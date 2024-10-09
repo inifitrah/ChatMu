@@ -63,4 +63,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  header {
+    @apply bg-gradient-to-r from-[#8e4ec6] to-[#3e63dd];
+  }
 }

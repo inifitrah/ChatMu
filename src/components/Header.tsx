@@ -11,7 +11,7 @@ import {
 
 const Header = () => {
   return (
-    <header className="flex justify-between p-4 mb-5 bg-gradient-to-r from-purple-500 via-purple-400 to-purple-600">
+    <header className="flex justify-between p-4 mb-5 ">
       <h1 className="text-2xl font-semibold text-white">ChatMu</h1>
       <DropdownMenu>
         <DropdownMenuTrigger>
