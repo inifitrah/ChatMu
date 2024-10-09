@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import Menu from "./Menu";
 
 import { EllipsisVertical } from "lucide-react";
 import {
@@ -16,12 +15,12 @@ const Header = () => {
       <h1 className="text-2xl font-semibold text-white">ChatMu</h1>
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <EllipsisVertical size={30} className="text-white" />
+          <EllipsisVertical size={25} className="text-inherit" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-52 fixed top-2 -right-4 flex flex-col gap-1 bg-black text-white  rounded-md p-5">
-          <DropdownMenuItem className="px-1 ">Profile</DropdownMenuItem>
-          <DropdownMenuItem className="px-1">Settings</DropdownMenuItem>
-          <DropdownMenuItem className="px-1">Help</DropdownMenuItem>
+        <DropdownMenuContent className="">
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem>Help</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
