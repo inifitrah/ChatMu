@@ -1,5 +1,5 @@
 "use client";
-import Chat from "@/components/Chat";
+import Chat from "@/components/ChatCard";
 import React from "react";
 
 const chatData = [

@@ -10,7 +10,7 @@ import { CircleUser } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
-interface ChatProps {
+interface ChatCardProps {
   uriProfile?: string;
   user: string;
   message: string;
@@ -19,7 +19,7 @@ interface ChatProps {
   number: number;
 }
 
-const Chat: React.FC<ChatProps> = ({
+const ChatCard: React.FC<ChatCardProps> = ({
   uriProfile,
   user,
   message,
@@ -60,4 +60,4 @@ const Chat: React.FC<ChatProps> = ({
   );
 };
 
-export default Chat;
+export default ChatCard;
