@@ -11,7 +11,7 @@ import {
 
 const Header = () => {
   return (
-    <header className="flex justify-between p-4 mb-5 ">
+    <header className="flex justify-between p-4">
       <h1 className="text-2xl font-semibold text-white">ChatMu</h1>
       <DropdownMenu>
         <DropdownMenuTrigger>
