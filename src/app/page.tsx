@@ -1,5 +1,5 @@
 "use client";
-import Chat from "@/components/ChatCard";
+import ChatCard from "@/components/ChatCard";
 import React from "react";
 
 const chatData = [
@@ -45,7 +45,7 @@ export default function Home() {
   return (
     <main className="">
       {chatData.map((chat) => (
-        <Chat
+        <ChatCard
           uriProfile={chat.uriProfile}
           user={chat.user}
           isRead={chat.isRead}
