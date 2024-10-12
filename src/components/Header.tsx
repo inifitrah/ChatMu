@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,31 +9,43 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import ChatSearch from "./ChatSearch";
 
 const Header = () => {
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
   return (
     <header className="flex flex-col p-4 gap-2">
       <div className="flex justify-between">
         <h1 className="text-2xl font-semibold text-white">ChatMu</h1>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <EllipsisVertical size={25} className="text-inherit" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="">
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Help</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="space-x-1">
+          <Button
+            onClick={() => setIsCommandOpen(!isCommandOpen)}
+            size={"icon"}
+            variant={"menu"}
+          >
+            <Search size={27} />
+          </Button>
+          {isCommandOpen && <ChatSearch setIsCommandOpen={setIsCommandOpen} />}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <EllipsisVertical size={27} className="text-inherit" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="">
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Help</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="space-x-4">
-        <Button size={"sm"} variant={"menu"}>
+        <Button size={"sm"} variant={"filter"}>
           Semua
         </Button>
-        <Button size={"sm"} variant={"menu"}>
+        <Button size={"sm"} variant={"filter"}>
           Favorit
         </Button>
-        <Button size={"sm"} variant={"menu"}>
+        <Button size={"sm"} variant={"filter"}>
           Grup
         </Button>
       </div>

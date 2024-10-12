@@ -10,7 +10,7 @@ import { CircleUser } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
-interface ChatCardProps {
+interface ChatCardProps extends React.HTMLAttributes<HTMLDivElement> {
   uriProfile?: string;
   user: string;
   message: string;
@@ -26,9 +26,13 @@ const ChatCard: React.FC<ChatCardProps> = ({
   date,
   isRead,
   number,
+  ...props
 }) => {
   return (
-    <Card className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2">
+    <Card
+      {...props}
+      className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2"
+    >
       <Avatar className="border-2 cursor-pointer mx-1">
         <AvatarImage src={uriProfile} />
         <AvatarFallback className="cursor-pointer">

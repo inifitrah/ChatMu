@@ -19,7 +19,7 @@ const DropdownMenuTrigger = React.forwardRef<
   <DropdownMenuPrimitive.Trigger
     ref={ref}
     className={cn(
-      "rounded-full outline-none text-white focus:bg-popover-foreground/10 p-1 focus:text-popover",
+      "outline-none active:bg-popover/20 rounded-full text-white p-1 focus:bg-popover-foreground/10 focus:text-popover",
       inset && "pl-8",
       className
     )}
