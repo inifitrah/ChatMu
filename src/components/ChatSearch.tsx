@@ -36,7 +36,6 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
         </Button>
         <CommandInput placeholder="Type a command or search..." />
       </div>
-
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         {chatData.map((chat) => (

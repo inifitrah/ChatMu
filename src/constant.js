@@ -7,6 +7,7 @@ export const chatData = [
     id: 1,
     date: "Hari ini",
     number: 1000,
+    status: "online",
   },
   {
     uriProfile: "/images/user2.jpg",
@@ -16,6 +17,7 @@ export const chatData = [
     id: 2,
     date: "Kemarin",
     number: 500,
+    status: "offline",
   },
   {
     uriProfile: "/images/user3.jpg",
@@ -25,6 +27,7 @@ export const chatData = [
     id: 3,
     date: "2 hari yang lalu",
     number: 200,
+    status: "online",
   },
   {
     uriProfile: "/images/user4.jpg",
@@ -34,8 +37,10 @@ export const chatData = [
     id: 4,
     date: "3 hari yang lalu",
     number: 150,
+    status: "offline",
   },
 ];
+
 chatData.push(
   {
     uriProfile: "/images/user5.jpg",
@@ -45,6 +50,7 @@ chatData.push(
     id: 5,
     date: "4 hari yang lalu",
     number: 120,
+    status: "online",
   },
   {
     uriProfile: "/images/user6.jpg",
@@ -54,6 +60,7 @@ chatData.push(
     id: 6,
     date: "5 hari yang lalu",
     number: 300,
+    status: "offline",
   },
   {
     uriProfile: "/images/user7.jpg",
@@ -63,6 +70,7 @@ chatData.push(
     id: 7,
     date: "6 hari yang lalu",
     number: 250,
+    status: "online",
   },
   {
     uriProfile: "/images/user8.jpg",
@@ -72,6 +80,7 @@ chatData.push(
     id: 8,
     date: "Seminggu yang lalu",
     number: 400,
+    status: "offline",
   },
   {
     uriProfile: "/images/user9.jpg",
@@ -81,6 +90,7 @@ chatData.push(
     id: 9,
     date: "8 hari yang lalu",
     number: 600,
+    status: "online",
   },
   {
     uriProfile: "/images/user10.jpg",
@@ -90,6 +100,7 @@ chatData.push(
     id: 10,
     date: "9 hari yang lalu",
     number: 700,
+    status: "offline",
   },
   {
     uriProfile: "/images/user11.jpg",
@@ -99,6 +110,7 @@ chatData.push(
     id: 11,
     date: "10 hari yang lalu",
     number: 800,
+    status: "online",
   },
   {
     uriProfile: "/images/user12.jpg",
@@ -108,6 +120,7 @@ chatData.push(
     id: 12,
     date: "11 hari yang lalu",
     number: 900,
+    status: "offline",
   },
   {
     uriProfile: "/images/user13.jpg",
@@ -117,6 +130,7 @@ chatData.push(
     id: 13,
     date: "12 hari yang lalu",
     number: 100,
+    status: "online",
   },
   {
     uriProfile: "/images/user14.jpg",
@@ -126,5 +140,6 @@ chatData.push(
     id: 14,
     date: "13 hari yang lalu",
     number: 50,
+    status: "offline",
   }
 );
