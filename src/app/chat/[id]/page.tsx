@@ -72,7 +72,7 @@ const ChatMessage: React.FC<chatMessageProps> = ({
   return (
     <div className="w-full">
       <div
-        className={cn("w-full flex  px-2", isCurrentUser && "justify-end mt-2")}
+        className={cn("w-full flex  px-2", isCurrentUser && "justify-end my-2")}
       >
         <div className="rounded-xl overflow-hidden max-w-xs">
           <div className={cn("bg-sky-200 p-3", isCurrentUser && "bg-sky-300")}>
@@ -86,10 +86,10 @@ const ChatMessage: React.FC<chatMessageProps> = ({
 
 const ChatInput = () => {
   return (
-    <div className="px-3 flex gap-1 py-3 w-full">
+    <div className="pl-3 flex  py-3 w-full">
       <Input className="border-2" type="text" />
-      <Button className="text-black rounded-sm bg-sky-300" variant={"menu"}>
-        <SendHorizontal />
+      <Button className="text-black rounded-sm " variant={"menu"}>
+        <SendHorizontal size={30} />
       </Button>
     </div>
   );
@@ -98,9 +98,21 @@ const ChatInput = () => {
 const ChatWindow = () => {
   return (
     <div className="flex flex-1 flex-col overflow-auto py-5 pb-10">
-      <ChatMessage message="P" />
-
-      <ChatMessage message="Why?" isCurrentUser={true} />
+      <ChatMessage message="Hey, how are you?" />
+      <ChatMessage
+        message="I'm good, thanks! How about you?"
+        isCurrentUser={true}
+      />
+      <ChatMessage message="I'm doing well. What are you up to?" />
+      <ChatMessage
+        message="Just working on a project. You?"
+        isCurrentUser={true}
+      />
+      <ChatMessage message="Same here. It's been a busy day." />
+      <ChatMessage
+        message="Tell me about it. Can't wait for the weekend."
+        isCurrentUser={true}
+      />
     </div>
   );
 };
