@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,9 +19,27 @@ import { chatData } from "@/constant";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+
+interface Message {
+  message: string;
+  isCurrentUser: boolean;
+}
+
 const Page = () => {
   const { id } = useParams<{ id: string }>();
   const person = chatData.filter((item) => item.id === parseInt(id))[0];
+
+  const [messages, setMessages] = useState<Message[]>([
+    { message: "Hey, how are you?", isCurrentUser: false },
+    { message: "I'm good, thanks! How about you?", isCurrentUser: true },
+    { message: "I'm doing well. What are you up to?", isCurrentUser: false },
+    { message: "Just working on a project. You?", isCurrentUser: true },
+    { message: "Same here. It's been a busy day.", isCurrentUser: false },
+  ]);
+
+  const handleSendMessage = (newMessage: string) => {
+    setMessages([...messages, { message: newMessage, isCurrentUser: true }]);
+  };
 
   return (
     <>
@@ -38,7 +56,6 @@ const Page = () => {
               <CircleUser size={60} />
             </AvatarFallback>
           </Avatar>
-
           <div>
             <h1 className="text-xl font-bold">{person.user}</h1>
             <p className="text-sm ">{person.status}</p>
@@ -54,8 +71,8 @@ const Page = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
-      <ChatWindow />
-      <ChatInput />
+      <ChatWindow messages={messages} />
+      <ChatInput onSendMessage={handleSendMessage} />
     </>
   );
 };
@@ -72,10 +89,15 @@ const ChatMessage: React.FC<chatMessageProps> = ({
   return (
     <div className="w-full">
       <div
-        className={cn("w-full flex  px-2", isCurrentUser && "justify-end my-2")}
+        className={cn(
+          "w-full flex  px-2",
+          isCurrentUser && "justify-end text-end my-2"
+        )}
       >
         <div className="rounded-xl overflow-hidden max-w-xs">
-          <div className={cn("bg-sky-200 p-3", isCurrentUser && "bg-sky-300")}>
+          <div
+            className={cn("bg-violet-200 p-3", isCurrentUser && "bg-blue-200")}
+          >
             {message}
           </div>
         </div>
@@ -84,35 +106,72 @@ const ChatMessage: React.FC<chatMessageProps> = ({
   );
 };
 
-const ChatInput = () => {
+interface ChatInputProps {
+  onSendMessage: (newMessage: string) => void;
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
+  const [inputValue, setInputValue] = useState("");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleSendClick = () => {
+    if (inputValue.trim() !== "") {
+      onSendMessage(inputValue);
+      setInputValue("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSendClick();
+    }
+  };
+
   return (
     <div className="pl-3 flex  py-3 w-full">
-      <Input className="border-2" type="text" />
-      <Button className="text-black rounded-sm " variant={"menu"}>
+      <Input
+        onChange={handleInputChange}
+        value={inputValue}
+        placeholder="Type a message.."
+        className="border-2"
+        type="text"
+        onKeyDown={handleKeyDown}
+      />
+      <Button
+        onClick={handleSendClick}
+        className="text-black rounded-sm active:bg-sky-300"
+        variant={"menu"}
+      >
         <SendHorizontal size={30} />
       </Button>
     </div>
   );
 };
 
-const ChatWindow = () => {
+interface ChatWindowProps {
+  messages: Message[];
+}
+
+const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <div className="flex flex-1 flex-col overflow-auto py-5 pb-10">
-      <ChatMessage message="Hey, how are you?" />
-      <ChatMessage
-        message="I'm good, thanks! How about you?"
-        isCurrentUser={true}
-      />
-      <ChatMessage message="I'm doing well. What are you up to?" />
-      <ChatMessage
-        message="Just working on a project. You?"
-        isCurrentUser={true}
-      />
-      <ChatMessage message="Same here. It's been a busy day." />
-      <ChatMessage
-        message="Tell me about it. Can't wait for the weekend."
-        isCurrentUser={true}
-      />
+    <div ref={ref} className="flex flex-1 flex-col overflow-auto py-5 pb-3">
+      {messages.map((item, i) => (
+        <ChatMessage
+          key={i}
+          message={item.message}
+          isCurrentUser={item.isCurrentUser}
+        />
+      ))}
     </div>
   );
 };
