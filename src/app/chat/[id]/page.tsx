@@ -28,7 +28,7 @@ interface Message {
 
 const Page = () => {
   const { id } = useParams<{ id: string }>();
-  const person = chatData.filter((item) => item.id === parseInt(id))[0];
+  const user = chatData.filter((item) => item.id === parseInt(id))[0];
   const [messages, setMessages] = useState<Message[]>([
     { message: "Hey, how are you?", isCurrentUser: false },
     { message: "I'm good, thanks! How about you?", isCurrentUser: true },
@@ -49,37 +49,51 @@ const Page = () => {
 
   return (
     <>
-      <header className="flex justify-between p-4 items-center text-white">
-        <div className="flex gap-2 items-center">
-          <Link href={"/"}>
-            <Button size={"icon"} variant={"menu"}>
-              <ArrowLeft />
-            </Button>
-          </Link>
-          <Avatar className="text-black">
-            <AvatarImage src={person.uriProfile} />
-            <AvatarFallback>
-              <CircleUser size={60} />
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-xl font-bold">{person.user}</h1>
-            <p className="text-sm ">{person.status}</p>
-          </div>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center ">
-            <EllipsisVertical className="text-inherit" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="">
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Block</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </header>
+      <ChatHeader user={user} />
       <ChatWindow messages={messages} />
       <ChatInput onSendMessage={handleSendMessage} />
     </>
+  );
+};
+
+interface ChatHeaderProps {
+  user: {
+    uriProfile: string;
+    user: string;
+    status: string;
+  };
+}
+
+const ChatHeader: React.FC<ChatHeaderProps> = ({ user }) => {
+  return (
+    <header className="flex justify-between p-4 items-center text-white">
+      <div className="flex gap-2 items-center">
+        <Link href={"/"}>
+          <Button size={"icon"} variant={"menu"}>
+            <ArrowLeft />
+          </Button>
+        </Link>
+        <Avatar className="text-black">
+          <AvatarImage src={user.uriProfile} />
+          <AvatarFallback>
+            <CircleUser size={60} />
+          </AvatarFallback>
+        </Avatar>
+        <div>
+          <h1 className="text-xl font-bold">{user.user}</h1>
+          <p className="text-sm ">{user.status}</p>
+        </div>
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="flex items-center ">
+          <EllipsisVertical className="text-inherit" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="">
+          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>Block</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </header>
   );
 };
 
