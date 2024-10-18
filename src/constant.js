@@ -10,7 +10,6 @@ export const chatData = [
     status: "online",
   },
   {
-    uriProfile: "/images/user2.jpg",
     user: "John Doe",
     isRead: true,
     message: "Hello, how are you?",
@@ -20,7 +19,6 @@ export const chatData = [
     status: "offline",
   },
   {
-    uriProfile: "/images/user3.jpg",
     user: "Jane Smith",
     isRead: false,
     message: "Can we meet tomorrow?",
@@ -30,7 +28,6 @@ export const chatData = [
     status: "online",
   },
   {
-    uriProfile: "/images/user4.jpg",
     user: "Alice Johnson",
     isRead: true,
     message: "Sure, see you then!",
@@ -43,7 +40,6 @@ export const chatData = [
 
 chatData.push(
   {
-    uriProfile: "/images/user5.jpg",
     user: "Bob Brown",
     isRead: false,
     message: "What's the plan for today?",
@@ -53,7 +49,6 @@ chatData.push(
     status: "online",
   },
   {
-    uriProfile: "/images/user6.jpg",
     user: "Charlie Davis",
     isRead: true,
     message: "I'll be there in 10 minutes.",
@@ -63,7 +58,6 @@ chatData.push(
     status: "offline",
   },
   {
-    uriProfile: "/images/user7.jpg",
     user: "Diana Evans",
     isRead: false,
     message: "Can you send me the report?",
@@ -73,7 +67,6 @@ chatData.push(
     status: "online",
   },
   {
-    uriProfile: "/images/user8.jpg",
     user: "Ethan Foster",
     isRead: true,
     message: "Meeting has been rescheduled.",
@@ -83,7 +76,6 @@ chatData.push(
     status: "offline",
   },
   {
-    uriProfile: "/images/user9.jpg",
     user: "Fiona Green",
     isRead: false,
     message: "Happy Birthday!",
@@ -93,7 +85,6 @@ chatData.push(
     status: "online",
   },
   {
-    uriProfile: "/images/user10.jpg",
     user: "George Harris",
     isRead: true,
     message: "Let's catch up soon.",
@@ -103,7 +94,6 @@ chatData.push(
     status: "offline",
   },
   {
-    uriProfile: "/images/user11.jpg",
     user: "Hannah Irving",
     isRead: false,
     message: "Can you review this document?",
@@ -113,7 +103,6 @@ chatData.push(
     status: "online",
   },
   {
-    uriProfile: "/images/user12.jpg",
     user: "Ian Jackson",
     isRead: true,
     message: "I'll call you later.",
@@ -123,7 +112,6 @@ chatData.push(
     status: "offline",
   },
   {
-    uriProfile: "/images/user13.jpg",
     user: "Jackie King",
     isRead: false,
     message: "Thank you for your help.",
@@ -133,7 +121,6 @@ chatData.push(
     status: "online",
   },
   {
-    uriProfile: "/images/user14.jpg",
     user: "Kevin Lee",
     isRead: true,
     message: "See you at the event.",

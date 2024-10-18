@@ -20,6 +20,7 @@ import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
+import { socket } from "@/lib/socket";
 interface Message {
   message: string;
   isCurrentUser: boolean;
@@ -28,7 +29,6 @@ interface Message {
 const Page = () => {
   const { id } = useParams<{ id: string }>();
   const person = chatData.filter((item) => item.id === parseInt(id))[0];
-
   const [messages, setMessages] = useState<Message[]>([
     { message: "Hey, how are you?", isCurrentUser: false },
     { message: "I'm good, thanks! How about you?", isCurrentUser: true },
@@ -40,6 +40,12 @@ const Page = () => {
   const handleSendMessage = (newMessage: string) => {
     setMessages([...messages, { message: newMessage, isCurrentUser: true }]);
   };
+
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to Socket.IO server");
+    });
+  }, [messages]);
 
   return (
     <>
