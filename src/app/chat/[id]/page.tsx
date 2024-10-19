@@ -29,19 +29,29 @@ interface Message {
 const Page = () => {
   const { id } = useParams<{ id: string }>();
   const user = chatData.filter((item) => item.id === parseInt(id))[0];
-  const [messages, setMessages] = useState<Message[]>([
-    { message: "Hey, how are you?", isCurrentUser: false },
-    { message: "I'm good, thanks! How about you?", isCurrentUser: true },
-    { message: "I'm doing well. What are you up to?", isCurrentUser: false },
-    { message: "Just working on a project. You?", isCurrentUser: true },
-    { message: "Same here. It's been a busy day.", isCurrentUser: false },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const [transport, setTransport] = useState("N/A");
 
   const handleSendMessage = (newMessage: string) => {
     setMessages([...messages, { message: newMessage, isCurrentUser: true }]);
   };
 
   useEffect(() => {
+    if (socket.connected) {
+      onConnect();
+    }
+
+    function onConnect() {
+      setIsConnected(true);
+      setTransport(socket.io.engine.transport.name);
+      console.log(socket.io.engine.transport);
+
+      socket.io.engine.on("upgrade", () => {
+        setTransport(transport.name);
+      });
+    }
+
     socket.on("connect", () => {
       console.log("Connected to Socket.IO server");
     });
@@ -58,7 +68,7 @@ const Page = () => {
 
 interface ChatHeaderProps {
   user: {
-    uriProfile: string;
+    uriProfile?: string;
     user: string;
     status: string;
   };
