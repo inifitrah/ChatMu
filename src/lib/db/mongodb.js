@@ -1,12 +1,15 @@
 import mongoose from "mongoose";
 
-const MONGO_URI = process.env.MONGO_URI;
+// const MONGO_URI = process.env.MONGO_URI;
 export async function connectToDB() {
   try {
-    return await mongoose.connect(MONGO_URI);
+    const connect = await mongoose.connect(
+      "mongodb://trah:trah@localhost:27017"
+    );
+    console.log("Connect to mongodb");
+    return connect;
   } catch (error) {
-    console.log("ERR CONNECTION ", error);
-    throw error;
+    console.log("Error koneksinya pak ", error);
   }
 }
 
