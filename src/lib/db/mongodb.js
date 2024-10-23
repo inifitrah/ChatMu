@@ -1,26 +1,10 @@
 import mongoose from "mongoose";
 
-// const MONGO_URI = process.env.MONGO_URI;
-export async function connectToDB() {
+export const connectToMongoDB = async () => {
   try {
-    const connect = await mongoose.connect(
-      "mongodb://trah:trah@localhost:27017"
-    );
-    console.log("Connect to mongodb");
-    return connect;
+    await mongoose.connect("mongodb://root:admin123@localhost:27017");
   } catch (error) {
-    console.log("Error koneksinya pak ", error);
+    console.error(`Error: ${error}`);
+    process.exit(1);
   }
-}
-
-mongoose.connection.on("connected", () => {
-  console.log("CONNECT IS SUCCESS");
-});
-
-mongoose.connection.on("error", (err) => {
-  console.error("MongoDB connection error:", err);
-});
-
-mongoose.connection.on("disconnected", () => {
-  console.log("MongoDB disconnected");
-});
+};
