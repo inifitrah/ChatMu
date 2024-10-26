@@ -6,7 +6,7 @@ import ChatCard from "./ChatCard";
 
 const ChatList = () => {
   const currentUserId = "6718e1bac9b7c37002817409";
-  const [conversations, setConversations] = useState([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,7 +14,9 @@ const ChatList = () => {
   }, []);
 
   async function getConversations() {
-    const response = await fetch("http://localhost:3000/api/conversation");
+    const response = await fetch("http://localhost:3000/api/conversations", {
+      method: "GET",
+    });
     const data = await response.json();
     setConversations(data.data);
     setLoading(false);
@@ -22,20 +24,15 @@ const ChatList = () => {
 
   return (
     <>
-      loading ? (<div>Loading...</div>) : (
-      {conversations.map((chat) => (
-        <Link href={`/chat/${chat._id}`} key={chat._id}>
-          <ChatCard
-            user={chat.user}
-            isRead={chat.isRead}
-            message={chat.message}
-            key={chat.id}
-            date={chat.date}
-            number={chat.number}
-          />
-        </Link>
-      ))}
-      )
+      {loading ? (
+        <div>
+          <p>Loading...</p>
+        </div>
+      ) : (
+        conversations.map((conversation) => (
+          <ChatCard key={conversation._id} conversation={conversation} />
+        ))
+      )}
     </>
   );
 };

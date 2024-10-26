@@ -10,7 +10,10 @@ export async function GET() {
 
     const conversation = await Conversation.find({
       participants: userId,
-    });
+    })
+      .populate("participants", "username avatar isOnline")
+      .populate("lastMessage.senderId", "name")
+      .sort({ updatedAt: -1 });
 
     return NextResponse.json({
       data: conversation,
