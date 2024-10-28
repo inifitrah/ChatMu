@@ -15,12 +15,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { chatData } from "@/constant";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-
-import { socket } from "@/lib/socket";
 interface Message {
   message: string;
   isCurrentUser: boolean;
@@ -28,7 +25,6 @@ interface Message {
 
 const Page = () => {
   const { id } = useParams<{ id: string }>();
-  const user = chatData.filter((item) => item.id === parseInt(id))[0];
   const [messages, setMessages] = useState<Message[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
@@ -37,25 +33,25 @@ const Page = () => {
     setMessages([...messages, { message: newMessage, isCurrentUser: true }]);
   };
 
-  useEffect(() => {
-    if (socket.connected) {
-      onConnect();
-    }
+  // useEffect(() => {
+  //   if (socket.connected) {
+  //     onConnect();
+  //   }
 
-    function onConnect() {
-      setIsConnected(true);
-      setTransport(socket.io.engine.transport.name);
-      console.log(socket.io.engine.transport);
+  //   function onConnect() {
+  //     setIsConnected(true);
+  //     setTransport(socket.io.engine.transport.name);
+  //     console.log(socket.io.engine.transport);
 
-      socket.io.engine.on("upgrade", () => {
-        setTransport(transport.name);
-      });
-    }
+  //     socket.io.engine.on("upgrade", () => {
+  //       setTransport(transport.name);
+  //     });
+  //   }
 
-    socket.on("connect", () => {
-      console.log("Connected to Socket.IO server");
-    });
-  }, [messages]);
+  //   socket.on("connect", () => {
+  //     console.log("Connected to Socket.IO server");
+  //   });
+  // }, [messages]);
 
   return (
     <>
