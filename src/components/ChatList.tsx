@@ -9,9 +9,9 @@ const ChatList = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getConversations();
-  }, []);
+  // useEffect(() => {
+  //   getConversations();
+  // }, []);
 
   async function getConversations() {
     const response = await fetch("http://localhost:3000/api/conversations", {
