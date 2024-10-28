@@ -31,6 +31,17 @@ export const authOptions = {
 
       return true;
     },
+    async session({ session }) {
+      await connectToMongoDB();
+
+      const userData = await User.findOne({ email: session.user.email });
+
+      console.log(" ==> User Data: ", userData);
+
+      session.user.id = userData._id;
+      session.user.username = userData.username;
+      return session;
+    },
   },
 };
 

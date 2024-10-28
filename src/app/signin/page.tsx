@@ -1,12 +1,15 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 import React, { useEffect } from "react";
 
 const SignIn = () => {
   const { data, status } = useSession();
 
   useEffect(() => {
-    console.log(data, status);
+    if (data && status === "authenticated") {
+      redirect("/");
+    }
   }, [data, status]);
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

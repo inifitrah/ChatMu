@@ -10,6 +10,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import ChatSearch from "./ChatSearch";
+import { signOut } from "next-auth/react";
 
 const Header = () => {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
@@ -34,6 +35,9 @@ const Header = () => {
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Help</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => signOut()}>
+                SignOut
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

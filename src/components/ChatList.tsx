@@ -3,38 +3,16 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import ChatCard from "./ChatCard";
+import { useSession } from "next-auth/react";
 
 const ChatList = () => {
-  const currentUserId = "6718e1bac9b7c37002817409";
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
 
-  // useEffect(() => {
-  //   getConversations();
-  // }, []);
+  useEffect(() => {
+    console.log(session?.user);
+  });
 
-  async function getConversations() {
-    const response = await fetch("http://localhost:3000/api/conversations", {
-      method: "GET",
-    });
-    const data = await response.json();
-    setConversations(data.data);
-    setLoading(false);
-  }
-
-  return (
-    <>
-      {loading ? (
-        <div>
-          <p>Loading...</p>
-        </div>
-      ) : (
-        conversations.map((conversation) => (
-          <ChatCard key={conversation._id} conversation={conversation} />
-        ))
-      )}
-    </>
-  );
+  return <></>;
 };
 
 export default ChatList;

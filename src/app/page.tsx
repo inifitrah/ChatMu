@@ -9,6 +9,7 @@ export default function Home() {
   const { data: session } = useSession();
 
   useEffect(() => {
+    console.log("session", session);
     if (!session) {
       redirect("/signin");
     }
@@ -17,7 +18,7 @@ export default function Home() {
     <>
       <Header />
       <main className="">
-        <ChatList />
+        <div className="p-2">Login by: {session?.user?.username}</div>
       </main>
     </>
   );
