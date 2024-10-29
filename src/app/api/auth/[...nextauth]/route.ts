@@ -17,9 +17,14 @@ export const authOptions = {
       const existingUser = await User.findOne({ email: profile.email });
 
       if (!existingUser) {
+        console.log(" ==> Creating new user");
+
+        const username =
+          profile.email.split("@")[0] + Math.floor(Math.random() * 1234);
+
         const newUser = new User({
           email: profile.email,
-          username: profile.email.split(" ").join("").toLowerCase(),
+          username,
           avatar: profile.image,
         });
         await newUser.save();
@@ -35,8 +40,6 @@ export const authOptions = {
       await connectToMongoDB();
 
       const userData = await User.findOne({ email: session.user.email });
-
-      console.log(" ==> User Data: ", userData);
 
       session.user.id = userData._id;
       session.user.username = userData.username;
