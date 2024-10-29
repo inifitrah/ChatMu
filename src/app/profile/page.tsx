@@ -1,7 +1,10 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CircleUser, Mail, Pencil, UserRound } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, CircleUser, Mail, Pencil, UserRound } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -20,6 +23,12 @@ const Profile = () => {
 
   return (
     <section className="px-5">
+      <Link href={"/"}>
+        <Button size={40} className="mt-4" variant={"icon"}>
+          <ArrowLeft size={30} />
+        </Button>
+      </Link>
+
       <div className=" flex w-full flex-col items-center justify-center gap-4">
         <Avatar className="text-black h-24 w-24 mt-16">
           <AvatarImage src={session.user.image} />
@@ -39,21 +48,24 @@ const Profile = () => {
               <p className="text-violet-800 font-semibold">Edit</p>
             </div>
           </div>
-          <div className=" rounded-xl flex justify-between bg-black p-3 text-white w-full">
-            <div className=" flex gap-1 items-center text-white">
-              <Mail />
-              <p className="text-sm">Email</p>
-            </div>
-            <h1 className="font-semibold">{session.user.email}</h1>
-          </div>
-
-          <div className=" rounded-xl flex justify-between bg-black p-3 text-white w-full">
-            <div className=" flex gap-1 items-center text-white">
-              <UserRound />
-              <p className="text-sm">Username</p>
-            </div>
-            <h1 className="font-semibold">{session.user.username}</h1>
-          </div>
+          <Card>
+            <CardContent className="rounded-xl flex justify-between bg-black p-3 text-white w-full">
+              <div className=" flex gap-1 items-center text-white">
+                <UserRound />
+                <p className="text-sm">Username</p>
+              </div>
+              <h1 className="font-semibold">{session.user.username}</h1>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="rounded-xl flex justify-between bg-black p-3 text-white w-full">
+              <div className=" flex gap-1 items-center text-white">
+                <UserRound />
+                <p className="text-sm">Email</p>
+              </div>
+              <h1 className="font-semibold">{session.user.email}</h1>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>
