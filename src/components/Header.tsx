@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ChatSearch from "./ChatSearch";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 const Header = () => {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
@@ -32,7 +33,9 @@ const Header = () => {
               <EllipsisVertical size={27} className="text-inherit" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="">
-              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <Link href="profile">
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+              </Link>
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Help</DropdownMenuItem>
               <DropdownMenuItem onClick={() => signOut()}>
