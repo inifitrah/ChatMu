@@ -11,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     console.log("session", session);
     if (!session) {
-      redirect("/signin");
+      redirect("/auth");
     }
   }, [session]);
   return (
