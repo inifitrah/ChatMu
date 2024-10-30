@@ -14,8 +14,6 @@ interface ChatSearchProps {
   setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-import { chatData } from "@/constant.js";
-
 const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
   useEffect(() => {
     document.body.classList.add("body-no-scroll");

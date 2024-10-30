@@ -16,7 +16,7 @@ import Link from "next/link";
 const Header = () => {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   return (
-    <header className="flex flex-col p-4 gap-2">
+    <header className="flex flex-col p-4 gap-2 bg-black">
       <div className="flex justify-between">
         <h1 className="text-2xl font-semibold text-white">ChatMu</h1>
         <div className="space-x-1">

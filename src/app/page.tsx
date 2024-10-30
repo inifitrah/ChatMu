@@ -18,7 +18,7 @@ export default function Home() {
     <>
       <Header />
       <main className="">
-        <div className="p-2">Login by: {session?.user?.username}</div>
+        <ChatList />
       </main>
     </>
   );

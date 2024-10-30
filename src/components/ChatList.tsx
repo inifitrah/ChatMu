@@ -12,7 +12,31 @@ const ChatList = () => {
     console.log(session?.user);
   });
 
-  return <></>;
+  const dummyConversation = {
+    participants: [
+      {
+        _id: "1",
+        username: "Fitrah",
+        avatar: "https://randomuser.me",
+        isOnline: true,
+      },
+      {
+        _id: "2",
+        username: "Ramadhan",
+        avatar: "https://randomuser.me",
+        isOnline: true,
+      },
+    ],
+    lastMessage: {
+      content: "Lorem ipsum dolor sit amet.",
+    },
+  };
+
+  return (
+    <>
+      <ChatCard conversation={dummyConversation} />
+    </>
+  );
 };
 
 export default ChatList;
