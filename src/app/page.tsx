@@ -1,19 +1,21 @@
 "use client";
-import React, { useEffect } from "react";
 import Header from "@/components/Header";
 import ChatList from "@/components/ChatList";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
-  const { data: session } = useSession();
-
-  useEffect(() => {
-    console.log("session", session);
-    if (!session) {
+  const { toast } = useToast();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      toast({
+        description: "Logged Out",
+      });
       redirect("/auth");
-    }
-  }, [session]);
+    },
+  });
   return (
     <>
       <Header />

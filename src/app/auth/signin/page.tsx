@@ -19,6 +19,7 @@ import React, { useEffect, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useAuthToast } from "@/hooks/useAuthToast";
 
 const formSchema = z.object({
   email: z.string(),
@@ -28,6 +29,8 @@ const formSchema = z.object({
 });
 
 const SignIn = () => {
+  useAuthToast();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,14 +47,6 @@ const SignIn = () => {
     console.log(values);
     alert(JSON.stringify(values));
   };
-
-  const { data, status } = useSession();
-
-  useEffect(() => {
-    if (data && status === "authenticated") {
-      redirect("/");
-    }
-  }, [data, status]);
   return (
     <div className="flex h-screen px-5 py-8 flex-col">
       <div>
@@ -110,31 +105,6 @@ const SignIn = () => {
           />
         </form>
       </Form>
-
-      {/* <form className=" py-3 space-y-4" action="">
-        <div className="flex flex-col">
-          <label className="text-sm" htmlFor="username">
-            Username or Email
-          </label>
-          <input
-            placeholder="Username or Email"
-            id="username"
-            className="py-3 px-5 rounded-2xl border-black border-2"
-            type="text"
-          />
-        </div>
-        <div className="flex flex-col">
-          <label className="text-sm" htmlFor="username">
-            Password
-          </label>
-          <input
-            placeholder="Password"
-            id="password"
-            className="py-3 px-5 rounded-2xl border-black border-2"
-            type="password"
-          />
-        </div>
-      </form> */}
 
       <div className="flex items-center my-10">
         <div className="flex-grow border-t border-gray-400"></div>
