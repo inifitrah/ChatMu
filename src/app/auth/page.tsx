@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React, { useEffect } from "react";
-
+import { useToast } from "@/hooks/use-toast";
 const Auth = () => {
   const { status } = useSession();
 
@@ -14,6 +14,8 @@ const Auth = () => {
       redirect("/");
     }
   });
+
+  const { toast } = useToast();
 
   return (
     <section className="flex p-5 flex-col gap-5 h-screen justify-center">
@@ -28,7 +30,15 @@ const Auth = () => {
         <Link href={"/auth/signin"}>
           <Button className="rounded-full h-14 w-full">SignIn</Button>
         </Link>
-        <Button className="rounded-full h-14 bg-gray-400 hover:text-white text-black">
+        <Button
+          onClick={() => {
+            toast({
+              title: "Halaman belum tersedia",
+              description: "Coming soon.",
+            });
+          }}
+          className="rounded-full h-14 bg-gray-400 hover:text-white text-black"
+        >
           SignUp
         </Button>
       </div>
