@@ -1,9 +1,20 @@
+"use client";
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { redirect } from "next/navigation";
+import React, { useEffect } from "react";
 
 const Auth = () => {
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      redirect("/");
+    }
+  });
+
   return (
     <section className="flex p-5 flex-col gap-5 h-screen justify-center">
       <div className=" text-center px-6">
@@ -17,7 +28,7 @@ const Auth = () => {
         <Link href={"/auth/signin"}>
           <Button className="rounded-full h-14 w-full">SignIn</Button>
         </Link>
-        <Button className="rounded-full h-14 bg-gray-400 text-black">
+        <Button className="rounded-full h-14 bg-gray-400 hover:text-white text-black">
           SignUp
         </Button>
       </div>

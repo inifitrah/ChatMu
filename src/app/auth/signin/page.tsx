@@ -7,15 +7,44 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { ArrowLeft, ArrowLeftCircle } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+const formSchema = z.object({
+  email: z.string(),
+  password: z.string().min(4, {
+    message: "Password should be atleast 4 characters long",
+  }),
+});
 
 const SignIn = () => {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const signInClick = () => {
+    form.handleSubmit(onSubmit)();
+  };
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+    alert(JSON.stringify(values));
+  };
+
   const { data, status } = useSession();
 
   useEffect(() => {
@@ -24,7 +53,7 @@ const SignIn = () => {
     }
   }, [data, status]);
   return (
-    <div className="flex h-[90vhh] px-5 py-8 flex-col">
+    <div className="flex h-screen px-5 py-8 flex-col">
       <div>
         <Link href={"/auth"}>
           <Button size={40} variant={"icon"}>
@@ -39,13 +68,56 @@ const SignIn = () => {
         <h1 className="text-3xl">You've been missed!</h1>
       </div>
 
-      <form className=" py-3 space-y-4" action="">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          action=""
+          className="space-y-3"
+        >
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    className="py-6 border-2 w-full px-3 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
+                    placeholder="Email"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    className="py-6 border-2 w-full px-3 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
+                    placeholder="Password"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+
+      {/* <form className=" py-3 space-y-4" action="">
         <div className="flex flex-col">
           <label className="text-sm" htmlFor="username">
-            Username
+            Username or Email
           </label>
           <input
-            placeholder="Username"
+            placeholder="Username or Email"
             id="username"
             className="py-3 px-5 rounded-2xl border-black border-2"
             type="text"
@@ -53,16 +125,16 @@ const SignIn = () => {
         </div>
         <div className="flex flex-col">
           <label className="text-sm" htmlFor="username">
-            Email
+            Password
           </label>
           <input
-            placeholder="Username"
-            id="email"
+            placeholder="Password"
+            id="password"
             className="py-3 px-5 rounded-2xl border-black border-2"
-            type="email"
+            type="password"
           />
         </div>
-      </form>
+      </form> */}
 
       <div className="flex items-center my-10">
         <div className="flex-grow border-t border-gray-400"></div>
@@ -94,9 +166,13 @@ const SignIn = () => {
               SignUp
             </Link>
           </p>
-          <Link className="self-end w-full" href={"/auth/signin"}>
-            <Button className="rounded-2xl text-xl h-14 w-full">SignIn</Button>
-          </Link>
+
+          <Button
+            onClick={signInClick}
+            className="rounded-2xl text-xl h-14 w-full"
+          >
+            SignIn
+          </Button>
         </div>
       </div>
     </div>
