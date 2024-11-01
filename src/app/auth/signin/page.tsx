@@ -44,7 +44,6 @@ const SignIn = () => {
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     alert(JSON.stringify(values));
   };
   return (

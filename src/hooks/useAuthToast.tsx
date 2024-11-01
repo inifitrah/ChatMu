@@ -8,7 +8,6 @@ export const useAuthToast = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("status", status);
     if (status === "authenticated" && session) {
       toast({
         description:

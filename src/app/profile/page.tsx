@@ -6,20 +6,15 @@ import { ArrowLeft, CircleUser, Mail, Pencil, UserRound } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 
 const Profile = () => {
-  const { data: session } = useSession();
-
-  useEffect(() => {
-    if (!session) {
-      redirect("/signin");
-    }
-  }, [session]);
-
-  if (!session) {
-    return <div>Loading...</div>;
-  }
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/auth");
+    },
+  });
 
   return (
     <section className="px-5">
