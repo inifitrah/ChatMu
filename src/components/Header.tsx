@@ -12,9 +12,12 @@ import { Button } from "@/components/ui/button";
 import ChatSearch from "./ChatSearch";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
+import LogoutAlert from "./LogoutAlert";
+import { useToast } from "@/hooks/use-toast";
 
 const Header = () => {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
+  const { toast } = useToast();
   return (
     <header className="flex flex-col p-4 gap-2 bg-black">
       <div className="flex justify-between">
@@ -37,9 +40,18 @@ const Header = () => {
                 <DropdownMenuItem>Profile</DropdownMenuItem>
               </Link>
               <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Help</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => signOut()}>
-                SignOut
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.preventDefault();
+                }}
+              >
+                <LogoutAlert
+                  onConfirm={() => {
+                    signOut();
+                  }}
+                >
+                  Logout
+                </LogoutAlert>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
