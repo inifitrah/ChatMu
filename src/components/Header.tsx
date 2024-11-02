@@ -40,19 +40,18 @@ const Header = () => {
                 <DropdownMenuItem>Profile</DropdownMenuItem>
               </Link>
               <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.preventDefault();
+              <LogoutAlert
+                onConfirm={() => {
+                  signOut();
                 }}
               >
-                <LogoutAlert
-                  onConfirm={() => {
-                    signOut();
-                  }}
+                <DropdownMenuItem
+                  className="text-red-700  font-semibold"
+                  onClick={(e) => e.preventDefault()}
                 >
                   Logout
-                </LogoutAlert>
-              </DropdownMenuItem>
+                </DropdownMenuItem>
+              </LogoutAlert>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
