@@ -1,4 +1,5 @@
 "use client";
+import EditProfile from "@/components/EditProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +16,8 @@ const Profile = () => {
       redirect("/auth");
     },
   });
+
+  if (!session) return <>Loading..</>;
 
   return (
     <section className="px-5">
@@ -36,12 +39,9 @@ const Profile = () => {
           <p>online</p>
         </div>
         <div className="flex flex-col space-y-1 w-full mt-5">
-          <div className="flex justify-between ">
+          <div className="flex justify-between items-center ">
             <h1 className="font-semibold">Personal information</h1>
-            <div className="flex cursor-pointer">
-              <Pencil size={19} className="text-violet-800" />
-              <p className="text-violet-800 font-semibold">Edit</p>
-            </div>
+            <EditProfile />
           </div>
           <Card>
             <CardContent className="rounded-xl flex justify-between bg-black p-3 text-white w-full">
