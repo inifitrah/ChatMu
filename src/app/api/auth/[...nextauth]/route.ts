@@ -14,10 +14,9 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async signIn({ user }) {
       await connectToMongoDB();
-
       const existingUser = await User.findOne({ email: user.email });
 
-      if (!existingUser && user.email) {
+      if (!existingUser) {
         console.log(" ==> Creating new user");
         const username =
           user.email.split("@")[0] + Math.floor(Math.random() * 1234);

@@ -2,17 +2,15 @@
 import NextAuth from "next-auth/next";
 
 declare module "next-auth" {
-  interface SignIn {
-    profile: {
-      email: string;
-      email_verified: boolean;
-      image: string;
-    };
+  //  add custom interface for Profile, Account, Sessions, User and etc.
+
+  interface User {
+    email: string;
   }
   interface Session {
     user: {
-      username: string;
       id: string;
+      username: string;
     } & DefaultSession["user"];
   }
 }
