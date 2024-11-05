@@ -1,36 +1,31 @@
 import { User } from "@/lib/db/models";
 import { connectToMongoDB } from "@/lib/db/mongodb";
-import {
-  GetServerSidePropsContext,
-  NextApiRequest,
-  NextApiResponse,
-} from "next";
-import NextAuth, { getServerSession } from "next-auth";
+import { AuthOptions } from "next-auth";
+import NextAuth, { getServerSession } from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
   callbacks: {
-    async signIn({ profile }) {
+    async signIn({ user }) {
       await connectToMongoDB();
 
-      const existingUser = await User.findOne({ email: profile.email });
+      const existingUser = await User.findOne({ email: user.email });
 
-      if (!existingUser) {
+      if (!existingUser && user.email) {
         console.log(" ==> Creating new user");
-
         const username =
-          profile.email.split("@")[0] + Math.floor(Math.random() * 1234);
+          user.email.split("@")[0] + Math.floor(Math.random() * 1234);
 
         const newUser = new User({
-          email: profile.email,
+          email: user.email,
           username,
-          avatar: profile.image,
+          avatar: user.image,
         });
         await newUser.save();
 
@@ -41,16 +36,12 @@ export const authOptions = {
 
       return true;
     },
-    async session({ session }) {
+
+    async session({ session, user }) {
       await connectToMongoDB();
-
-      const userData = await User.findOne({ email: session.user.email });
-
+      const userData = await User.findOne({ email: user.email });
       session.user.id = userData._id;
       session.user.username = userData.username;
-
-      console.log("username==> ", session.user.username);
-
       return session;
     },
   },
@@ -60,13 +51,8 @@ export const authOptions = {
   },
 };
 
-export function authServerSession(
-  ...args:
-    | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
-    | [NextApiRequest, NextApiResponse]
-    | []
-) {
-  return getServerSession(...args, authOptions);
+export function authServerSession() {
+  return getServerSession(authOptions);
 }
 
 const handler = NextAuth(authOptions);
