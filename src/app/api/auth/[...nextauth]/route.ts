@@ -36,9 +36,9 @@ export const authOptions: AuthOptions = {
       return true;
     },
 
-    async session({ session, user }) {
+    async session({ session, token }) {
       await connectToMongoDB();
-      const userData = await User.findOne({ email: user.email });
+      const userData = await User.findOne({ email: token.email });
       session.user.id = userData._id;
       session.user.username = userData.username;
       return session;
