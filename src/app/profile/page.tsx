@@ -1,28 +1,19 @@
-"use client";
 import EditProfile from "@/components/EditProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, CircleUser, Mail, Pencil, UserRound } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import React, { useEffect, useLayoutEffect } from "react";
-
-const Profile = () => {
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect("/auth");
-    },
-  });
+import { authServerSession } from "../api/auth/[...nextauth]/route";
+const Profile = async () => {
+  const session = await authServerSession();
 
   if (!session) return <>Loading..</>;
 
   return (
     <section className="px-5">
       <Link href={"/"}>
-        <Button size={40} className="mt-4" variant={"icon"}>
+        <Button size={"icon"} className="mt-4" variant={"icon"}>
           <ArrowLeft size={30} />
         </Button>
       </Link>
@@ -41,7 +32,7 @@ const Profile = () => {
         <div className="flex flex-col space-y-1 w-full mt-5">
           <div className="flex justify-between items-center ">
             <h1 className="font-semibold">Personal information</h1>
-            <EditProfile />
+            <EditProfile user={session.user} />
           </div>
           <Card>
             <CardContent className="rounded-xl flex justify-between bg-black p-3 text-white w-full">

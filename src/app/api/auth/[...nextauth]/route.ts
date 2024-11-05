@@ -1,6 +1,11 @@
 import { User } from "@/lib/db/models";
 import { connectToMongoDB } from "@/lib/db/mongodb";
-import NextAuth from "next-auth";
+import {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from "next";
+import NextAuth, { getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions = {
@@ -43,6 +48,9 @@ export const authOptions = {
 
       session.user.id = userData._id;
       session.user.username = userData.username;
+
+      console.log("username==> ", session.user.username);
+
       return session;
     },
   },
@@ -51,6 +59,15 @@ export const authOptions = {
     error: "/auth/error",
   },
 };
+
+export function authServerSession(
+  ...args:
+    | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
+    | [NextApiRequest, NextApiResponse]
+    | []
+) {
+  return getServerSession(...args, authOptions);
+}
 
 const handler = NextAuth(authOptions);
 

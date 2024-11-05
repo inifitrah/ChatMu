@@ -12,10 +12,17 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { Pencil } from "lucide-react";
-import { useSession } from "next-auth/react";
 
-const EditProfile = () => {
-  const { data: session } = useSession();
+type EditProfileProps = {
+  user: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+    username?: string | null;
+  };
+};
+
+const EditProfile = ({ user }: EditProfileProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -38,7 +45,7 @@ const EditProfile = () => {
             </Label>
             <Input
               id="name"
-              defaultValue={session?.user?.name || ""}
+              defaultValue={user?.name || ""}
               className="py-2 px-3 rounded-2xl col-span-3"
             />
           </div>
@@ -48,7 +55,7 @@ const EditProfile = () => {
             </Label>
             <Input
               id="username"
-              defaultValue={session?.user?.username || ""}
+              defaultValue={user?.username || ""}
               className="py-2 px-3 rounded-2xl col-span-3"
             />
           </div>
