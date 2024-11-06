@@ -7,7 +7,7 @@ import Link from "next/link";
 import { authServerSession } from "../api/auth/[...nextauth]/route";
 
 const Profile = async () => {
-  const session = await authServerSession();
+  const session = JSON.parse(JSON.stringify(await authServerSession()));
 
   if (!session) return <>Loading..</>;
 
