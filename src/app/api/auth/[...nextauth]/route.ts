@@ -15,13 +15,13 @@ export const authOptions: AuthOptions = {
     async signIn({ user }) {
       await connectToMongoDB();
       const existingUser = await User.findOne({ email: user.email });
-
       if (!existingUser) {
         console.log(" ==> Creating new user");
         const username =
           user.email.split("@")[0] + Math.floor(Math.random() * 1234);
 
         const newUser = new User({
+          name: user.name,
           email: user.email,
           username,
           avatar: user.image,
@@ -39,9 +39,17 @@ export const authOptions: AuthOptions = {
     async session({ session, token }) {
       await connectToMongoDB();
       const userData = await User.findOne({ email: token.email });
-      session.user.id = userData._id;
-      session.user.username = userData.username;
-      return session;
+
+      const user = {
+        id: userData._id,
+        name: userData.name,
+        username: userData.username,
+        email: userData.email,
+        image: userData.avatar,
+      };
+      session.user = user;
+
+      return JSON.parse(JSON.stringify(session));
     },
   },
   pages: {
