@@ -26,14 +26,14 @@ export const connectToMongoDB = async () => {
   }
 };
 
-mongoose.connection.on("connected", () => {
+mongoose.connection.once("connected", () => {
   console.log("Connected to MongoDB");
 });
 
-mongoose.connection.on("error", (error) => {
+mongoose.connection.once("error", (error) => {
   console.log("Error connecting to MongoDB", error);
 });
 
-mongoose.connection.on("disconnected", () => {
+mongoose.connection.once("disconnected", () => {
   console.log("Disconnected from MongoDB");
 });
