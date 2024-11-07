@@ -58,8 +58,8 @@ const EditProfile = ({ user }: EditProfileProps) => {
   };
 
   return (
-    <Dialog open={isOpen}>
-      <DialogTrigger onClick={() => setIsOpen(true)} asChild>
+    <Dialog modal={true} open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
         <span className="flex px-2 cursor-pointer items-center">
           <Pencil size={17} className="" />
           <p className="font-semibold">Edit</p>
