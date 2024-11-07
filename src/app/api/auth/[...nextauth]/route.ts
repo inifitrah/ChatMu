@@ -13,7 +13,7 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      // await connectToMongoDB();
+      await connectToMongoDB();
       const existingUser = await User.findOne({ email: user.email });
       if (!existingUser) {
         console.log(" ==> Creating new user");
@@ -31,13 +31,33 @@ export const authOptions: AuthOptions = {
         return true;
       } else {
         console.log(" ==> User already exists");
+        let updated = false;
+
+        if (!existingUser.name) {
+          existingUser.name = user.name;
+          updated = true;
+        }
+        if (!existingUser.username) {
+          existingUser.username =
+            user.email.split("@")[0] + Math.floor(Math.random() * 1234);
+          updated = true;
+        }
+        if (!existingUser.avatar) {
+          existingUser.avatar = user.image;
+          updated = true;
+        }
+
+        if (updated) {
+          await existingUser.save();
+          console.log(" ==> User data updated");
+        }
       }
 
       return true;
     },
 
     async session({ session, token }) {
-      // await connectToMongoDB();
+      await connectToMongoDB();
       const userData = await User.findOne({ email: token.email });
 
       const user = {

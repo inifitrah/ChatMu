@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, CircleUser, UserRound } from "lucide-react";
 import Link from "next/link";
 import { authServerSession } from "../api/auth/[...nextauth]/route";
+import Image from "next/image";
 
 const Profile = async () => {
   const session = await authServerSession();
