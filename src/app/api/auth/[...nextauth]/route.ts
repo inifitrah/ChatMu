@@ -13,7 +13,7 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      await connectToMongoDB();
+      // await connectToMongoDB();
       const existingUser = await User.findOne({ email: user.email });
       if (!existingUser) {
         console.log(" ==> Creating new user");
@@ -37,7 +37,7 @@ export const authOptions: AuthOptions = {
     },
 
     async session({ session, token }) {
-      await connectToMongoDB();
+      // await connectToMongoDB();
       const userData = await User.findOne({ email: token.email });
 
       const user = {

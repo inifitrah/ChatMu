@@ -13,7 +13,13 @@ const MONGO_URI = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/${M
 
 export const connectToMongoDB = async () => {
   try {
-    await mongoose.connect(MONGO_URI);
+    console.log("<MONGODB STATE: ", mongoose.connection.readyState, " >");
+    if (mongoose.connection.readyState === 0) {
+      console.log("<Connecting...>");
+      await mongoose.connect(MONGO_URI);
+    } else {
+      console.log("<USING EXISTING CONNECTION>");
+    }
   } catch (error) {
     console.error(`Error: ${error}`);
     process.exit(1);
