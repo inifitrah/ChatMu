@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
 import { z } from "zod";
 import {
@@ -24,6 +24,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import updateProfile from "@/app/actions/updateProfile";
+import { useToast } from "@/hooks/use-toast";
 
 type EditProfileProps = {
   user: {
@@ -41,6 +42,7 @@ const formSchema = z.object({
 
 const EditProfile = ({ user }: EditProfileProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,6 +56,9 @@ const EditProfile = ({ user }: EditProfileProps) => {
     form.handleSubmit(async (values: z.infer<typeof formSchema>) => {
       await updateProfile({ ...values, email: user.email });
       setIsOpen(false);
+      toast({
+        description: "Profile updated",
+      });
     })();
   };
 
