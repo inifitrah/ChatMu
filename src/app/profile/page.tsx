@@ -2,9 +2,11 @@ import EditProfile from "@/components/EditProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, CircleUser, UserRound } from "lucide-react";
+import { ArrowLeft, CircleUser, Pencil, UserRound } from "lucide-react";
 import Link from "next/link";
 import { authServerSession } from "../api/auth/[...nextauth]/route";
+import { Badge } from "@/components/ui/badge";
+import EditAvatarUser from "@/components/EditProfilePicture";
 
 const Profile = async () => {
   const session = await authServerSession();
@@ -20,12 +22,15 @@ const Profile = async () => {
       </Link>
 
       <div className=" flex w-full flex-col items-center justify-center gap-4">
-        <Avatar className="text-black h-24 w-24 mt-16">
-          <AvatarImage src={session.user.image} />
-          <AvatarFallback>
-            <CircleUser size={60} />
-          </AvatarFallback>
-        </Avatar>
+        <div className="flex mt-16 relative">
+          <Avatar className="text-black h-24 w-24 ">
+            <AvatarImage src={session.user.image} />
+            <AvatarFallback>
+              <CircleUser size={60} />
+            </AvatarFallback>
+          </Avatar>
+          <EditAvatarUser currentAvatar={session.user.image} />
+        </div>
         <div className="text-center">
           <h1 className="font-semibold text-xl">{session.user.name}</h1>
           <p>online</p>
