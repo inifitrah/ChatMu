@@ -6,7 +6,7 @@ import { ArrowLeft, CircleUser, Pencil, UserRound } from "lucide-react";
 import Link from "next/link";
 import { authServerSession } from "../api/auth/[...nextauth]/route";
 import { Badge } from "@/components/ui/badge";
-import EditAvatarUser from "@/components/EditProfilePicture";
+import EditProfilePicture from "@/components/EditProfilePicture";
 
 const Profile = async () => {
   const session = await authServerSession();
@@ -29,7 +29,7 @@ const Profile = async () => {
               <CircleUser size={60} />
             </AvatarFallback>
           </Avatar>
-          <EditAvatarUser currentAvatar={session.user.image} />
+          <EditProfilePicture currentAvatar={session.user.image} />
         </div>
         <div className="text-center">
           <h1 className="font-semibold text-xl">{session.user.name}</h1>
