@@ -91,7 +91,7 @@ const EditProfilePicture = ({ user }) => {
         >
           <div className="bg-black/10 h-full w-auto px-7 flex  items-center rounded-2xl">
             <Avatar className="text-black bg-white h-24 w-24 ">
-              <AvatarImage src={filePreview ? filePreview : currentAvatar} />
+              <AvatarImage src={filePreview ? filePreview : user.image} />
               <AvatarFallback>
                 <CircleUser size={60} />
               </AvatarFallback>
