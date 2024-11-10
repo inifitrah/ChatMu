@@ -29,7 +29,7 @@ const Profile = async () => {
               <CircleUser size={60} />
             </AvatarFallback>
           </Avatar>
-          <EditProfilePicture currentAvatar={session.user.image} />
+          <EditProfilePicture user={session.user} />
         </div>
         <div className="text-center">
           <h1 className="font-semibold text-xl">{session.user.name}</h1>

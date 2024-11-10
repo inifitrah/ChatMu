@@ -27,7 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import updateProfilePicture from "@/app/actions/updateProfilePicture";
 
-const EditProfilePicture = ({ currentAvatar }: { currentAvatar: string }) => {
+const EditProfilePicture = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
@@ -70,7 +70,7 @@ const EditProfilePicture = ({ currentAvatar }: { currentAvatar: string }) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    await updateProfilePicture(formData);
+    await updateProfilePicture({ formData, userId: user.id });
   };
 
   return (
