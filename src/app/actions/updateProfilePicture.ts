@@ -13,7 +13,7 @@ type UpdateProfilePicture = {
 export default async function updateProfilePicture({
   formData,
   userId,
-}: UpdateProfilePicture): Promise<void> {
+}: UpdateProfilePicture) {
   try {
     const file = formData.get("file");
 
@@ -27,11 +27,36 @@ export default async function updateProfilePicture({
       folder: "avatars",
     };
 
-    cloudinary.uploader
-      .upload(`data:${file.type};base64,${base64}`, uploadOptions)
-      .then((result) => console.log(result));
+    const result = cloudinary.uploader.upload(
+      `data:${file.type};base64,${base64}`,
+      uploadOptions
+    );
 
-    console.log(file);
+    if (result) {
+      await connectToMongoDB();
+
+      const update = await User.findOneAndUpdate(
+        { _id: userId },
+        {
+          avatar: (await result).secure_url,
+          lastSeen: new Date(),
+        },
+        { new: true }
+      );
+
+      if (update) {
+        revalidatePath(`/profile`);
+        return {
+          success: true,
+          message: "Profile picture updated",
+        };
+      }
+    } else {
+      return {
+        success: false,
+        message: "Failed to upload image",
+      };
+    }
   } catch (error) {
     console.log(" ERROR from updateProfilePicture ==> ", error);
   }

@@ -63,14 +63,18 @@ const EditProfilePicture = ({ user }) => {
       return;
     }
 
-    toast({
-      description: "Saving changes",
-    });
-
     const formData = new FormData();
     formData.append("file", file);
 
-    await updateProfilePicture({ formData, userId: user.id });
+    const update = await updateProfilePicture({ formData, userId: user.id });
+    if (update?.success) {
+      toast({
+        description: update.message,
+      });
+      setFile(null);
+      setFileName("Upload new profile picture");
+      setIsOpen(false);
+    }
   };
 
   return (

@@ -23,7 +23,7 @@ const Profile = async () => {
 
       <div className=" flex w-full flex-col items-center justify-center gap-4">
         <div className="flex mt-16 relative">
-          <Avatar className="text-black h-24 w-24 ">
+          <Avatar className="text-black h-24 w-24 bg-black/10 ">
             <AvatarImage src={session.user.image} />
             <AvatarFallback>
               <CircleUser size={60} />
