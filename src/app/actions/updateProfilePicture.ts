@@ -57,6 +57,13 @@ export default async function updateProfilePicture({
         message: "Failed to upload image",
       };
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return {
+      success: true,
+      message: "Profile picture updated",
+    };
   } catch (error) {
     console.log(" ERROR from updateProfilePicture ==> ", error);
   }

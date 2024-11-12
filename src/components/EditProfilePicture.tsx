@@ -37,6 +37,8 @@ const EditProfilePicture = ({ user }) => {
 
   const [file, setFile] = useState(null);
 
+  const [loading, setLoading] = useState(false);
+
   const handleFileChange = (e) => {
     e.preventDefault();
     const file = e.target.files[0];
@@ -53,27 +55,33 @@ const EditProfilePicture = ({ user }) => {
   };
 
   const handleSaveChanges = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      toast({
-        variant: "destructive",
-        description: "Please select a file to upload",
-      });
+    try {
+      e.preventDefault();
+      if (!file) {
+        toast({
+          variant: "destructive",
+          description: "Please select a file to upload",
+        });
 
-      return;
-    }
+        return;
+      }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const update = await updateProfilePicture({ formData, userId: user.id });
-    if (update?.success) {
-      toast({
-        description: update.message,
-      });
-      setFile(null);
-      setFileName("Upload new profile picture");
-      setIsOpen(false);
+      const formData = new FormData();
+      formData.append("file", file);
+      setLoading(true);
+      const update = await updateProfilePicture({ formData, userId: user.id });
+      if (update?.success) {
+        toast({
+          description: update.message,
+        });
+        setFile(null);
+        setFileName("Upload new profile picture");
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,8 +126,8 @@ const EditProfilePicture = ({ user }) => {
               className="hidden"
             />
 
-            <Button type="submit" className="rounded-2xl">
-              Save Canges
+            <Button disabled={loading} type="submit" className="rounded-2xl">
+              {loading ? "Uploading..." : "Save Changes"}
             </Button>
           </form>
         </div>
