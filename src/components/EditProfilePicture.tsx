@@ -26,9 +26,13 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import updateProfilePicture from "@/app/actions/updateProfilePicture";
+import { useFormStatus } from "react-dom";
 
 const EditProfilePicture = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const status = useFormStatus();
+
   const { toast } = useToast();
 
   const [fileName, setFileName] = useState("Upload new profile picture");
@@ -57,12 +61,14 @@ const EditProfilePicture = ({ user }) => {
   const handleSaveChanges = async (e) => {
     try {
       e.preventDefault();
+
+      console.log("Status 1", status);
+
       if (!file) {
         toast({
           variant: "destructive",
           description: "Please select a file to upload",
         });
-
         return;
       }
 
@@ -82,6 +88,7 @@ const EditProfilePicture = ({ user }) => {
       console.log(error);
     } finally {
       setLoading(false);
+      console.log("Status 2", status);
     }
   };
 
@@ -125,7 +132,6 @@ const EditProfilePicture = ({ user }) => {
               type="file"
               className="hidden"
             />
-
             <Button disabled={loading} type="submit" className="rounded-2xl">
               {loading ? "Uploading..." : "Save Changes"}
             </Button>

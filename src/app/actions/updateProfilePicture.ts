@@ -4,6 +4,7 @@ import { User } from "@/lib/db/models";
 import { connectToMongoDB } from "@/lib/db/mongodb";
 import { revalidatePath } from "next/cache";
 import cloudinary from "@/lib/cloudinary";
+import { useFormStatus } from "react-dom";
 
 type UpdateProfilePicture = {
   formData: FormData;
@@ -57,13 +58,6 @@ export default async function updateProfilePicture({
         message: "Failed to upload image",
       };
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    return {
-      success: true,
-      message: "Profile picture updated",
-    };
   } catch (error) {
     console.log(" ERROR from updateProfilePicture ==> ", error);
   }
