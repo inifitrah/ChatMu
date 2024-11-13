@@ -37,17 +37,11 @@ const Auth = () => {
         <Link href={"/auth/signin"}>
           <Button className="rounded-full h-14 w-full">SignIn</Button>
         </Link>
-        <Button
-          onClick={() => {
-            toast({
-              title: "Halaman belum tersedia",
-              description: "Masih tahap develop.",
-            });
-          }}
-          className="rounded-full h-14 bg-black/10 hover:text-white text-black"
-        >
-          SignUp
-        </Button>
+        <Link href={"/auth/signup"}>
+          <Button className="rounded-full h-14 w-full bg-black/10 hover:text-white text-black">
+            SignUp
+          </Button>
+        </Link>
       </div>
     </section>
   );

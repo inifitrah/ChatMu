@@ -22,18 +22,20 @@ import { z } from "zod";
 import { useAuthToast } from "@/hooks/useAuthToast";
 
 const formSchema = z.object({
-  email: z.string(),
+  name: z.string(),
+  email: z.string().email(),
   password: z.string().min(4, {
     message: "Password should be atleast 4 characters long",
   }),
 });
 
-const SignIn = () => {
+const SignUp = () => {
   useAuthToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
@@ -57,9 +59,9 @@ const SignIn = () => {
       </div>
 
       <div className="py-8 space-y-4">
-        <h1 className="text-4xl font-semibold">Let's Sign you in.</h1>
-        <h1 className="text-3xl">Welcome back</h1>
-        <h1 className="text-3xl">You've been missed!</h1>
+        <h1 className="text-4xl font-semibold">Create your account</h1>
+        <h1 className="text-3xl">Join us today</h1>
+        <h1 className="text-3xl">Let's get started!</h1>
       </div>
 
       <Form {...form}>
@@ -68,6 +70,23 @@ const SignIn = () => {
           action=""
           className="space-y-3"
         >
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input
+                    className="py-6 border-2 w-full px-3 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
+                    placeholder="text"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"
@@ -130,9 +149,9 @@ const SignIn = () => {
       <div className="flex-1 flex  ">
         <div className="self-end w-full">
           <p className="text-center">
-            Dont have an account?{" "}
-            <Link className="font-semibold" href={"/auth/signup"}>
-              SignUp
+            You have an account?{" "}
+            <Link className="font-semibold" href={"/auth/signin"}>
+              SignIn
             </Link>
           </p>
 
@@ -140,7 +159,7 @@ const SignIn = () => {
             onClick={signInClick}
             className="rounded-2xl text-xl h-14 w-full"
           >
-            SignIn
+            SignUp
           </Button>
         </div>
       </div>
@@ -148,4 +167,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;
