@@ -10,12 +10,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, ArrowLeftCircle } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,6 +30,8 @@ const formSchema = z.object({
 });
 
 const SignUp = () => {
+  const [showPassword, setShowPassword] = useState(false);
+
   useAuthToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -75,11 +77,11 @@ const SignUp = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Fullname</FormLabel>
                 <FormControl>
                   <Input
                     className="py-6 border-2 w-full px-3 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
-                    placeholder="text"
+                    placeholder="Fullname"
                     {...field}
                   />
                 </FormControl>
@@ -111,11 +113,20 @@ const SignUp = () => {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    className="py-6 border-2 w-full px-3 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
-                    placeholder="Password"
-                    {...field}
-                  />
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      className="py-6 border-2 w-full px-3 pr-12 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
+                      placeholder="Password"
+                      {...field}
+                    />
+                    <div
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute  inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
+                    >
+                      {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                    </div>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
