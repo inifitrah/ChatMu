@@ -20,16 +20,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuthToast } from "@/hooks/useAuthToast";
+import { createUser } from "@/app/actions/createUser";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string(),
-  email: z.string().email(),
-  password: z.string().min(4, {
-    message: "Password should be atleast 4 characters long",
-  }),
+  email: z.string(),
+  password: z.string(),
 });
 
 const SignUp = () => {
+  const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
 
   useAuthToast();
@@ -43,12 +44,16 @@ const SignUp = () => {
     },
   });
 
-  const signInClick = () => {
-    form.handleSubmit(onSubmit)();
-  };
+  const signUpClick = () => {
+    form.handleSubmit(async (values: z.infer<typeof formSchema>) => {
+      const createNewUser = await createUser({ ...values });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    alert(JSON.stringify(values));
+      if (createNewUser.success) {
+        toast({
+          description: createNewUser.message,
+        });
+      }
+    })();
   };
   return (
     <div className="flex h-screen px-5 py-8 flex-col">
@@ -67,11 +72,7 @@ const SignUp = () => {
       </div>
 
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          action=""
-          className="space-y-3"
-        >
+        <form action="" className="space-y-3">
           <FormField
             control={form.control}
             name="name"
@@ -144,9 +145,9 @@ const SignUp = () => {
       <div className="flex mb-5">
         <Button
           onClick={() => signIn("google")}
-          size={50}
+          size={"icon"}
           className="w-14 mx-auto h-14 border-2"
-          variant={"icon"}
+          variant={"menu"}
         >
           <Image
             width={40}
@@ -167,7 +168,7 @@ const SignUp = () => {
           </p>
 
           <Button
-            onClick={signInClick}
+            onClick={signUpClick}
             className="rounded-2xl text-xl h-14 w-full"
           >
             SignUp
