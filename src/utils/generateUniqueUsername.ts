@@ -1,3 +1,4 @@
+import { User } from "@/lib/db/models";
 import { connectToMongoDB } from "@/lib/db/mongodb";
 
 export default async function generateUniqueUsername(email: string) {
