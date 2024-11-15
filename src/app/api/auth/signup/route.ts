@@ -13,6 +13,18 @@ export async function POST(req: Request) {
   const { name, email, password } = await req.json();
   const username = await generateUniqueUsername(email);
 
+  await connectToMongoDB();
+  const newUser = new User({
+    name,
+    username,
+    password,
+    email,
+    avatar: null,
+    isOnline: false,
+  });
+
+  await newUser.save();
+
   return NextResponse.json({
     message: "Success created",
   });
