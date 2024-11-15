@@ -11,21 +11,33 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const { name, email, password } = await req.json();
-  const username = await generateUniqueUsername(email);
 
-  await connectToMongoDB();
-  const newUser = new User({
-    name,
-    username,
-    password,
-    email,
-    avatar: null,
-    isOnline: false,
-  });
+  try {
+    if (!name || !email || !password) {
+      throw new Error("Input yang dimasukkan tidak lengkap");
+    }
 
-  await newUser.save();
+    const username = await generateUniqueUsername(email);
 
-  return NextResponse.json({
-    message: "Success created",
-  });
+    await connectToMongoDB();
+    const newUser = new User({
+      name,
+      username,
+      password,
+      email,
+      avatar: null,
+      isOnline: false,
+    });
+
+    await newUser.save();
+
+    return NextResponse.json({
+      message: "Success created",
+    });
+  } catch (error) {
+    console.log("ERR WOI==>  ", error.message);
+    return NextResponse.json({
+      message: "Server Err",
+    });
+  }
 }
