@@ -7,37 +7,35 @@ export default async function generateUniqueUsername(email: string) {
   let candidateUsername = baseUsername;
 
   if (candidateUsername) {
-    return await connectToMongoDB().then(async () => {
+    const checkExistingUsername = await User.exists({
+      username: candidateUsername,
+    });
+
+    if (checkExistingUsername === null) {
+      return candidateUsername;
+    }
+
+    const generateRandomSuffix = (attempt: number) => {
+      const maxRange = Math.pow(10, 2 + attempt);
+      return Math.floor(Math.random() * maxRange);
+    };
+
+    let attempt = 0;
+    const MAX_ATTEMPTS = 10;
+    while (attempt < MAX_ATTEMPTS) {
+      candidateUsername = `${baseUsername}${generateRandomSuffix(attempt)}`;
       const checkExistingUsername = await User.exists({
         username: candidateUsername,
       });
 
       if (checkExistingUsername === null) {
+        console.log({ attempt });
         return candidateUsername;
       }
 
-      const generateRandomSuffix = (attempt: number) => {
-        const maxRange = Math.pow(10, 2 + attempt);
-        return Math.floor(Math.random() * maxRange);
-      };
+      attempt++;
+    }
 
-      let attempt = 0;
-      const MAX_ATTEMPTS = 10;
-      while (attempt < MAX_ATTEMPTS) {
-        candidateUsername = `${baseUsername}${generateRandomSuffix(attempt)}`;
-        const checkExistingUsername = await User.exists({
-          username: candidateUsername,
-        });
-
-        if (checkExistingUsername === null) {
-          console.log({ attempt });
-          return candidateUsername;
-        }
-
-        attempt++;
-      }
-
-      throw new Error("Cannot generate unique username");
-    });
+    throw new Error("Cannot generate unique username");
   }
 }

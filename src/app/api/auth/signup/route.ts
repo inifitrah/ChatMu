@@ -16,10 +16,10 @@ export async function POST(req: Request) {
     if (!name || !email || !password) {
       throw new Error("Input yang dimasukkan tidak lengkap");
     }
+    await connectToMongoDB();
 
     const username = await generateUniqueUsername(email);
 
-    await connectToMongoDB();
     const newUser = new User({
       name,
       username,
