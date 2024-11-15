@@ -21,8 +21,7 @@ export const connectToMongoDB = async () => {
       console.log("<USING EXISTING CONNECTION>");
     }
   } catch (error) {
-    console.error(`Error: ${error}`);
-    process.exit(1);
+    throw new Error(error.message);
   }
 };
 
