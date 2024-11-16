@@ -39,13 +39,10 @@ const SignIn = () => {
     },
   });
 
-  const signInClick = () => {
-    form.handleSubmit(onSubmit)();
-  };
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const handleSignIn = (values: z.infer<typeof formSchema>) => {
     alert(JSON.stringify(values));
   };
+
   return (
     <div className="flex h-screen px-5 py-8 flex-col">
       <div>
@@ -114,9 +111,9 @@ const SignIn = () => {
       <div className="flex mb-5">
         <Button
           onClick={() => signIn("google")}
-          size={50}
+          size={"icon"}
           className="w-14 mx-auto h-14 border-2"
-          variant={"icon"}
+          variant={"menu"}
         >
           <Image
             width={40}
@@ -137,7 +134,7 @@ const SignIn = () => {
           </p>
 
           <Button
-            onClick={signInClick}
+            onClick={form.handleSubmit(handleSignIn)}
             className="rounded-2xl text-xl h-14 w-full"
           >
             SignIn

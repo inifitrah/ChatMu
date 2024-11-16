@@ -44,16 +44,14 @@ const SignUp = () => {
     },
   });
 
-  const signUpClick = () => {
-    form.handleSubmit(async (values: z.infer<typeof formSchema>) => {
-      const createNewUser = await createUser({ ...values });
+  const handleSignUp = async (values: z.infer<typeof formSchema>) => {
+    const createNewUser = await createUser({ ...values });
 
-      if (createNewUser.success) {
-        toast({
-          description: createNewUser.message,
-        });
-      }
-    })();
+    if (createNewUser) {
+      toast({
+        description: createNewUser.message,
+      });
+    }
   };
   return (
     <div className="flex h-screen px-5 py-8 flex-col">
@@ -168,7 +166,7 @@ const SignUp = () => {
           </p>
 
           <Button
-            onClick={signUpClick}
+            onClick={form.handleSubmit(handleSignUp)}
             className="rounded-2xl text-xl h-14 w-full"
           >
             SignUp
