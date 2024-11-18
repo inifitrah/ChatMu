@@ -39,7 +39,9 @@ const Header = () => {
               <Link href="profile">
                 <DropdownMenuItem>Profile</DropdownMenuItem>
               </Link>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <Link href={"settings"}>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+              </Link>
               <LogoutAlert
                 onConfirm={() => {
                   signOut();

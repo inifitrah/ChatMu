@@ -18,7 +18,7 @@ const Auth = () => {
   const { toast } = useToast();
 
   return (
-    <section className="flex p-5 flex-col gap-7 h-screen items-center justify-center ">
+    <section className="flex  p-5 flex-col gap-7 h-screen items-center justify-evenly ">
       <Image
         width={100}
         height={100}
