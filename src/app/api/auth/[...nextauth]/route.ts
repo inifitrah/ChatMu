@@ -1,4 +1,4 @@
-import { User } from "@/lib/db/models";
+import { User } from "@/lib/db/models/auth";
 import { connectToMongoDB } from "@/lib/db/mongodb";
 import { AuthOptions } from "next-auth";
 import NextAuth, { getServerSession } from "next-auth/next";
@@ -7,7 +7,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { mongooseAdapter } from "@/lib/mongoose-adapter";
 
 export const authOptions: AuthOptions = {
-  adapter: mongooseAdapter(),
+  // adapter: mongooseAdapter(),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
