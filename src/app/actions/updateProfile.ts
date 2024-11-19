@@ -1,6 +1,6 @@
 "use server";
 
-import { User } from "@/lib/db/models";
+import { User } from "@/lib/db/models/auth";
 import { connectToMongoDB } from "@/lib/db/mongodb";
 import { revalidatePath } from "next/cache";
 
