@@ -1,7 +1,6 @@
 "use server";
 
 import { User } from "@/lib/db/models/auth";
-import { connectToMongoDB } from "@/lib/db/mongodb";
 import { revalidatePath } from "next/cache";
 import cloudinary from "@/lib/cloudinary";
 import { useFormStatus } from "react-dom";
@@ -34,8 +33,6 @@ export default async function updateProfilePicture({
     );
 
     if (result) {
-      await connectToMongoDB();
-
       const update = await User.findOneAndUpdate(
         { _id: userId },
         {

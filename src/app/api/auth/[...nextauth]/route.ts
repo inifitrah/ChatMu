@@ -1,13 +1,12 @@
 import { User } from "@/lib/db/models/auth";
-import { connectToMongoDB } from "@/lib/db/mongodb";
 import { AuthOptions } from "next-auth";
 import NextAuth, { getServerSession } from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { mongooseAdapter } from "@/lib/mongoose-adapter";
+import { MongooseAdapter, mongooseAdapter } from "@/lib/mongoose-adapter";
 
 export const authOptions: AuthOptions = {
-  adapter: mongooseAdapter(),
+  // adapter: mongooseAdapter(),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -41,65 +40,55 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      await connectToMongoDB();
-      const existingUser = await User.findOne({ email: user.email });
-      if (!existingUser) {
-        console.log(" ==> Creating new user");
-        const username =
-          user.email.split("@")[0] + Math.floor(Math.random() * 1234);
-
-        const newUser = new User({
-          name: user.name,
-          email: user.email,
-          username,
-          avatar: user.image,
-        });
-        await newUser.save();
-
-        return true;
-      } else {
-        console.log(" ==> User already exists");
-        let updated = false;
-
-        if (!existingUser.name) {
-          existingUser.name = user.name;
-          updated = true;
-        }
-        if (!existingUser.username) {
-          existingUser.username =
-            user.email.split("@")[0] + Math.floor(Math.random() * 1234);
-          updated = true;
-        }
-        if (!existingUser.avatar) {
-          existingUser.avatar = user.image;
-          updated = true;
-        }
-
-        if (updated) {
-          await existingUser.save();
-          console.log(" ==> User data updated");
-        }
-      }
-
-      return true;
-    },
-
-    async session({ session, token }) {
-      await connectToMongoDB();
-      const userData = await User.findOne({ email: token.email });
-
-      const user = {
-        id: userData._id,
-        name: userData.name,
-        username: userData.username,
-        email: userData.email,
-        image: userData.avatar,
-      };
-      session.user = user;
-
-      return JSON.parse(JSON.stringify(session));
-    },
+    // async signIn({ user }) {
+    //   const existingUser = await User.findOne({ email: user.email });
+    //   if (!existingUser) {
+    //     console.log(" ==> Creating new user");
+    //     const username =
+    //       user.email.split("@")[0] + Math.floor(Math.random() * 1234);
+    //     const newUser = new User({
+    //       name: user.name,
+    //       email: user.email,
+    //       username,
+    //       avatar: user.image,
+    //     });
+    //     await newUser.save();
+    //     return true;
+    //   } else {
+    //     console.log(" ==> User already exists");
+    //     let updated = false;
+    //     if (!existingUser.name) {
+    //       existingUser.name = user.name;
+    //       updated = true;
+    //     }
+    //     if (!existingUser.username) {
+    //       existingUser.username =
+    //         user.email.split("@")[0] + Math.floor(Math.random() * 1234);
+    //       updated = true;
+    //     }
+    //     if (!existingUser.avatar) {
+    //       existingUser.avatar = user.image;
+    //       updated = true;
+    //     }
+    //     if (updated) {
+    //       await existingUser.save();
+    //       console.log(" ==> User data updated");
+    //     }
+    //   }
+    //   return true;
+    // },
+    // async session({ session, token }) {
+    //   const userData = await User.findOne({ email: token.email });
+    //   const user = {
+    //     id: userData._id,
+    //     name: userData.name,
+    //     username: userData.username,
+    //     email: userData.email,
+    //     image: userData.avatar,
+    //   };
+    //   session.user = user;
+    //   return JSON.parse(JSON.stringify(session));
+    // },
   },
   pages: {
     signIn: "/auth/signin",

@@ -1,5 +1,4 @@
 import { User } from "@/lib/db/models";
-import { connectToMongoDB } from "@/lib/db/mongodb";
 import generateUniqueUsername from "@/utils/generateUniqueUsername";
 import { NextResponse } from "next/server";
 
@@ -16,7 +15,6 @@ export async function POST(req: Request) {
     if (!name || !email || !password) {
       throw new Error("Input yang dimasukkan tidak lengkap");
     }
-    await connectToMongoDB();
 
     const username = await generateUniqueUsername(email);
 

@@ -1,7 +1,6 @@
 "use server";
 
 import { User } from "@/lib/db/models/auth";
-import { connectToMongoDB } from "@/lib/db/mongodb";
 import { revalidatePath } from "next/cache";
 
 export default async function updateProfile({
@@ -14,8 +13,6 @@ export default async function updateProfile({
   username: string;
 }) {
   try {
-    await connectToMongoDB();
-
     const updateUser = await User.findOneAndUpdate(
       { email },
       { name, username },
