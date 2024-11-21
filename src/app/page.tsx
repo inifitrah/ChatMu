@@ -7,15 +7,15 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const { toast } = useToast();
-  const { data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      toast({
-        description: "Logged Out",
-      });
-      redirect("/auth");
-    },
-  });
+  // const { data: session } = useSession({
+  //   required: true,
+  //   onUnauthenticated() {
+  //     toast({
+  //       description: "Logged Out",
+  //     });
+  //     redirect("/auth");
+  //   },
+  // });
   return (
     <>
       <Header />

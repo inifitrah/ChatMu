@@ -6,7 +6,6 @@ if (!MONGO_USER || !MONGO_PASSWORD || !MONGO_DB) {
   console.error(
     "Error: Missing required environment variables MONGO_USER, MONGO_PASSWORD, or MONGO_DB"
   );
-  process.exit(1);
 }
 
 const MONGO_URI = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/${MONGO_DB}?authSource=admin`;
