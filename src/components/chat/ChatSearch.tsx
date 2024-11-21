@@ -6,9 +6,9 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import ChatCard from "./ChatCard";
+import ChatCard from "@/components/chat/ChatCard";
 import { ArrowLeft, X } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 interface ChatSearchProps {
   setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;

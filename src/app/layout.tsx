@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import SessionWrapper from "@/components/SessionWrapper";
+import SessionWrapper from "@/components/auth/SessionWrapper";
 import { Toaster } from "@/components/ui/toaster";
 import { connectToMongoDB } from "@/lib/db/mongodb";
 export const metadata: Metadata = {

@@ -1,4 +1,4 @@
-import EditProfile from "@/components/EditProfile";
+import EditProfile from "@/components/profile/EditProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { ArrowLeft, CircleUser, Pencil, UserRound } from "lucide-react";
 import Link from "next/link";
 import { authServerSession } from "../api/auth/[...nextauth]/route";
 import { Badge } from "@/components/ui/badge";
-import EditProfilePicture from "@/components/EditProfilePicture";
+import EditProfilePicture from "@/components/profile/EditProfilePicture";
 
 const Profile = async () => {
   const session = await authServerSession();
@@ -16,7 +16,7 @@ const Profile = async () => {
   return (
     <section className="px-5">
       <Link href={"/"}>
-        <Button size={"icon"} className="mt-4 text-black" variant={"menu"}>
+        <Button size={"box"} className="mt-4 text-black" variant={"menu"}>
           <ArrowLeft size={30} />
         </Button>
       </Link>

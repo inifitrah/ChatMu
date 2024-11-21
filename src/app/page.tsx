@@ -1,6 +1,6 @@
 "use client";
-import Header from "@/components/Header";
-import ChatList from "@/components/ChatList";
+import Header from "@/components/header/Header";
+import ChatList from "@/components/chat/ChatList";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
