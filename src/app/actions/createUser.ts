@@ -1,30 +1,24 @@
 "use server";
 
-const API_URL = process.env.API_URL;
+import { SignupSchema } from "@/schemas/zod.schemas";
+import * as z from "zod";
 
-interface CreateUserRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
-export async function createUser({ name, email, password }: CreateUserRequest) {
+export async function createUser(values: z.infer<typeof SignupSchema>) {
   try {
-    const data = JSON.stringify({ name, email, password });
+    console.log("values", values);
+    const validatedFields = SignupSchema.safeParse(values);
+    console.log({ validatedFields });
 
-    const response = await fetch(API_URL + "/auth/signup", {
-      method: "POST",
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-      }),
-    });
+    if (!validatedFields.success) {
+      return {
+        success: false,
+        message: "Invalid fields",
+      };
+    }
 
-    const resData = await response.json();
     return {
       success: true,
-      message: "success create dari server action",
+      message: "User created",
     };
   } catch (e) {
     return {

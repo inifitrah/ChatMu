@@ -39,9 +39,15 @@ const SignUp = () => {
   });
 
   const handleSignUp = async (values: z.infer<typeof SignupSchema>) => {
-    const createNewUser = await createUser({ ...values });
+    const createNewUser = await createUser(values);
 
-    if (createNewUser) {
+    if (!createNewUser.success) {
+      toast({
+        variant: "destructive",
+        title: createNewUser.message,
+      });
+    }
+    if (createNewUser.success) {
       toast({
         description: createNewUser.message,
       });
