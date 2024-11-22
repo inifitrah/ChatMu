@@ -11,23 +11,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuthToast } from "@/hooks/useAuthToast";
 import { createUser } from "@/app/actions/createUser";
 import { useToast } from "@/hooks/use-toast";
-
-const formSchema = z.object({
-  name: z.string(),
-  email: z.string(),
-  password: z.string(),
-});
+import { SignupSchema } from "@/schemas/zod.schemas";
 
 const SignUp = () => {
   const { toast } = useToast();
@@ -35,8 +29,8 @@ const SignUp = () => {
 
   useAuthToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof SignupSchema>>({
+    resolver: zodResolver(SignupSchema),
     defaultValues: {
       name: "",
       email: "",
@@ -44,7 +38,7 @@ const SignUp = () => {
     },
   });
 
-  const handleSignUp = async (values: z.infer<typeof formSchema>) => {
+  const handleSignUp = async (values: z.infer<typeof SignupSchema>) => {
     const createNewUser = await createUser({ ...values });
 
     if (createNewUser) {
@@ -57,7 +51,7 @@ const SignUp = () => {
     <div className="flex h-screen px-5 py-8 flex-col">
       <div>
         <Link href={"/auth"}>
-          <Button className="text-black" size={"icon"} variant={"menu"}>
+          <Button className="text-black" size={"box"} variant={"menu"}>
             <ArrowLeft size={30} />
           </Button>
         </Link>
