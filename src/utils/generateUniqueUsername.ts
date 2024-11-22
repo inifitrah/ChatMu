@@ -1,4 +1,4 @@
-import { User } from "@/lib/db/models";
+import { User } from "@/lib/db/models/auth";
 
 export default async function generateUniqueUsername(email: string) {
   const emailParts = email.split("@");

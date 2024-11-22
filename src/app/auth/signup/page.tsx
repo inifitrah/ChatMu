@@ -143,7 +143,7 @@ const SignUp = () => {
       <div className="flex mb-5">
         <Button
           onClick={() => signIn("google")}
-          size={"icon"}
+          size={"box"}
           className="w-14 mx-auto h-14 border-2"
           variant={"menu"}
         >

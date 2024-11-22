@@ -13,7 +13,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // await connectToMongoDB();
+  await connectToMongoDB();
 
   return (
     <SessionWrapper>
