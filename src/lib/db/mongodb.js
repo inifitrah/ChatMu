@@ -19,10 +19,13 @@ export const connectToMongoDB = async () => {
     } else {
       console.log("<USING EXISTING CONNECTION>");
     }
+    // console.log("FromMONGOOSE", mongoose.connection.getClient());
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
+export const clientMongoose = mongoose.connection.getClient();
 
 mongoose.connection.once("connected", () => {
   console.log("Connected to MongoDB");

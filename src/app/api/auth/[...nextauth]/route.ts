@@ -3,10 +3,10 @@ import { AuthOptions } from "next-auth";
 import NextAuth, { getServerSession } from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { MongooseAdapter, mongooseAdapter } from "@/lib/mongoose-adapter";
-
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import { clientMongoose } from "@/lib/db/mongodb";
 export const authOptions: AuthOptions = {
-  // adapter: mongooseAdapter(),
+  adapter: MongoDBAdapter(clientMongoose),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
