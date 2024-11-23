@@ -5,7 +5,13 @@ import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import { clientMongoose } from "@/lib/db/mongodb";
+import { LoginSchema } from "@/schemas/zod.schemas";
+import { compare } from "bcryptjs";
 export const authOptions: AuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
+
   adapter: MongoDBAdapter(clientMongoose),
   providers: [
     GoogleProvider({
@@ -13,82 +19,48 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     CredentialsProvider({
-      // The name to display on the sign in form (e.g. "Sign in with...")
       name: "Credentials",
-      // `credentials` is used to generate a form on the sign in page.
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" },
+        email: {},
+        password: {},
       },
       async authorize(credentials, req) {
-        // Add logic here to look up the user from the credentials supplied
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
+        const validatedFields = LoginSchema.safeParse(credentials);
 
-        if (user) {
-          // Any object returned will be saved in `user` property of the JWT
-          return user;
-        } else {
-          // If you return null then an error will be displayed advising the user to check their details.
+        if (!validatedFields.success) {
           return null;
-
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
         }
+        const { email, password } = validatedFields.data;
+
+        const user = await User.findOne({ email });
+        if (!user || !user.password) return null;
+        // compare password
+        const passwordMatch = await compare(password, user.password);
+
+        if (!passwordMatch) return null;
+
+        console.log("User from route authorize", user);
+
+        return user;
       },
     }),
   ],
   callbacks: {
-    // async signIn({ user }) {
-    //   const existingUser = await User.findOne({ email: user.email });
-    //   if (!existingUser) {
-    //     console.log(" ==> Creating new user");
-    //     const username =
-    //       user.email.split("@")[0] + Math.floor(Math.random() * 1234);
-    //     const newUser = new User({
-    //       name: user.name,
-    //       email: user.email,
-    //       username,
-    //       avatar: user.image,
-    //     });
-    //     await newUser.save();
-    //     return true;
-    //   } else {
-    //     console.log(" ==> User already exists");
-    //     let updated = false;
-    //     if (!existingUser.name) {
-    //       existingUser.name = user.name;
-    //       updated = true;
-    //     }
-    //     if (!existingUser.username) {
-    //       existingUser.username =
-    //         user.email.split("@")[0] + Math.floor(Math.random() * 1234);
-    //       updated = true;
-    //     }
-    //     if (!existingUser.avatar) {
-    //       existingUser.avatar = user.image;
-    //       updated = true;
-    //     }
-    //     if (updated) {
-    //       await existingUser.save();
-    //       console.log(" ==> User data updated");
-    //     }
-    //   }
-    //   return true;
-    // },
-    // async session({ session, token }) {
-    //   const userData = await User.findOne({ email: token.email });
-    //   const user = {
-    //     id: userData._id,
-    //     name: userData.name,
-    //     username: userData.username,
-    //     email: userData.email,
-    //     image: userData.avatar,
-    //   };
-    //   session.user = user;
-    //   return JSON.parse(JSON.stringify(session));
-    // },
+    async signIn({ user }) {
+      console.log("User from route signIn", user);
+      return true;
+    },
+    async session({ session, token }) {
+      const user = await User.findOne({ email: token.email });
+
+      if (user) {
+        session.user.image = user.image;
+        session.user.username = user.username;
+      }
+      console.log("Session from route session", session);
+
+      return session;
+    },
   },
   pages: {
     signIn: "/auth/signin",

@@ -14,33 +14,46 @@ import { ArrowLeft, ArrowLeftCircle } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuthToast } from "@/hooks/useAuthToast";
-
-const formSchema = z.object({
-  email: z.string(),
-  password: z.string().min(4, {
-    message: "Password should be atleast 4 characters long",
-  }),
-});
+import { LoginSchema } from "@/schemas/zod.schemas";
+import { login } from "@/app/actions/login";
+import { useToast } from "@/hooks/use-toast";
 
 const SignIn = () => {
+  const { toast } = useToast();
   useAuthToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof LoginSchema>>({
+    resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
+      email: "asdasd",
       password: "",
     },
   });
 
-  const handleSignIn = (values: z.infer<typeof formSchema>) => {
-    alert(JSON.stringify(values));
+  const handleSignIn = async (values: z.infer<typeof LoginSchema>) => {
+    const validatedFields = LoginSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+      toast({
+        variant: "destructive",
+        description: "Invalid fields",
+      });
+    }
+
+    if (validatedFields.data) {
+      const { email, password } = validatedFields.data;
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: true,
+      });
+      console.log({ result });
+    }
   };
 
   return (
