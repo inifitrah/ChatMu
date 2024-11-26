@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, CircleUser, Pencil, UserRound } from "lucide-react";
 import Link from "next/link";
-import { authServerSession } from "../api/auth/[...nextauth]/route";
+import { authServerSession } from "@/app/api/auth/[...nextauth]/route";
 import { Badge } from "@/components/ui/badge";
 import EditProfilePicture from "@/components/profile/EditProfilePicture";
 
