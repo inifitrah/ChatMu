@@ -7,6 +7,7 @@ import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import { clientMongoose } from "@/lib/db/mongodb";
 import { LoginSchema } from "@/schemas/zod.schemas";
 import { compare } from "bcryptjs";
+import generateUniqueUsername from "@/utils/generateUniqueUsername";
 export const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
@@ -46,6 +47,11 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
+      const userExist = await User.exists({ email: user.email });
+      if (!userExist.username || userExist.username === "") {
+        const username = await generateUniqueUsername(user.email);
+        await User.findOneAndUpdate({ email: user.email }, { username });
+      }
       return true;
     },
     async session({ session, token }) {
