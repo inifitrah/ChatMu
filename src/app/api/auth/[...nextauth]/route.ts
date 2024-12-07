@@ -34,30 +34,30 @@ export const authOptions: AuthOptions = {
 
         const user = await User.findOne({ email });
         if (!user || !user.password) return null;
+
         // compare password
         const passwordMatch = await compare(password, user.password);
 
         if (!passwordMatch) return null;
 
-        console.log("User from route authorize", user);
-
-        return user;
+        return JSON.parse(JSON.stringify(user)); // remove new object_id in user id
       },
     }),
   ],
   callbacks: {
     async signIn({ user }) {
-      console.log("User from route signIn", user);
       return true;
     },
     async session({ session, token }) {
-      const user = await User.findOne({ email: token.email });
+      const user = await User.findOne({ email: token.email }).then(
+        (user) => JSON.parse(JSON.stringify(user)) // remove new object_id in user id
+      );
 
       if (user) {
         session.user.image = user.image;
         session.user.username = user.username;
+        session.user.id = user._id;
       }
-      console.log("Session from route session", session);
 
       return session;
     },

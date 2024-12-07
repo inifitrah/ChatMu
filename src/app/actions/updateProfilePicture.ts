@@ -36,7 +36,7 @@ export default async function updateProfilePicture({
       const update = await User.findOneAndUpdate(
         { _id: userId },
         {
-          avatar: (await result).secure_url,
+          image: (await result).secure_url,
           lastSeen: new Date(),
         },
         { new: true }

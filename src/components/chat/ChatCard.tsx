@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 interface User {
   _id: string;
   username: string;
-  avatar: string;
+  image: string;
   isOnline: boolean;
 }
 
@@ -41,7 +41,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ conversation, ...props }) => {
   const filteredParticipants = participants.filter(
     (participant) => participant._id !== "6718e1bac9b7c37002817409"
   );
-  const { username, avatar } = filteredParticipants[0];
+  const { username, image } = filteredParticipants[0];
   const content = lastMessage ? lastMessage.content : null;
   return (
     <Card
@@ -49,7 +49,7 @@ const ChatCard: React.FC<ChatCardProps> = ({ conversation, ...props }) => {
       className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2"
     >
       <Avatar className="border-2 cursor-pointer mx-1">
-        <AvatarImage src={avatar} />
+        <AvatarImage src={image} />
         <AvatarFallback className="cursor-pointer">
           <CircleUser size={60} />
         </AvatarFallback>
