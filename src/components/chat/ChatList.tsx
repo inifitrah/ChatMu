@@ -8,10 +8,6 @@ import { useSession } from "next-auth/react";
 const ChatList = () => {
   const { data: session } = useSession();
 
-  useEffect(() => {
-    console.log(session?.user);
-  });
-
   const dummyConversation = {
     participants: [
       {

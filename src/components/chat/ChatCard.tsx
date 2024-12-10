@@ -33,7 +33,7 @@ interface ChatCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const ChatCard: React.FC<ChatCardProps> = ({ conversation, ...props }) => {
   useEffect(() => {
-    console.log(conversation);
+    // console.log(conversation);
   }, []);
 
   const { participants, lastMessage } = conversation;

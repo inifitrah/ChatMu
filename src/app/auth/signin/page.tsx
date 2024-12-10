@@ -20,8 +20,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuthToast } from "@/hooks/useAuthToast";
 import { LoginSchema } from "@/schemas/zod.schemas";
-import { login } from "@/app/actions/login";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const SignIn = () => {
   const { toast } = useToast();
@@ -50,9 +50,21 @@ const SignIn = () => {
       const result = await signIn("credentials", {
         email,
         password,
-        redirect: true,
+        redirect: false,
       });
       console.log({ result });
+
+      if (result?.error) {
+        toast({
+          variant: "destructive",
+          description: result.error,
+          action: (
+            <ToastAction altText="Goto schedule to undo">
+              {result.error.name}
+            </ToastAction>
+          ),
+        });
+      }
     }
   };
 
@@ -60,7 +72,7 @@ const SignIn = () => {
     <div className="flex h-screen px-5 py-8 flex-col">
       <div>
         <Link href={"/auth"}>
-          <Button className="text-black" size={"icon"} variant={"menu"}>
+          <Button className="text-black" size={"box"} variant={"menu"}>
             <ArrowLeft size={30} />
           </Button>
         </Link>
@@ -73,7 +85,7 @@ const SignIn = () => {
       </div>
 
       <Form {...form}>
-        <form action="" className="space-y-3">
+        <form className="space-y-3">
           <FormField
             control={form.control}
             name="email"
@@ -120,7 +132,7 @@ const SignIn = () => {
       <div className="flex mb-5">
         <Button
           onClick={() => signIn("google")}
-          size={"icon"}
+          size={"box"}
           className="w-14 mx-auto h-14 border-2"
           variant={"menu"}
         >

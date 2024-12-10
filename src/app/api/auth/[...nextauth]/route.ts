@@ -27,21 +27,29 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials, req) {
         const validatedFields = LoginSchema.safeParse(credentials);
-
         if (!validatedFields.success) {
-          return null;
+          throw new Error("Invalid Credentials");
         }
+
         const { email, password } = validatedFields.data;
 
-        const user = await User.findOne({ email });
-        if (!user || !user.password) return null;
+        const existingUser = await User.findOne({ email });
+        if (!existingUser || !existingUser.password) {
+          throw new Error("User not found");
+        }
 
         // compare password
-        const passwordMatch = await compare(password, user.password);
+        const passwordMatch = await compare(password, existingUser.password);
 
-        if (!passwordMatch) return null;
+        if (!passwordMatch) {
+          throw new Error("Email or password is incorrect");
+        }
 
-        return JSON.parse(JSON.stringify(user)); // remove new object_id in user id
+        if (!existingUser.emailVerified) {
+          throw new Error("Email not verified");
+        }
+
+        return JSON.parse(JSON.stringify(existingUser)); // remove new object_id in user id
       },
     }),
   ],
