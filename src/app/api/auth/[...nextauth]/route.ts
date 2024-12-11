@@ -4,10 +4,12 @@ import NextAuth, { getServerSession } from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { clientMongoose } from "@/lib/db/mongodb";
+import { clientMongoose, connectToMongoDB } from "@/lib/db/mongodb";
 import { LoginSchema } from "@/schemas/zod.schemas";
 import { compare } from "bcryptjs";
 import generateUniqueUsername from "@/utils/generateUniqueUsername";
+import { generateVerificationToken } from "@/utils/generateVerificationToken";
+import { sendVerificationEmail } from "@/lib/resend/mail";
 export const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
@@ -26,6 +28,7 @@ export const authOptions: AuthOptions = {
         password: {},
       },
       async authorize(credentials, req) {
+        await connectToMongoDB();
         const validatedFields = LoginSchema.safeParse(credentials);
         if (!validatedFields.success) {
           throw new Error("Invalid Credentials");
@@ -46,7 +49,9 @@ export const authOptions: AuthOptions = {
         }
 
         if (!existingUser.emailVerified) {
-          throw new Error("Email not verified");
+          const token = await generateVerificationToken(email);
+          await sendVerificationEmail(token.email, token.token);
+          throw new Error("EmailNotVerified");
         }
 
         return JSON.parse(JSON.stringify(existingUser)); // remove new object_id in user id

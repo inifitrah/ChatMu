@@ -49,8 +49,11 @@ export const Session =
 
 // VERIFICATION TOKEN
 const verificationTokenSchema = new mongoose.Schema({
-  identifier: String,
   token: {
+    type: String,
+    unique: true,
+  },
+  email: {
     type: String,
     unique: true,
   },

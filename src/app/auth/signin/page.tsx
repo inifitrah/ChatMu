@@ -22,6 +22,7 @@ import { useAuthToast } from "@/hooks/useAuthToast";
 import { LoginSchema } from "@/schemas/zod.schemas";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
+import { redirect } from "next/navigation";
 
 const SignIn = () => {
   const { toast } = useToast();
@@ -52,18 +53,19 @@ const SignIn = () => {
         password,
         redirect: false,
       });
-      console.log({ result });
 
       if (result?.error) {
-        toast({
-          variant: "destructive",
-          description: result.error,
-          action: (
-            <ToastAction altText="Goto schedule to undo">
-              {result.error.name}
-            </ToastAction>
-          ),
-        });
+        if (result.error === "EmailNotVerified") {
+          toast({
+            title: `Email Not Verified`,
+            description: "Please check your email to verify",
+          });
+        } else {
+          toast({
+            variant: "destructive",
+            description: result.error,
+          });
+        }
       }
     }
   };
