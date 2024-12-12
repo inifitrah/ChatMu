@@ -6,7 +6,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 
   await resend.emails.send({
     from: "onboarding@resend.dev",
-    to: "codinginbet@gmail.com",
+    to: "codinginbet@gmail.com", // email for testing
     subject: "Verify your email",
     html: `<p>Please verify your email to click the link below: <a href="${costumLink}">Here</a></p>`,
   });

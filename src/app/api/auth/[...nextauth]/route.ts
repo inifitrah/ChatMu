@@ -49,6 +49,7 @@ export const authOptions: AuthOptions = {
         }
 
         if (!existingUser.emailVerified) {
+          //send verification email
           const token = await generateVerificationToken(email);
           await sendVerificationEmail(token.email, token.token);
           throw new Error("EmailNotVerified");

@@ -6,6 +6,8 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import generateUniqueUsername from "@/utils/generateUniqueUsername";
 import { connectToMongoDB } from "@/lib/db/mongodb";
+import { generateVerificationToken } from "@/utils/generateVerificationToken";
+import { sendVerificationEmail } from "@/lib/resend/mail";
 
 export async function createUser(values: z.infer<typeof SignupSchema>) {
   try {
@@ -55,13 +57,17 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
           email,
           password: hash,
           role: "USER",
+          emailVerified: null,
         });
       });
+      //send verification email
+      const token = await generateVerificationToken(email);
+      await sendVerificationEmail(token.email, token.token);
     });
 
     return {
       success: true,
-      message: "User created",
+      message: "Please verify your email, for account activation",
     };
   } catch (e) {
     return {
