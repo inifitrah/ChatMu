@@ -29,6 +29,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials, req) {
         await connectToMongoDB();
+        console.log({ credentials });
         const validatedFields = LoginSchema.safeParse(credentials);
         if (!validatedFields.success) {
           throw new Error("Invalid Credentials");
@@ -59,19 +60,30 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
+  events: {
+    linkAccount: async ({ user }) => {
+      // add emailVerified, username and role to user linked
+      await User.findOneAndUpdate(
+        { email: user.email },
+        {
+          emailVerified: new Date(),
+          username: await generateUniqueUsername(user.email),
+          role: "USER",
+        }
+      );
+    },
+  },
   callbacks: {
-    async signIn({ user }) {
-      const userExist = await User.exists({ email: user.email });
-      if (!userExist.username || userExist.username === "") {
-        const username = await generateUniqueUsername(user.email);
-        await User.findOneAndUpdate({ email: user.email }, { username });
-      }
+    async signIn({ user, account }) {
+      console.log(user);
       return true;
     },
     async session({ session, token }) {
       const user = await User.findOne({ email: token.email }).then(
         (user) => JSON.parse(JSON.stringify(user)) // remove new object_id in user id
       );
+
+      console.log({ session });
 
       if (user) {
         session.user.image = user.image;

@@ -25,7 +25,10 @@ export const connectToMongoDB = async () => {
   }
 };
 
-export const clientMongoose = mongoose.connection.getClient();
+export const clientMongoose = async () => {
+  await connectToMongoDB();
+  return mongoose.connection.getClient();
+};
 
 mongoose.connection.once("connected", () => {
   console.log("Connected to MongoDB");
