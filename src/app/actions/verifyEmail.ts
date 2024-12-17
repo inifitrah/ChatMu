@@ -24,5 +24,9 @@ export default async function verifyEmail(token: string) {
 
   await VerificationToken.deleteOne({ token });
 
-  return { success: true, message: "Email verified" };
+  return {
+    success: true,
+    message: "Email verified",
+    email: existingUser.email,
+  };
 }

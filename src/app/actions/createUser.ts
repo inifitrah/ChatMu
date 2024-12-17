@@ -38,7 +38,7 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
       if (err) {
         return {
           success: false,
-          message: "Failed to create user",
+          message: "Failed sign up",
         };
       }
 
@@ -46,7 +46,7 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
         if (err) {
           return {
             success: false,
-            message: "Failed to create user",
+            message: "Failed sign up",
           };
         }
 
@@ -67,7 +67,8 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
 
     return {
       success: true,
-      message: "Please verify your email, for account activation",
+      message:
+        "Sign up success. Please check your email to verify your account",
     };
   } catch (e) {
     return {

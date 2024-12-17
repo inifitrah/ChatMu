@@ -1,7 +1,7 @@
 import { VerificationToken } from "@/lib/db/models/auth";
 import { v4 as uuid } from "uuid";
 export async function generateVerificationToken(email: string) {
-  const expiresIn = new Date(new Date().getTime() + 3 * 60 * 1000); // 3 minutes
+  const expiresIn = new Date(new Date().getTime() + 60 * 60 * 1000); // 1 hour
   const existingToken = await VerificationToken.exists({ email: email });
 
   if (existingToken) {
