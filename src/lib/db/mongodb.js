@@ -21,7 +21,8 @@ export const connectToMongoDB = async () => {
     }
     // console.log("FromMONGOOSE", mongoose.connection.getClient());
   } catch (error) {
-    throw new Error(error.message);
+    console.log("Error connecting to MongoDB", error);
+    // throw new Error(error.message);
   }
 };
 
