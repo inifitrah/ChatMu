@@ -5,13 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuthToast } from "@/hooks/useAuthToast";
-import { createUser } from "@/app/actions/createUser";
 import { useToast } from "@/hooks/use-toast";
 import { SignupSchema } from "@/schemas/zod.schemas";
 import DividerWithText from "@/components/auth/DividerWithText";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";
 import FormSignUp from "@/components/auth/FormSignUp";
 import CardWrapper from "@/components/auth/CardWrapper";
+import { createUser } from "@/app/actions/userActions";
 
 const SignUp = () => {
   const { toast } = useToast();

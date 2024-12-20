@@ -1,3 +1,4 @@
+import { isUserExists } from "@/data-access/user";
 import { User } from "@/lib/db/models/auth";
 
 export default async function generateUniqueUsername(email: string) {
@@ -6,7 +7,7 @@ export default async function generateUniqueUsername(email: string) {
   let candidateUsername = baseUsername;
 
   if (candidateUsername) {
-    const checkExistingUsername = await User.exists({
+    const checkExistingUsername = await isUserExists({
       username: candidateUsername,
     });
 
@@ -23,7 +24,7 @@ export default async function generateUniqueUsername(email: string) {
     const MAX_ATTEMPTS = 10;
     while (attempt < MAX_ATTEMPTS) {
       candidateUsername = `${baseUsername}${generateRandomSuffix(attempt)}`;
-      const checkExistingUsername = await User.exists({
+      const checkExistingUsername = await isUserExists({
         username: candidateUsername,
       });
 
@@ -37,4 +38,5 @@ export default async function generateUniqueUsername(email: string) {
 
     throw new Error("Cannot generate unique username");
   }
+  return candidateUsername;
 }

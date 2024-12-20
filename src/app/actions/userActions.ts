@@ -1,6 +1,5 @@
 "use server";
 
-import { User } from "@/lib/db/models/auth";
 import { SignupSchema } from "@/schemas/zod.schemas";
 import * as z from "zod";
 import bcrypt from "bcryptjs";
@@ -8,9 +7,11 @@ import generateUniqueUsername from "@/utils/generateUniqueUsername";
 import { connectToMongoDB } from "@/lib/db/mongodb";
 import { generateVerificationToken } from "@/utils/generateVerificationToken";
 import { sendVerificationEmail } from "@/lib/resend/mail";
+import { isUserExists, createUser as createUserInDB } from "@/data-access/user";
 
 export async function createUser(values: z.infer<typeof SignupSchema>) {
   try {
+    await connectToMongoDB();
     const validatedFields = SignupSchema.safeParse(values);
 
     if (!validatedFields.success) {
@@ -22,10 +23,8 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
 
     const { name, email, password } = validatedFields.data;
 
-    await connectToMongoDB();
-
     //check if user already exists
-    const userExists = await User.exists({ email });
+    const userExists = await isUserExists({ email });
     if (!!userExists) {
       return {
         success: false,
@@ -34,36 +33,22 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
     }
 
     // hash password
-    bcrypt.genSalt(10, async function (err, salt) {
-      if (err) {
-        return {
-          success: false,
-          message: "Failed sign up",
-        };
-      }
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
 
-      bcrypt.hash(password, salt, async function (err, hash) {
-        if (err) {
-          return {
-            success: false,
-            message: "Failed sign up",
-          };
-        }
-
-        // create new user
-        await User.create({
-          name,
-          username: await generateUniqueUsername(name),
-          email,
-          password: hash,
-          role: "USER",
-          emailVerified: null,
-        });
-      });
-      //send verification email
-      const token = await generateVerificationToken(email);
-      await sendVerificationEmail(token.email, token.token);
+    // create new user
+    const newUser = await createUserInDB({
+      name,
+      username: await generateUniqueUsername(name),
+      email,
+      password: hash,
+      role: "USER",
+      emailVerified: null,
     });
+
+    //send verification email
+    const token = await generateVerificationToken(newUser.email);
+    await sendVerificationEmail(token.email, token.token);
 
     return {
       success: true,
