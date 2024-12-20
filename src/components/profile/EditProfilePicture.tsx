@@ -25,7 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import updateProfilePicture from "@/app/actions/updateProfilePicture";
+import { updateProfilePicture } from "@/app/actions/userActions";
 import { useFormStatus } from "react-dom";
 
 const EditProfilePicture = ({ user }) => {

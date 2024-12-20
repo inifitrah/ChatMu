@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import updateProfile from "@/app/actions/updateProfile";
+import { updateProfile } from "@/app/actions/userActions";
 import { useToast } from "@/hooks/use-toast";
 
 type EditProfileProps = {

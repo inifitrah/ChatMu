@@ -24,7 +24,6 @@ app.prepare().then(() => {
       process.exit(1);
     })
     .listen(port, async () => {
-      await connectToMongoDB();
       console.log(`> Ready on http://${hostname}:${port}`);
     });
 });

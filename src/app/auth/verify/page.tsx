@@ -1,5 +1,5 @@
 "use client";
-import verifyEmail from "@/app/actions/verifyEmail";
+import { verifyEmail } from "@/app/actions/userActions";
 import { useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 

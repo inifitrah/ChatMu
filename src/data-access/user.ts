@@ -22,7 +22,11 @@ export const createUser = async (userData: {
 };
 
 export const updateUser = async (
-  userId: string,
+  criteria: {
+    _id?: string;
+    email?: string;
+    username?: string;
+  },
   updateData: Partial<{
     name: string;
     username: string;
@@ -33,7 +37,7 @@ export const updateUser = async (
     emailVerified: Date;
   }>
 ) => {
-  const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+  const user = await User.findOneAndUpdate(criteria, updateData, { new: true });
   return user;
 };
 
