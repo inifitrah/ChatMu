@@ -1,5 +1,5 @@
 "use client";
-import { verifyEmail } from "@/app/actions/userActions";
+import { verifyEmail } from "@/app/actions/newVerificationActions";
 import { useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
@@ -36,7 +36,6 @@ const VerifyPage = () => {
     newVerifyEmail(token);
   }, []);
 
-  console.log("state is", { success, error });
   return (
     <div className="flex justify-center items-center h-screen">
       {!success && !error && <h1>LOADING..</h1>}

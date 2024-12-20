@@ -79,6 +79,7 @@ export async function updateProfile({
   email: string;
   username: string;
 }) {
+  await connectToMongoDB();
   try {
     const update = await updateUser(
       { email },
@@ -106,6 +107,7 @@ export async function updateProfilePicture({
   formData,
   userId,
 }: UpdateProfilePicture) {
+  await connectToMongoDB();
   try {
     const file = formData.get("file");
 
@@ -148,32 +150,4 @@ export async function updateProfilePicture({
   } catch (error) {
     console.log(" ERROR from updateProfilePicture ==> ", error);
   }
-}
-
-export async function verifyEmail(token: string) {
-  await connectToMongoDB();
-  const existingToken = await VerificationToken.findOne({ token });
-  if (!existingToken) {
-    return { success: false, message: "Invalid token" };
-  }
-
-  if (existingToken.expiresAt < new Date()) {
-    return { success: false, message: "Token expired" };
-  }
-
-  const checkExistingUserAndUpdate = await updateUser(
-    { email: existingToken.email },
-    { emailVerified: new Date(), email: existingToken.email }
-  );
-
-  if (!checkExistingUserAndUpdate)
-    return { success: false, message: "User not found" };
-
-  await VerificationToken.deleteOne({ token });
-
-  return {
-    success: true,
-    message: "Email verified",
-    email: checkExistingUserAndUpdate.email,
-  };
 }
