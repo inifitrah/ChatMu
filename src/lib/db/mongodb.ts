@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const { MONGO_USER, MONGO_PASSWORD, MONGO_DB } = process.env;
 
@@ -10,7 +10,7 @@ if (!MONGO_USER || !MONGO_PASSWORD || !MONGO_DB) {
 
 const MONGO_URI = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/${MONGO_DB}?authSource=admin`;
 
-export const connectToMongoDB = async () => {
+export const connectToMongoDB = async (): Promise<Mongoose | void> => {
   try {
     console.log("<MONGODB STATE: ", mongoose.connection.readyState, " >");
     if (mongoose.connection.readyState === 0) {
