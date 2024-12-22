@@ -29,7 +29,6 @@ export default async function generateUniqueUsername(email: string) {
       });
 
       if (checkExistingUsername === null) {
-        console.log({ attempt });
         return candidateUsername;
       }
 

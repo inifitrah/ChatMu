@@ -62,8 +62,6 @@ const EditProfilePicture = ({ user }) => {
     try {
       e.preventDefault();
 
-      console.log("Status 1", status);
-
       if (!file) {
         toast({
           variant: "destructive",
@@ -88,7 +86,6 @@ const EditProfilePicture = ({ user }) => {
       console.log(error);
     } finally {
       setLoading(false);
-      console.log("Status 2", status);
     }
   };
 

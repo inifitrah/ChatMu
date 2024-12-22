@@ -29,7 +29,6 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials, req) {
         await connectToMongoDB();
-        console.log({ credentials });
         const validatedFields = LoginSchema.safeParse(credentials);
         if (!validatedFields.success) {
           throw new Error("Invalid Credentials");
@@ -75,15 +74,12 @@ export const authOptions: AuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      console.log(user);
       return true;
     },
     async session({ session, token }) {
       const user = await User.findOne({ email: token.email }).then(
         (user) => JSON.parse(JSON.stringify(user)) // remove new object_id in user id
       );
-
-      console.log({ session });
 
       if (user) {
         session.user.image = user.image;

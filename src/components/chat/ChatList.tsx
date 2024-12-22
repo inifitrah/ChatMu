@@ -1,36 +1,24 @@
 "use client";
-
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ChatCard from "./ChatCard";
-import { useSession } from "next-auth/react";
 
 const ChatList = () => {
-  const { data: session } = useSession();
-
-  const dummyConversation = {
-    participants: [
-      {
-        _id: "1",
-        username: "Fitrah",
-        avatar: "https://randomuser.me",
-        isOnline: true,
-      },
-      {
-        _id: "2",
-        username: "Ramadhan",
-        avatar: "https://randomuser.me",
-        isOnline: true,
-      },
-    ],
-    lastMessage: {
-      content: "Lorem ipsum dolor sit amet.",
-    },
-  };
-
   return (
     <>
-      <ChatCard conversation={dummyConversation} />
+      <ChatCard
+        profileImage="https://example.com/user.jpg"
+        username="John Doe"
+        lastMessageTime="Yesterday"
+        lastMessageContent="Hello, how are you?"
+        unreadMessageCount={3}
+      />
+      <ChatCard
+        profileImage="https://example.com/user.jpg"
+        username="John Doe"
+        lastMessageTime="Yesterday"
+        lastMessageContent="Hello, My name s John Doe"
+        unreadMessageCount={6}
+      />
     </>
   );
 };
