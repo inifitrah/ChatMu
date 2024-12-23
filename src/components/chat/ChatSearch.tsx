@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Command,
   CommandEmpty,
@@ -7,20 +7,27 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import ChatCard from "@/components/chat/ChatCard";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDebounce } from "@/hooks/use-debounce";
+import { searchChats } from "@/app/actions/chatActions";
 
 interface ChatSearchProps {
   setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
-  useEffect(() => {
-    document.body.classList.add("body-no-scroll");
-    return () => {
-      document.body.classList.remove("body-no-scroll");
-    };
-  }, []);
+  const [searchResult, setSearchResult] = useState([]);
+  const handleSearch = useDebounce((query: string) => {
+    if (query.trim() === "") {
+      setSearchResult([]);
+      return;
+    }
+    searchChats(query).then((result) => {
+      setSearchResult(result as any);
+    });
+  }, 800);
+
   return (
     <Command className={"absolute rounded-none top-0 -left-1 z-50 "}>
       <div className="flex items-center px-2">
@@ -28,24 +35,25 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
           onClick={() => setIsCommandOpen(false)}
           className="text-popover-foreground p-0 active:bg-black/10 "
           variant={"menu"}
-          size={"icon"}
+          size={"box"}
         >
           <ArrowLeft size={27} className="" />
         </Button>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput
+          onValueChange={handleSearch}
+          placeholder="Search by username"
+        />
       </div>
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        {chatData.map((chat) => (
-          <CommandItem key={chat.id}>
+        {searchResult.map((chat: any) => (
+          <CommandItem key={chat._id} value={chat.username}>
             <ChatCard
-              onClick={() => setIsCommandOpen(false)}
-              isRead={chat.isRead}
-              number={chat.number}
-              uriProfile={chat.uriProfile}
-              message={chat.message}
-              user={chat.user}
-              date={chat.date}
+              profileImage={chat.image}
+              username={chat.username}
+              lastMessageTime={chat.lastMessageTime || ""}
+              lastMessageContent={chat.lastMessageContent || ""}
+              unreadMessageCount={chat.unreadMessageCount || 0}
             />
           </CommandItem>
         ))}

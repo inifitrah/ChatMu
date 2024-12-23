@@ -11,11 +11,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 interface ChatCardProps {
-  profileImage: string;
+  profileImage?: string;
   username: string;
-  lastMessageTime: string;
-  lastMessageContent: string;
-  unreadMessageCount: number;
+  lastMessageTime?: string;
+  lastMessageContent?: string;
+  unreadMessageCount?: number;
 }
 
 const ChatCard: React.FC<ChatCardProps> = ({
@@ -45,7 +45,12 @@ const ChatCard: React.FC<ChatCardProps> = ({
             {lastMessageContent}
           </CardDescription>
           <Badge
-            style={{ opacity: unreadMessageCount === 0 ? "0" : "1" }}
+            style={{
+              opacity:
+                unreadMessageCount === undefined || unreadMessageCount === 0
+                  ? "0"
+                  : "1",
+            }}
             className="bg-violet-500 text-white ml-1 flex justify-center items-center"
             variant="outline"
           >
