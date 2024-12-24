@@ -49,6 +49,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
         {searchResult.map((chat: any) => (
           <CommandItem key={chat._id} value={chat.username}>
             <ChatCard
+              chatId={chat._id}
               profileImage={chat.image}
               username={chat.username}
               lastMessageTime={chat.lastMessageTime || ""}

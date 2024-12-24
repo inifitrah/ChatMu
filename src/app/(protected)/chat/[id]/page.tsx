@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,44 +18,46 @@ import {
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { getConversation } from "@/app/actions/chatActions";
 interface Message {
   message: string;
   isCurrentUser: boolean;
 }
 
+interface IConversation {
+  username: string;
+  image?: string;
+}
+
 const Page = () => {
   const { id } = useParams<{ id: string }>();
+
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [transport, setTransport] = useState("N/A");
+  const [conversation, setConversation] = useState<IConversation>();
 
   const handleSendMessage = (newMessage: string) => {
     setMessages([...messages, { message: newMessage, isCurrentUser: true }]);
   };
 
-  // useEffect(() => {
-  //   if (socket.connected) {
-  //     onConnect();
-  //   }
+  const fetchConversation = useCallback(async () => {
+    if (id) {
+      const conversation = await getConversation(id);
 
-  //   function onConnect() {
-  //     setIsConnected(true);
-  //     setTransport(socket.io.engine.transport.name);
-  //     console.log(socket.io.engine.transport);
+      setConversation(conversation);
+    }
+  }, [id]);
 
-  //     socket.io.engine.on("upgrade", () => {
-  //       setTransport(transport.name);
-  //     });
-  //   }
-
-  //   socket.on("connect", () => {
-  //     console.log("Connected to Socket.IO server");
-  //   });
-  // }, [messages]);
+  useEffect(() => {
+    fetchConversation();
+  }, [fetchConversation]);
 
   return (
     <>
-      <ChatHeader user={user} />
+      <ChatHeader
+        username={conversation?.username}
+        profileImage={conversation?.image}
+        status="Online"
+      />
       <ChatWindow messages={messages} />
       <ChatInput onSendMessage={handleSendMessage} />
     </>
@@ -63,36 +65,38 @@ const Page = () => {
 };
 
 interface ChatHeaderProps {
-  user: {
-    uriProfile?: string;
-    user: string;
-    status: string;
-  };
+  profileImage?: string;
+  status?: string;
+  username?: string;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ user }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({
+  profileImage,
+  status,
+  username,
+}) => {
   return (
-    <header className="flex justify-between p-4 items-center text-white">
-      <div className="flex gap-2 items-center">
+    <header className="flex justify-between p-4 items-center text-black">
+      <div className="flex gap-2 items-center ">
         <Link href={"/"}>
-          <Button size={"icon"} variant={"menu"}>
+          <Button size={"box"} variant={"menu"} className="text-black">
             <ArrowLeft />
           </Button>
         </Link>
         <Avatar className="text-black">
-          <AvatarImage src={user.uriProfile} />
+          <AvatarImage src={profileImage} />
           <AvatarFallback>
             <CircleUser size={60} />
           </AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-xl font-bold">{user.user}</h1>
-          <p className="text-sm ">{user.status}</p>
+          <h1 className="text-xl font-bold">{username}</h1>
+          <p className="text-sm ">{status}</p>
         </div>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center ">
-          <EllipsisVertical className="text-inherit" />
+          <EllipsisVertical className="text-black" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="">
           <DropdownMenuItem>Profile</DropdownMenuItem>
@@ -157,12 +161,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
   };
 
   return (
-    <div className="pl-3 flex  py-3 w-full">
+    <div className=" flex space-x-3  py-3 w-full px-2">
       <Input
         onChange={handleInputChange}
         value={inputValue}
         placeholder="Type a message.."
-        className="border-2"
+        className="border-2 w-full rounded-md px-2"
         type="text"
         onKeyDown={handleKeyDown}
       />
@@ -191,13 +195,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
 
   return (
     <div ref={ref} className="flex flex-1 flex-col overflow-auto py-5 pb-3">
-      {messages.map((item, i) => (
-        <ChatMessage
-          key={i}
-          message={item.message}
-          isCurrentUser={item.isCurrentUser}
-        />
-      ))}
+      {messages ? (
+        messages.map((message, index) => (
+          <ChatMessage
+            key={index}
+            isCurrentUser={message.isCurrentUser}
+            message={message.message}
+          />
+        ))
+      ) : (
+        <p>No messages</p>
+      )}
     </div>
   );
 };

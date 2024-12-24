@@ -7,6 +7,11 @@ export const getUserByEmail = async (email: string) => {
   return user;
 };
 
+export const getUserById = async (id: string) => {
+  const user = await User.findById(id);
+  return user;
+};
+
 export const searchUsersByUsername = async (query: string) => {
   const users = await User.find({
     username: { $regex: query, $options: "i" },

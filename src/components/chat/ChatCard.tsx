@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Card,
@@ -9,6 +10,7 @@ import {
 import { CircleUser } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 interface ChatCardProps {
   profileImage?: string;
@@ -16,9 +18,11 @@ interface ChatCardProps {
   lastMessageTime?: string;
   lastMessageContent?: string;
   unreadMessageCount?: number;
+  chatId: string;
 }
 
 const ChatCard: React.FC<ChatCardProps> = ({
+  chatId,
   profileImage,
   username,
   lastMessageTime,
@@ -26,39 +30,43 @@ const ChatCard: React.FC<ChatCardProps> = ({
   unreadMessageCount,
 }) => {
   return (
-    <Card className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2">
-      <Avatar className="border-2 cursor-pointer mx-1">
-        <AvatarImage src={profileImage} />
-        <AvatarFallback className="cursor-pointer">
-          <CircleUser size={60} />
-        </AvatarFallback>
-      </Avatar>
-      <div className="flex flex-col basis-auto flex-grow border-t-gray-300 py-3 shadow-none border-t-2 min-w-0 w-full mr-2">
-        <div className="flex items-center">
-          <CardHeader className="flex-grow items-start m-0 p-0">
-            <CardTitle className="text-lg">{username}</CardTitle>
-          </CardHeader>
-          <p className="text-violet-500 flex-none text-xs">{lastMessageTime}</p>
+    <Link href={`/chat/${chatId}`}>
+      <Card className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2">
+        <Avatar className="border-2 cursor-pointer mx-1">
+          <AvatarImage src={profileImage} />
+          <AvatarFallback className="cursor-pointer">
+            <CircleUser size={60} />
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col basis-auto flex-grow border-t-gray-300 py-3 shadow-none border-t-2 min-w-0 w-full mr-2">
+          <div className="flex items-center">
+            <CardHeader className="flex-grow items-start m-0 p-0">
+              <CardTitle className="text-lg">{username}</CardTitle>
+            </CardHeader>
+            <p className="text-violet-500 flex-none text-xs">
+              {lastMessageTime}
+            </p>
+          </div>
+          <CardContent className="flex mt-1 overflow-hidden items-center p-0">
+            <CardDescription className="flex-grow overflow-hidden max-h-5">
+              {lastMessageContent}
+            </CardDescription>
+            <Badge
+              style={{
+                opacity:
+                  unreadMessageCount === undefined || unreadMessageCount === 0
+                    ? "0"
+                    : "1",
+              }}
+              className="bg-violet-500 text-white ml-1 flex justify-center items-center"
+              variant="outline"
+            >
+              {unreadMessageCount}
+            </Badge>
+          </CardContent>
         </div>
-        <CardContent className="flex mt-1 overflow-hidden items-center p-0">
-          <CardDescription className="flex-grow overflow-hidden max-h-5">
-            {lastMessageContent}
-          </CardDescription>
-          <Badge
-            style={{
-              opacity:
-                unreadMessageCount === undefined || unreadMessageCount === 0
-                  ? "0"
-                  : "1",
-            }}
-            className="bg-violet-500 text-white ml-1 flex justify-center items-center"
-            variant="outline"
-          >
-            {unreadMessageCount}
-          </Badge>
-        </CardContent>
-      </div>
-    </Card>
+      </Card>
+    </Link>
   );
 };
 
