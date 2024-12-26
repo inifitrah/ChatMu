@@ -3,6 +3,7 @@ import "./globals.css";
 import SessionWrapper from "@/components/auth/SessionWrapper";
 import { Toaster } from "@/components/ui/toaster";
 import { connectToMongoDB } from "@/lib/db/mongodb";
+import SocketWrapper from "@/components/SocketWrapper";
 export const metadata: Metadata = {
   title: "ChatMu",
   description: "ChatMu is a chat application",
@@ -17,12 +18,14 @@ export default async function RootLayout({
 
   return (
     <SessionWrapper>
-      <html lang="en">
-        <body className="text-black">
-          {children}
-          <Toaster />
-        </body>
-      </html>
+      <SocketWrapper>
+        <html lang="en">
+          <body className="text-black">
+            {children}
+            <Toaster />
+          </body>
+        </html>
+      </SocketWrapper>
     </SessionWrapper>
   );
 }

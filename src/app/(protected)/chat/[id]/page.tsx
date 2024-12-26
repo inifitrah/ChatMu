@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { getConversation } from "@/app/actions/chatActions";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
-import { getSocket } from "@/lib/socket";
+import { useSocketContext } from "@/contexts/SocketContext";
 interface Message {
   message: string;
   isCurrentUser: boolean;
@@ -33,7 +33,7 @@ interface IConversation {
 }
 
 const Page = () => {
-  const socket = getSocket();
+  const { socket, isConnected } = useSocketContext();
   const { data: session } = useSession();
   const { id } = useParams<{ id: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -42,7 +42,7 @@ const Page = () => {
 
   const handleSendMessage = (newMessage: string) => {
     setMessages([...messages, { message: newMessage, isCurrentUser: true }]);
-    socket.emit("message", {
+    socket?.emit("message", {
       from: session?.user.username,
       to: conversation?.username,
       text: newMessage,
@@ -58,16 +58,23 @@ const Page = () => {
 
   useEffect(() => {
     fetchConversation();
-    socket.on(
-      "receiveMessage",
-      (receiveMessage: { from: string; text: string }) => {
-        setMessages([
-          ...messages,
-          { message: receiveMessage.text, isCurrentUser: false },
-        ]);
-      }
-    );
-  }, [messages]);
+
+    if (!isConnected) {
+      socket?.connect();
+    }
+
+    if (isConnected) {
+      socket?.on(
+        "receiveMessage",
+        (receiveMessage: { from: string; text: string }) => {
+          setMessages([
+            ...messages,
+            { message: receiveMessage.text, isCurrentUser: false },
+          ]);
+        }
+      );
+    }
+  }, [messages, socket, isConnected]);
 
   return (
     <>
