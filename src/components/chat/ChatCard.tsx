@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CircleUser } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import ChatProfile from "./ChatProfile";
 
 interface ChatCardProps {
   profileImage?: string;
@@ -32,12 +32,7 @@ const ChatCard: React.FC<ChatCardProps> = ({
   return (
     <Link href={`/chat/${chatId}`}>
       <Card className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2">
-        <Avatar className="border-2 cursor-pointer mx-1">
-          <AvatarImage src={profileImage} />
-          <AvatarFallback className="cursor-pointer">
-            <CircleUser size={60} />
-          </AvatarFallback>
-        </Avatar>
+        <ChatProfile src={profileImage} />
         <div className="flex flex-col basis-auto flex-grow border-t-gray-300 py-3 shadow-none border-t-2 min-w-0 w-full mr-2">
           <div className="flex items-center">
             <CardHeader className="flex-grow items-start m-0 p-0">

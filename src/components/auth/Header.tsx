@@ -1,5 +1,5 @@
 import React from "react";
-import BackButton from "@/components/auth/BackButton";
+import BackButton from "@/components/BackButton";
 
 interface HeaderProps {
   backButtonHref: string;
