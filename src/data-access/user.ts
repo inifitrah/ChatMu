@@ -12,10 +12,18 @@ export const getUserById = async (id: string) => {
   return user;
 };
 
-export const searchUsersByUsername = async (query: string) => {
-  const users = await User.find({
-    username: { $regex: query, $options: "i" },
-  });
+export const searchUsersByUsername = async (
+  query: string,
+  fields: string[] = []
+) => {
+  const projection = fields.length > 0 ? fields.join(" ") : "";
+
+  const users = await User.find(
+    {
+      username: { $regex: query, $options: "i" },
+    },
+    projection
+  );
   return users;
 };
 

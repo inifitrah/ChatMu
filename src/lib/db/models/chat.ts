@@ -24,10 +24,10 @@ const ChatSchema = new Schema<IChat>({
 });
 
 export const Chat =
-  mongoose.models.User || mongoose.model<IChat>("User", ChatSchema);
+  mongoose.models.Chat || mongoose.model<IChat>("Chat", ChatSchema);
 
 interface IMessage extends Document {
-  chat: mongoose.Schema.Types.ObjectId;
+  chatId: mongoose.Schema.Types.ObjectId;
   sender: mongoose.Schema.Types.ObjectId;
   text: string;
   timestamp: Date;
@@ -35,7 +35,7 @@ interface IMessage extends Document {
 }
 
 const MessageSchema = new mongoose.Schema({
-  chat: {
+  chatId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Chat",
     required: true,
@@ -61,4 +61,4 @@ const MessageSchema = new mongoose.Schema({
 });
 
 export const Message =
-  mongoose.models.User || mongoose.model<IMessage>("Message", MessageSchema);
+  mongoose.models.Message || mongoose.model<IMessage>("Message", MessageSchema);

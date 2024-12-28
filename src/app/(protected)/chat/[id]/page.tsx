@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getConversation } from "@/app/actions/chatActions";
+import { getConversation, sendNewMessage } from "@/app/actions/chatActions";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
 import { useSocketContext } from "@/contexts/SocketContext";
@@ -9,13 +9,14 @@ import ChatHeader from "@/components/chat/ChatHeader";
 import ChatWindow from "@/components/chat/ChatWindow";
 import ChatInput from "@/components/chat/ChatInput";
 interface Message {
-  message: string;
+  text: string;
   isCurrentUser: boolean;
 }
 
 interface IConversation {
   username: string;
-  image?: string;
+  profileImage?: string;
+  messages?: Message[];
 }
 
 const Page = () => {
@@ -27,24 +28,28 @@ const Page = () => {
   const { toast } = useToast();
 
   const handleSendMessage = (newMessage: string) => {
-    setMessages([...messages, { message: newMessage, isCurrentUser: true }]);
+    setMessages([...messages, { text: newMessage, isCurrentUser: true }]);
+    sendNewMessage(id, session?.user.id, newMessage);
     socket?.emit("message", {
       from: session?.user.username,
       to: conversation?.username,
       text: newMessage,
     });
   };
-
   const fetchConversation = useCallback(async () => {
-    if (id) {
-      const conversation = await getConversation(id);
+    if (id && session?.user.id) {
+      console.log("fetching conversation");
+      const conversation = await getConversation(id, session?.user.id);
+      setMessages([...conversation.messages]);
       setConversation(conversation);
     }
-  }, [id]);
+  }, [id, session]);
 
   useEffect(() => {
     fetchConversation();
+  }, [fetchConversation]);
 
+  useEffect(() => {
     if (!isConnected) {
       socket?.connect();
     }
@@ -55,18 +60,18 @@ const Page = () => {
         (receiveMessage: { from: string; text: string }) => {
           setMessages([
             ...messages,
-            { message: receiveMessage.text, isCurrentUser: false },
+            { text: receiveMessage.text, isCurrentUser: false },
           ]);
         }
       );
     }
-  }, [messages, socket, isConnected]);
+  }, [messages, socket, isConnected, session]);
 
   return (
     <>
       <ChatHeader
         username={conversation?.username}
-        profileImage={conversation?.image}
+        profileImage={conversation?.profileImage}
         status="Online"
       />
       <ChatWindow messages={messages} />

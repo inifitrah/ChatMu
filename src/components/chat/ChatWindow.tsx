@@ -2,12 +2,12 @@ import React, { useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
 
 interface Message {
-  message: string;
+  text: string;
   isCurrentUser: boolean;
 }
 
 interface ChatWindowProps {
-  messages: Message[];
+  messages?: Message[];
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
@@ -30,7 +30,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
               className={isSameSenderAsPrevious ? "mt-1" : "mt-6"}
               key={index}
               isCurrentUser={message.isCurrentUser}
-              message={message.message}
+              message={message.text}
             />
           );
         })

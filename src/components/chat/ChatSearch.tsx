@@ -11,19 +11,22 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { searchChats } from "@/app/actions/chatActions";
+import { useSession } from "next-auth/react";
 
 interface ChatSearchProps {
   setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
+  const { data: session } = useSession();
+
   const [searchResult, setSearchResult] = useState([]);
   const handleSearch = useDebounce((query: string) => {
     if (query.trim() === "") {
       setSearchResult([]);
       return;
     }
-    searchChats(query).then((result) => {
+    searchChats(query, session?.user.id).then((result) => {
       setSearchResult(result as any);
     });
   }, 800);
@@ -46,15 +49,15 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
       </div>
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        {searchResult.map((chat: any) => (
-          <CommandItem key={chat._id} value={chat.username}>
+        {searchResult.map((target: any) => (
+          <CommandItem key={target._id} value={target.username}>
             <ChatCard
-              chatId={chat._id}
-              profileImage={chat.image}
-              username={chat.username}
-              lastMessageTime={chat.lastMessageTime || ""}
-              lastMessageContent={chat.lastMessageContent || ""}
-              unreadMessageCount={chat.unreadMessageCount || 0}
+              targetId={target.targetId}
+              profileImage={target.profileImage}
+              username={target.username}
+              lastMessageTime={target.lastMessageTime || ""}
+              lastMessageContent={target.lastMessageContent || ""}
+              unreadMessageCount={target.unreadMessageCount || 0}
             />
           </CommandItem>
         ))}
