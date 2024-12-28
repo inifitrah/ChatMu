@@ -49,8 +49,8 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
       </div>
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        {searchResult.map((target: any) => (
-          <CommandItem key={target._id} value={target.username}>
+        {searchResult.map((target: any, index) => (
+          <CommandItem key={index} value={target.username}>
             <ChatCard
               targetId={target.targetId}
               profileImage={target.profileImage}
