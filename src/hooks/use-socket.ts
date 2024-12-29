@@ -20,39 +20,42 @@ export const useSocket = (): UseSocketReturn => {
   const { toast } = useToast();
 
   useEffect(() => {
+    if (!session) return;
     const socket = initializeSocket();
+    if (socket.disconnected) {
+      socket.connect();
+      setIsConnected(true);
+    }
+
+    const handleSocketConnect = () => {
+      if (socket.connected) {
+        socket?.emit("online", session.user.username);
+        setIsOnline(true);
+        toast({
+          description: "Is Online",
+        });
+      }
+    };
     const handleGetOnlineUsers = (users: string[]) => {
       setOnlineUsers(users);
     };
-    const handleSocketConnect = () => {
-      setIsConnected(true);
-    };
     const handleDisconnect = () => {
-      setIsConnected(false);
-      toast({
-        variant: "destructive",
-        description: "Logout socket",
-      });
+      if (socket.disconnected) {
+        setIsConnected(false);
+      }
     };
 
     socket.on("connect", handleSocketConnect);
-    if (session) {
-      socket?.emit("online", session.user.username);
-      setIsOnline(true);
-      toast({
-        description: "Login socket",
-      });
-    }
     socket.on("getOnlineUsers", handleGetOnlineUsers);
     socket.on("disconnect", handleDisconnect);
     setSocket(socket);
-
     return () => {
       socket.off("connect");
-      socket.off("disconnect");
       socket.off("getOnlineUsers");
-      if (socket) {
+      socket.off("disconnect");
+      if (socket && socket.connected) {
         socket.disconnect();
+        setIsConnected(false);
       }
     };
   }, [session]);

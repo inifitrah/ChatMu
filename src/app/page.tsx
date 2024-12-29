@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { useSocketContext } from "@/contexts/SocketContext";
+import { useEffect } from "react";
 
 export default function Home() {
   const { socket, isConnected, isOnline } = useSocketContext();

@@ -38,7 +38,6 @@ const Page = () => {
   };
   const fetchConversation = useCallback(async () => {
     if (id && session?.user.id) {
-      console.log("fetching conversation");
       const conversation = await getConversation(id, session?.user.id);
       setMessages([...conversation.messages]);
       setConversation(conversation);
@@ -50,10 +49,6 @@ const Page = () => {
   }, [fetchConversation]);
 
   useEffect(() => {
-    if (!isConnected) {
-      socket?.connect();
-    }
-
     if (isConnected) {
       socket?.on(
         "receiveMessage",

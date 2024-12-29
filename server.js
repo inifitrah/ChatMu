@@ -17,11 +17,12 @@ app.prepare().then(() => {
   let onlineUsers = [];
 
   io.on("connection", (socket) => {
-    console.log("new connected ", socket.id);
+    console.log(">>SOCKET: CONNECTED ", socket.id);
+
     socket.on("online", (username) => {
       if (!onlineUsers.some((user) => user.username === username)) {
         onlineUsers.push({ username, socketId: socket.id });
-        console.log("new user is here!", onlineUsers);
+        console.log(">>SOCKET: new user is here!", onlineUsers);
       }
       io.emit("getOnlineUsers", onlineUsers);
     });
@@ -40,6 +41,7 @@ app.prepare().then(() => {
     socket.on("disconnect", () => {
       onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
       io.emit("getOnlineUsers", onlineUsers);
+      console.log(">>SOCKET: DISCONNECTED", socket.id);
     });
   });
 
