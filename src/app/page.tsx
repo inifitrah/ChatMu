@@ -23,7 +23,7 @@ export default function Home() {
     <>
       <Header />
       <main className="">
-        <p>Socket: {socket ? "Connected" : "Disconnected"}</p>
+        <p>Socket: {isConnected ? "Connected" : "Disconnected"}</p>
         <ChatList />
       </main>
     </>

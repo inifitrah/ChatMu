@@ -39,6 +39,36 @@ export const searchChats = async (username: string, currentUserId: string) => {
   return JSON.parse(JSON.stringify(result));
 };
 
+export const getChatsDetails = async (currentUserId: string) => {
+  const chats = await Chat.find({ participants: currentUserId })
+    .populate("participants", "username image")
+    .populate("lastMessage", "text timestamp")
+    .exec();
+
+  const result = await Promise.all(
+    chats.map(async (chat) => {
+      const targetUser = chat.participants.find(
+        (p: any) => p._id.toString() !== currentUserId
+      );
+
+      return {
+        targetId: targetUser._id,
+        profileImage: targetUser.image || null,
+        username: targetUser.username,
+        lastMessageTime: chat.lastMessage?.timestamp || null,
+        lastMessageContent: chat.lastMessage?.text || null,
+        unreadMessageCount: await Message.countDocuments({
+          chatId: chat._id,
+          sender: { $ne: currentUserId },
+          status: { $ne: "read" },
+        }),
+      };
+    })
+  );
+
+  return JSON.parse(JSON.stringify(result));
+};
+
 export const getConversation = async (
   chatId: string,
   currentUserId: string
