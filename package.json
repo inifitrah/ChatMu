@@ -24,6 +24,7 @@
     "cloudinary": "^2.5.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "express": "^4.21.2",
     "lucide-react": "^0.449.0",
     "mongoose": "^8.7.2",
     "next": "14.2.14",
