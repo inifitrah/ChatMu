@@ -3,6 +3,7 @@ import next from "next";
 import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
+const turbopack = process.env.TURBOPACK === "1";
 const hostname = "localhost";
 const port = 3000;
 // when using middleware `hostname` and `port` must be provided below
@@ -32,7 +33,7 @@ app.prepare().then(() => {
         (user) => user.username === message.to
       );
       console.log("message: ", message);
-      console.log("receivedUser: ", receivedUser);
+      console.log("receivedUser: ", receivedUser || "offline");
       if (receivedUser) {
         socket.to(receivedUser.socketId).emit("receiveMessage", message);
       }
@@ -51,6 +52,8 @@ app.prepare().then(() => {
       process.exit(1);
     })
     .listen(port, async () => {
-      console.log(`> Ready on http://${hostname}:${port}`);
+      console.log(
+        `> Ready on http://${hostname}:${port} - development:${dev} turbopack:${turbopack}`
+      );
     });
 });
