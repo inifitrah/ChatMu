@@ -29,7 +29,7 @@ export const Chat =
 interface IMessage extends Document {
   chatId: mongoose.Schema.Types.ObjectId;
   sender: mongoose.Schema.Types.ObjectId;
-  text: string;
+  content: string;
   timestamp: Date;
   status: "sent" | "delivered" | "read";
 }

@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 interface ChatCardProps {
   profileImage?: string;
   username: string;
-  lastMessageTime?: string;
+  lastMessageTime: string;
   lastMessageContent?: string;
   unreadMessageCount?: number;
   targetId: string;

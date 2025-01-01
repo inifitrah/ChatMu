@@ -3,11 +3,15 @@ import React, { useEffect, useState } from "react";
 import ChatCard from "./ChatCard";
 import { useSession } from "next-auth/react";
 import { getChatsDetails } from "@/app/actions/chatActions";
-import { useSocketContext } from "@/contexts/SocketContext";
+import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
 
-interface Message {
-  text?: string;
-  isCurrentUser?: boolean;
+interface IChat {
+  targetId: string;
+  profileImage: string;
+  username: string;
+  lastMessageTime: Date;
+  lastMessageContent: string;
+  unreadMessageCount: number;
 }
 
 const ChatList = () => {
@@ -25,13 +29,13 @@ const ChatList = () => {
   return (
     <>
       {chats.length > 0 ? (
-        chats.map((chat, index) => (
+        chats.map((chat: IChat, index) => (
           <ChatCard
             key={index}
             targetId={chat.targetId}
             profileImage={chat.profileImage}
             username={chat.username}
-            lastMessageTime={chat.lastMessageTime || ""}
+            lastMessageTime={formatLastMessageTime(chat.lastMessageTime)}
             lastMessageContent={chat.lastMessageContent || ""}
             unreadMessageCount={chat.unreadMessageCount || 0}
           />

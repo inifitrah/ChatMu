@@ -51,12 +51,16 @@ export const getChatsDetails = async (currentUserId: string) => {
         (p: any) => p._id.toString() !== currentUserId
       );
 
+      const lastMessage = chat.lastMessage
+        ? await Message.findById(chat.lastMessage).exec()
+        : null;
+
       return {
         targetId: targetUser._id,
         profileImage: targetUser.image || null,
         username: targetUser.username,
         lastMessageTime: chat.lastMessage?.timestamp || null,
-        lastMessageContent: chat.lastMessage?.text || null,
+        lastMessageContent: lastMessage?.content,
         unreadMessageCount: await Message.countDocuments({
           chatId: chat._id,
           sender: { $ne: currentUserId },
