@@ -28,22 +28,27 @@ app.prepare().then(() => {
   io.on("connection", (socket) => {
     console.log(">>SOCKET: CONNECTED ", socket.id);
 
-    socket.on("online", (username) => {
-      if (!onlineUsers.some((user) => user.username === username)) {
-        onlineUsers.push({ username, socketId: socket.id });
-        console.log(">>SOCKET: new user is here!", onlineUsers);
-      }
-      io.emit("getOnlineUsers", onlineUsers);
-    });
+    const { id, username } = socket.handshake.query;
 
-    socket.on("message", (message) => {
+    if (!onlineUsers.some((user) => user.username === username)) {
+      onlineUsers.push({
+        id,
+        username,
+        socketId: socket.id,
+      });
+      console.log(">>SOCKET: new user is here!", onlineUsers);
+    }
+
+    io.emit("getOnlineUsers", onlineUsers);
+
+    socket.on("message", ({ chatId, sender, recipient, content, type }) => {
       const receivedUser = onlineUsers.find(
-        (user) => user.username === message.to
+        (user) => user.username === recipient.username
       );
-      console.log("message: ", message);
-      console.log("receivedUser: ", receivedUser || "offline");
       if (receivedUser) {
-        socket.to(receivedUser.socketId).emit("receiveMessage", message);
+        socket
+          .to(receivedUser.socketId)
+          .emit("receiveMessage", { content, type });
       }
     });
 

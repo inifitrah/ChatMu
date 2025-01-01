@@ -1,6 +1,5 @@
-import { initializeSocket } from "@/lib/socket";
 import { useEffect, useState } from "react";
-import { Socket } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import { useToast } from "./use-toast";
 import { useSession } from "next-auth/react";
 
@@ -20,44 +19,46 @@ export const useSocket = (): UseSocketReturn => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!session) return;
-    const socket = initializeSocket();
-    if (socket.disconnected) {
-      socket.connect();
-      setIsConnected(true);
-    }
-
-    const handleSocketConnect = () => {
-      if (socket.connected) {
-        socket?.emit("online", session.user.username);
+    if (session) {
+      const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        query: {
+          id: session.user.id,
+          username: session.user.username,
+        },
+      });
+      socket.on("connect", () => {
+        setIsConnected(true);
         setIsOnline(true);
         toast({
           description: "Is Online",
         });
-      }
-    };
-    const handleGetOnlineUsers = (users: string[]) => {
-      setOnlineUsers(users);
-    };
-    const handleDisconnect = () => {
-      if (socket.disconnected) {
+      });
+      socket.on("getOnlineUsers", (users) => {
+        setOnlineUsers(users);
+      });
+      socket.on("disconnect", () => {
         setIsConnected(false);
+      });
+      setSocket(socket);
+      return () => {
+        socket.off("connect");
+        socket.off("getOnlineUsers");
+        socket.off("disconnect");
+        if (socket && socket.connected) {
+          socket.disconnect();
+          setIsConnected(false);
+          setSocket(null);
+        }
+      };
+    } else {
+      if (socket) {
+        socket.close();
       }
-    };
-
-    socket.on("connect", handleSocketConnect);
-    socket.on("getOnlineUsers", handleGetOnlineUsers);
-    socket.on("disconnect", handleDisconnect);
-    setSocket(socket);
-    return () => {
-      socket.off("connect");
-      socket.off("getOnlineUsers");
-      socket.off("disconnect");
-      if (socket && socket.connected) {
-        socket.disconnect();
-        setIsConnected(false);
-      }
-    };
+      return;
+    }
   }, [session]);
 
   return { socket, isConnected, isOnline, onlineUsers };

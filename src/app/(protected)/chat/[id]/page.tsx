@@ -82,7 +82,6 @@ const Page = () => {
           },
         ]);
       });
-      console.log(conversation);
     }
   }, [messages, socket, isConnected, session]);
 
