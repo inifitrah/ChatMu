@@ -85,12 +85,13 @@ export const getConversation = async (
 
   const filterMessages = messages.map((message) => {
     return {
-      text: message.text,
+      content: message.content,
       isCurrentUser: message.sender.toString() === currentUserId,
     };
   });
 
   const result = {
+    id: JSON.parse(JSON.stringify(targetUser._id)),
     username: targetUser?.username,
     profileImage: targetUser?.image || null,
     messages: JSON.parse(JSON.stringify(filterMessages)),
@@ -110,12 +111,12 @@ export const getOrCreateChat = async (userId1: string, userId2: string) => {
   return JSON.parse(JSON.stringify(chat));
 };
 
-export const sendNewMessage = async (
+export const saveNewMessage = async (
   chatId: string,
   senderId: string,
-  text: string
+  content: string
 ) => {
-  const newMessage = new Message({ chatId, sender: senderId, text });
+  const newMessage = new Message({ chatId, sender: senderId, content });
   await Chat.updateOne(
     { _id: chatId },
     { lastMessage: newMessage._id },

@@ -2,8 +2,9 @@ import React, { useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
 
 interface Message {
-  text: string;
+  content: string;
   isCurrentUser: boolean;
+  type: "text" | "server";
 }
 
 interface ChatWindowProps {
@@ -30,7 +31,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
               className={isSameSenderAsPrevious ? "mt-1" : "mt-6"}
               key={index}
               isCurrentUser={message.isCurrentUser}
-              message={message.text}
+              message={message.content}
             />
           );
         })

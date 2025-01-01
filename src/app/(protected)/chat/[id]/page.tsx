@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getConversation, sendNewMessage } from "@/app/actions/chatActions";
+import { getConversation, saveNewMessage } from "@/app/actions/chatActions";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
 import { useSocketContext } from "@/contexts/SocketContext";
@@ -9,11 +9,21 @@ import ChatHeader from "@/components/chat/ChatHeader";
 import ChatWindow from "@/components/chat/ChatWindow";
 import ChatInput from "@/components/chat/ChatInput";
 interface Message {
-  text: string;
+  content: string;
+  type: "text" | "server";
   isCurrentUser: boolean;
 }
 
+interface IReceiveMessage {
+  chatId: string;
+  sender: { id: string; username: string };
+  recipient: { id: string; username: string };
+  content: string;
+  type: string;
+}
+
 interface IConversation {
+  id: "string";
   username: string;
   profileImage?: string;
   messages?: Message[];
@@ -28,13 +38,24 @@ const Page = () => {
   const { toast } = useToast();
 
   const handleSendMessage = (newMessage: string) => {
-    setMessages([...messages, { text: newMessage, isCurrentUser: true }]);
-    sendNewMessage(id, session?.user.id, newMessage);
+    setMessages([
+      ...messages,
+      { content: newMessage, isCurrentUser: true, type: "text" },
+    ]);
     socket?.emit("message", {
-      from: session?.user.username,
-      to: conversation?.username,
-      text: newMessage,
+      chatId: id,
+      sender: {
+        id: session?.user.id,
+        username: session?.user.username,
+      },
+      recipient: {
+        id: conversation?.id,
+        username: conversation?.username,
+      },
+      content: newMessage,
+      type: "text",
     });
+    saveNewMessage(id, session?.user.id, newMessage);
   };
   const fetchConversation = useCallback(async () => {
     if (id && session?.user.id) {
@@ -50,15 +71,18 @@ const Page = () => {
 
   useEffect(() => {
     if (isConnected) {
-      socket?.on(
-        "receiveMessage",
-        (receiveMessage: { from: string; text: string }) => {
-          setMessages([
-            ...messages,
-            { text: receiveMessage.text, isCurrentUser: false },
-          ]);
-        }
-      );
+      socket?.on("receiveMessage", (receiveMessage: IReceiveMessage) => {
+        const { content, type } = receiveMessage;
+        setMessages([
+          ...messages,
+          {
+            content,
+            isCurrentUser: false,
+            type: type as "text",
+          },
+        ]);
+      });
+      console.log(conversation);
     }
   }, [messages, socket, isConnected, session]);
 
