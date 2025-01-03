@@ -4,14 +4,20 @@ Chatmu is a chat application
 
 ## Tech Stack
 
-- Framework: Nextjs
-- Database: MongoDB
-- Authentication: NextAuth, JWT
-- Real-time Communication: Socket.io
+**Client:** Next JS, Socket IO Client, Shadcn/UI, Tailwind CSS
+
+**Server:** Custom server with Express, Mongoose, Socket IO
 
 ## Features
 
-- Real-time messaging
-- User authentication
-- Private chat
-- Message history
+- [x] Real-time messaging
+- [x] User authentication
+- [x] Private chat
+- [x] Message history
+
+## Roadmap
+
+- Implement group chat functionality
+- Improve user interface and experience
+- Develop mobile application
+- Add support for multiple languages
