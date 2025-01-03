@@ -1,19 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import ChatCard from "./ChatCard";
 import { useSession } from "next-auth/react";
 import { getChatsDetails, getOrCreateChat } from "@/app/actions/chatActions";
-import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
 import { useRouter } from "next/navigation";
-
-interface IChat {
-  targetId: string;
-  profileImage: string;
-  username: string;
-  lastMessageTime: Date;
-  lastMessageContent: string;
-  unreadMessageCount: number;
-}
+import ChatListItems from "./ChatListItems";
 
 const ChatList = () => {
   const [chats, setChats] = useState([]);
@@ -34,26 +24,7 @@ const ChatList = () => {
     );
   };
 
-  return (
-    <>
-      {chats.length > 0 ? (
-        chats.map((chat: IChat, index) => (
-          <ChatCard
-            onOpenChat={handleOpenChat}
-            key={index}
-            targetId={chat.targetId}
-            profileImage={chat.profileImage}
-            username={chat.username}
-            lastMessageTime={formatLastMessageTime(chat.lastMessageTime)}
-            lastMessageContent={chat.lastMessageContent || ""}
-            unreadMessageCount={chat.unreadMessageCount || 0}
-          />
-        ))
-      ) : (
-        <p className="text-center">No chats</p>
-      )}
-    </>
-  );
+  return <ChatListItems chats={chats} onOpenChat={handleOpenChat} />;
 };
 
 export default ChatList;
