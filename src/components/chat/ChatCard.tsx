@@ -10,9 +10,6 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import ChatProfile from "./ChatProfile";
-import { getOrCreateChat } from "@/app/actions/chatActions";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 interface ChatCardProps {
   profileImage?: string;
@@ -21,28 +18,21 @@ interface ChatCardProps {
   lastMessageContent?: string;
   unreadMessageCount?: number;
   targetId: string;
+  onOpenChat: (targetId: string) => void;
 }
 
 const ChatCard: React.FC<ChatCardProps> = ({
-  targetId,
   profileImage,
   username,
   lastMessageTime,
   lastMessageContent,
   unreadMessageCount,
+  targetId,
+  onOpenChat,
 }) => {
-  const { data: session } = useSession();
-  const router = useRouter();
-
-  const handleOpenChat = async () => {
-    await getOrCreateChat(session?.user.id, targetId).then((chat) =>
-      router.push(`/chat/${chat._id}`)
-    );
-  };
-
   return (
     <Card
-      onClick={handleOpenChat}
+      onClick={() => onOpenChat(targetId)}
       className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2"
     >
       <ChatProfile src={profileImage} />

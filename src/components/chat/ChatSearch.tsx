@@ -11,7 +11,9 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { searchChats } from "@/app/actions/chatActions";
+import { getOrCreateChat } from "@/app/actions/chatActions";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface ChatSearchProps {
   setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,7 +21,7 @@ interface ChatSearchProps {
 
 const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
   const { data: session } = useSession();
-
+  const router = useRouter();
   const [searchResult, setSearchResult] = useState([]);
   const handleSearch = useDebounce((query: string) => {
     if (query.trim() === "") {
@@ -30,6 +32,13 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
       setSearchResult(result as any);
     });
   }, 800);
+
+  const handleOpenChat = async (targetId: string) => {
+    if (!session) return;
+    await getOrCreateChat(session?.user.id, targetId).then((chat) =>
+      router.push(`/chat/${chat._id}`)
+    );
+  };
 
   return (
     <Command className={"absolute rounded-none top-0 -left-1 z-50 "}>
@@ -53,6 +62,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
           <CommandItem key={index} value={target.username}>
             <ChatCard
               targetId={target.targetId}
+              onOpenChat={handleOpenChat}
               profileImage={target.profileImage}
               username={target.username}
               lastMessageTime={target.lastMessageTime || ""}
