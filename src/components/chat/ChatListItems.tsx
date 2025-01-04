@@ -8,6 +8,7 @@ interface IChat {
   lastMessageTime: Date;
   lastMessageContent: string;
   unreadMessageCount: number;
+  status: "sent" | "delivered" | "read";
 }
 
 interface ChatListItemsProps {
@@ -20,6 +21,7 @@ const ChatListItems: React.FC<ChatListItemsProps> = ({ chats, onOpenChat }) => {
     <>
       {chats.map((chat: IChat) => (
         <ChatCard
+          status={chat.status}
           onOpenChat={onOpenChat}
           key={chat.targetId}
           targetId={chat.targetId}

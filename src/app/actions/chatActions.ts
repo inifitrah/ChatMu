@@ -66,6 +66,7 @@ export const getChatsDetails = async (currentUserId: string) => {
           sender: { $ne: currentUserId },
           status: { $ne: "read" },
         }),
+        status: lastMessage?.status || "sent",
       };
     })
   );

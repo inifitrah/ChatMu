@@ -10,6 +10,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import ChatProfile from "./ChatProfile";
+import { Check, CheckCheck } from "lucide-react";
 
 interface ChatCardProps {
   profileImage?: string;
@@ -18,6 +19,7 @@ interface ChatCardProps {
   lastMessageContent?: string;
   unreadMessageCount?: number;
   targetId: string;
+  status: "sent" | "delivered" | "read";
   onOpenChat: (targetId: string) => void;
 }
 
@@ -28,6 +30,7 @@ const ChatCard: React.FC<ChatCardProps> = ({
   lastMessageContent,
   unreadMessageCount,
   targetId,
+  status,
   onOpenChat,
 }) => {
   return (
@@ -63,6 +66,10 @@ const ChatCard: React.FC<ChatCardProps> = ({
           >
             {unreadMessageCount}
           </Badge>
+
+          {status === "sent" && <Check />}
+          {status === "delivered" && <CheckCheck />}
+          {status === "read" && <CheckCheck className="text-violet-500" />}
         </CardContent>
       </div>
     </Card>
