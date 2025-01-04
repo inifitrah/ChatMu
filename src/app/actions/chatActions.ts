@@ -60,7 +60,7 @@ export const getChatsDetails = async (currentUserId: string) => {
         profileImage: targetUser.image || null,
         username: targetUser.username,
         lastMessageTime: chat.lastMessage?.timestamp || null,
-        lastMessageContent: lastMessage?.content,
+        lastMessageContent: lastMessage?.content || null,
         unreadMessageCount: await Message.countDocuments({
           chatId: chat._id,
           sender: { $ne: currentUserId },

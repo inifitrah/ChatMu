@@ -41,7 +41,11 @@ const ChatCard: React.FC<ChatCardProps> = ({
           <CardHeader className="flex-grow items-start m-0 p-0">
             <CardTitle className="text-lg">{username}</CardTitle>
           </CardHeader>
-          <p className="text-violet-500 flex-none text-xs">{lastMessageTime}</p>
+          {lastMessageContent && (
+            <p className="text-violet-500 flex-none text-xs">
+              {lastMessageTime}
+            </p>
+          )}
         </div>
         <CardContent className="flex mt-1 overflow-hidden items-center p-0">
           <CardDescription className="flex-grow overflow-hidden max-h-5">

@@ -12,7 +12,10 @@ const ChatList = () => {
   useEffect(() => {
     if (session) {
       getChatsDetails(session?.user.id).then((chats) => {
-        setChats(chats);
+        const filteredChats = chats.filter(
+          (chat: any) => chat.lastMessageContent !== null
+        );
+        setChats(filteredChats);
       });
     }
   }, [session]);

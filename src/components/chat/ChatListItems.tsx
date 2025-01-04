@@ -25,7 +25,7 @@ const ChatListItems: React.FC<ChatListItemsProps> = ({ chats, onOpenChat }) => {
           targetId={chat.targetId}
           profileImage={chat.profileImage}
           username={chat.username}
-          lastMessageTime={formatLastMessageTime(chat.lastMessageTime)}
+          lastMessageTime={formatLastMessageTime(chat.lastMessageTime || "")}
           lastMessageContent={chat.lastMessageContent || ""}
           unreadMessageCount={chat.unreadMessageCount || 0}
         />
