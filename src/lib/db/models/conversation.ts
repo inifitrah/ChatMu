@@ -5,7 +5,7 @@ interface IConversation extends Document {
   lastMessage: mongoose.Schema.Types.ObjectId;
   createdAt: Date;
 }
-const ConversationSchema = new Schema<IChat>({
+const ConversationSchema = new Schema<IConversation>({
   participants: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -28,7 +28,7 @@ export const Conversation =
   mongoose.model<IConversation>("Conversation", ConversationSchema);
 
 interface IMessage extends Document {
-  chatId: mongoose.Schema.Types.ObjectId;
+  conversationId: mongoose.Schema.Types.ObjectId;
   sender: mongoose.Schema.Types.ObjectId;
   content: string;
   timestamp: Date;
@@ -36,9 +36,9 @@ interface IMessage extends Document {
 }
 
 const MessageSchema = new mongoose.Schema({
-  chatId: {
+  conversationId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Chat",
+    ref: "Conversation",
     required: true,
   },
   sender: {

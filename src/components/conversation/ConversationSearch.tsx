@@ -10,8 +10,8 @@ import ConversationCard from "@/components/conversation/ConversationCard";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
-import { searchChats } from "@/app/actions/chatActions";
-import { getOrCreateChat } from "@/app/actions/chatActions";
+import { searchConversations } from "@/app/actions/conversationActions";
+import { getOrCreateConversation } from "@/app/actions/conversationActions";
 import { useSession } from "next-auth/react";
 
 import { setSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
@@ -32,14 +32,14 @@ const ConversationSearch: React.FC<ConversationSearch> = ({
       setSearchResult([]);
       return;
     }
-    searchChats(query, session?.user.id).then((result) => {
+    searchConversations(query, session?.user.id).then((result) => {
       setSearchResult(result as any);
     });
   }, 800);
 
   const handleOpenChat = async (targetId: string) => {
     if (!session) return;
-    await getOrCreateChat(session?.user.id, targetId).then((chat) => {
+    await getOrCreateConversation(session?.user.id, targetId).then((chat) => {
       dispatch(
         setSelectedConversation({
           id: chat._id,

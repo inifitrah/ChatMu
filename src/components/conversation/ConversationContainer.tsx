@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getConversation, saveNewMessage } from "@/app/actions/chatActions";
+import {
+  getConversation,
+  saveNewMessage,
+} from "@/app/actions/conversationActions";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
 import { useSocketContext } from "@/contexts/SocketContext";
