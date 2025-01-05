@@ -6,15 +6,14 @@ import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationContainer from "@/components/conversation/ConversationContainer";
-import { useSelector } from "react-redux";
+import { useAppSelector } from "@/hooks/use-dispatch-selector";
+import { useEffect } from "react";
 
 export default function Home() {
-  const { isConnected } = useSocketContext();
-
-  const selectedConversation = useSelector(
+  const { connected } = useSocketContext();
+  const selectedConversation = useAppSelector(
     (state) => state.conversation.selectedConversation
   );
-
   const { toast } = useToast();
   const { data: session } = useSession({
     required: true,
@@ -30,7 +29,7 @@ export default function Home() {
     <>
       <Header />
       <main className="">
-        <p>Socket: {isConnected ? "Connected" : "Disconnected"}</p>
+        <p>Socket: {connected ? "Connected" : "Disconnected"}</p>
         <ConversationList />
         {selectedConversation.id && <ConversationContainer />}
       </main>

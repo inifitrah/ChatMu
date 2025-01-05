@@ -23,38 +23,39 @@ app.prepare().then(() => {
 
   const io = new Server(httpServer);
 
-  let onlineUsers = [];
+  let onlineUsers = []; // [{ userId: "123", socketId: "123", username: "user1" }]
 
   io.on("connection", (socket) => {
     console.log(">>SOCKET: CONNECTED ", socket.id);
-
     const { id, username } = socket.handshake.query;
-
     if (!onlineUsers.some((user) => user.username === username)) {
       onlineUsers.push({
-        id,
+        userId: id,
         username,
         socketId: socket.id,
       });
       console.log(">>SOCKET: new user is here!", onlineUsers);
     }
 
-    io.emit("getOnlineUsers", onlineUsers);
+    io.emit("get_online_users", onlineUsers);
 
-    socket.on("message", ({ chatId, sender, recipient, content, type }) => {
+    socket.on("send_message", (data) => {
+      console.log(">>SOCKET: send_message", data);
       const receivedUser = onlineUsers.find(
-        (user) => user.username === recipient.username
+        (user) => user.userId === data.recipient.id
+      );
+      console.log(
+        ">>SOCKET: received",
+        receivedUser ? receivedUser : "Offline"
       );
       if (receivedUser) {
-        socket
-          .to(receivedUser.socketId)
-          .emit("receiveMessage", { content, type });
+        socket.to(receivedUser.socketId).emit("send_message", data);
       }
     });
 
     socket.on("disconnect", () => {
       onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
-      io.emit("getOnlineUsers", onlineUsers);
+      io.emit("get_online_users", onlineUsers);
       console.log(">>SOCKET: DISCONNECTED", socket.id);
     });
   });

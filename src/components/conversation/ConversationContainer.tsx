@@ -17,7 +17,7 @@ interface Message {
 }
 
 interface IReceiveMessage {
-  chatId: string;
+  conversationId: string;
   sender: { id: string; username: string };
   recipient: { id: string; username: string };
   content: string;
@@ -32,7 +32,7 @@ interface IConversation {
 }
 
 const ConversationContainer = () => {
-  const { socket, isConnected } = useSocketContext();
+  const { socket, listenSendMessage } = useSocketContext();
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState<IConversation>();
@@ -40,6 +40,7 @@ const ConversationContainer = () => {
     (state) => state.conversation.selectedConversation
   );
   const dispatch = useAppDispatch();
+  const { sendMessage } = useSocketContext();
   const { toast } = useToast();
 
   const handleSendMessage = (newMessage: string) => {
@@ -47,8 +48,8 @@ const ConversationContainer = () => {
       ...messages,
       { content: newMessage, isCurrentUser: true, type: "text" },
     ]);
-    socket?.emit("message", {
-      chatId: selectedConversation.id,
+    sendMessage({
+      conversationId: selectedConversation.id,
       sender: {
         id: session?.user.id,
         username: session?.user.username,
@@ -60,7 +61,7 @@ const ConversationContainer = () => {
       content: newMessage,
       type: "text",
     });
-    if (selectedConversation.id && session?.user.id) {
+    if (selectedConversation.id && session?.user.id && newMessage) {
       saveNewMessage(selectedConversation.id, session?.user.id, newMessage);
     }
   };
@@ -81,20 +82,26 @@ const ConversationContainer = () => {
   }, [fetchConversation]);
 
   useEffect(() => {
-    if (isConnected) {
-      socket?.on("receiveMessage", (receiveMessage: IReceiveMessage) => {
-        const { content, type } = receiveMessage;
-        setMessages([
-          ...messages,
-          {
-            content,
-            isCurrentUser: false,
-            type: type as "text",
-          },
-        ]);
+    if (socket) {
+      listenSendMessage((data: IReceiveMessage) => {
+        const { conversationId, sender, recipient, content, type } = data;
+        if (recipient.id === session?.user.id) {
+          setMessages([
+            ...messages,
+            {
+              content,
+              isCurrentUser: false,
+              type: type as "text",
+            },
+          ]);
+          toast({
+            title: `New message from ${sender.username}`,
+            description: content,
+          });
+        }
       });
     }
-  }, [messages, socket, isConnected, session]);
+  }, [messages, socket, session]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white">
