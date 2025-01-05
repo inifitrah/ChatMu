@@ -7,6 +7,8 @@ import { useSocketContext } from "@/contexts/SocketContext";
 import ChatHeader from "./ChatHeader";
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
+import { useDispatch, useSelector } from "react-redux";
+import { clearSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
 
 interface Message {
   content: string;
@@ -29,18 +31,15 @@ interface IConversation {
   messages?: Message[];
 }
 
-const ChatContainer = ({
-  selectedConversationId,
-  setSelectedConversationId,
-}: {
-  selectedConversationId: string | null;
-  setSelectedConversationId: (id: string | null) => void;
-}) => {
+const ChatContainer = () => {
   const { socket, isConnected } = useSocketContext();
   const { data: session } = useSession();
-  // const { id } = useParams<{ id: string }>();
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState<IConversation>();
+  const selectedConversation = useSelector(
+    (state) => state.conversation.selectedConversation
+  );
+  const dispatch = useDispatch();
   const { toast } = useToast();
 
   const handleSendMessage = (newMessage: string) => {
@@ -49,7 +48,7 @@ const ChatContainer = ({
       { content: newMessage, isCurrentUser: true, type: "text" },
     ]);
     socket?.emit("message", {
-      chatId: selectedConversationId,
+      chatId: selectedConversation.id,
       sender: {
         id: session?.user.id,
         username: session?.user.username,
@@ -61,21 +60,21 @@ const ChatContainer = ({
       content: newMessage,
       type: "text",
     });
-    if (selectedConversationId && session?.user.id) {
-      saveNewMessage(selectedConversationId, session?.user.id, newMessage);
+    if (selectedConversation.id && session?.user.id) {
+      saveNewMessage(selectedConversation.id, session?.user.id, newMessage);
     }
   };
 
   const fetchConversation = useCallback(async () => {
-    if (selectedConversationId && session?.user.id) {
+    if (selectedConversation.id && session?.user.id) {
       const conversation = await getConversation(
-        selectedConversationId,
+        selectedConversation.id,
         session?.user.id
       );
       setMessages([...conversation.messages]);
       setConversation(conversation);
     }
-  }, [selectedConversationId, session]);
+  }, [selectedConversation.id, session]);
 
   useEffect(() => {
     fetchConversation();
@@ -100,7 +99,7 @@ const ChatContainer = ({
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white">
       <ChatHeader
-        backButtonClick={() => setSelectedConversationId(null)}
+        backButtonClick={() => dispatch(clearSelectedConversation())}
         username={conversation?.username}
         profileImage={conversation?.profileImage}
         status="Online"

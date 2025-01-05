@@ -13,7 +13,8 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { searchChats } from "@/app/actions/chatActions";
 import { getOrCreateChat } from "@/app/actions/chatActions";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { setSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
 
 interface ChatSearchProps {
   setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,7 +22,7 @@ interface ChatSearchProps {
 
 const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
   const { data: session } = useSession();
-  const router = useRouter();
+  const dispatch = useDispatch();
   const [searchResult, setSearchResult] = useState([]);
   const handleSearch = useDebounce((query: string) => {
     if (query.trim() === "") {
@@ -35,9 +36,13 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
 
   const handleOpenChat = async (targetId: string) => {
     if (!session) return;
-    await getOrCreateChat(session?.user.id, targetId).then((chat) =>
-      router.push(`/chat/${chat._id}`)
-    );
+    await getOrCreateChat(session?.user.id, targetId).then((chat) => {
+      dispatch(
+        setSelectedConversation({
+          id: chat._id,
+        })
+      );
+    });
   };
 
   return (
