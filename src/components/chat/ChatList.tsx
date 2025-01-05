@@ -5,7 +5,11 @@ import { getChatsDetails, getOrCreateChat } from "@/app/actions/chatActions";
 import { useRouter } from "next/navigation";
 import ChatListItems from "./ChatListItems";
 
-const ChatList = () => {
+const ChatList = ({
+  onSelectConversation,
+}: {
+  onSelectConversation: (id: string) => void;
+}) => {
   const [chats, setChats] = useState([]);
   const { data: session } = useSession();
   const router = useRouter();
@@ -23,7 +27,7 @@ const ChatList = () => {
   const handleOpenChat = async (targetId: string) => {
     if (!session) return;
     await getOrCreateChat(session?.user.id, targetId).then((chat) =>
-      router.push(`/chat/${chat._id}`)
+      onSelectConversation(chat._id)
     );
   };
 
