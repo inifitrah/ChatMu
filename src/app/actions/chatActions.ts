@@ -1,12 +1,12 @@
 "use server";
 
 import { getUserById, searchUsersByUsername } from "@/data-access/user";
-import { Chat, Message } from "@/lib/db/models/chat";
+import { Conversation, Message } from "@/lib/db/models/conversation";
 
 export const searchChats = async (username: string, currentUserId: string) => {
   const users = await searchUsersByUsername(username, ["username", "image"]);
 
-  const chats = await Chat.find({ participants: currentUserId })
+  const chats = await Conversation.find({ participants: currentUserId })
     .populate("participants", "username image")
     .populate("lastMessage", "text timestamp")
     .exec();
@@ -40,7 +40,7 @@ export const searchChats = async (username: string, currentUserId: string) => {
 };
 
 export const getChatsDetails = async (currentUserId: string) => {
-  const chats = await Chat.find({ participants: currentUserId })
+  const chats = await Conversation.find({ participants: currentUserId })
     .populate("participants", "username image")
     .populate("lastMessage", "text timestamp")
     .exec();
@@ -78,7 +78,7 @@ export const getConversation = async (
   chatId: string,
   currentUserId: string
 ) => {
-  const chat = await Chat.findOne({ _id: chatId })
+  const chat = await Conversation.findOne({ _id: chatId })
     .populate("participants", "username image")
     .exec();
 
@@ -107,9 +107,11 @@ export const getConversation = async (
 
 export const getOrCreateChat = async (userId1: string, userId2: string) => {
   console.log({ userId1, userId2 });
-  let chat = await Chat.findOne({ participants: { $all: [userId1, userId2] } });
+  let chat = await Conversation.findOne({
+    participants: { $all: [userId1, userId2] },
+  });
   if (!chat) {
-    chat = new Chat({ participants: [userId1, userId2] });
+    chat = new Conversation({ participants: [userId1, userId2] });
     await chat.save();
   }
   // console.log({ chat });
@@ -122,7 +124,7 @@ export const saveNewMessage = async (
   content: string
 ) => {
   const newMessage = new Message({ chatId, sender: senderId, content });
-  await Chat.updateOne(
+  await Conversation.updateOne(
     { _id: chatId },
     { lastMessage: newMessage._id },
     { new: true }

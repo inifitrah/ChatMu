@@ -1,11 +1,11 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-interface IChat extends Document {
+interface IConversation extends Document {
   participants: mongoose.Schema.Types.ObjectId[];
   lastMessage: mongoose.Schema.Types.ObjectId;
   createdAt: Date;
 }
-const ChatSchema = new Schema<IChat>({
+const ConversationSchema = new Schema<IChat>({
   participants: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -23,8 +23,9 @@ const ChatSchema = new Schema<IChat>({
   },
 });
 
-export const Chat =
-  mongoose.models.Chat || mongoose.model<IChat>("Chat", ChatSchema);
+export const Conversation =
+  mongoose.models.Conversation ||
+  mongoose.model<IConversation>("Conversation", ConversationSchema);
 
 interface IMessage extends Document {
   chatId: mongoose.Schema.Types.ObjectId;
