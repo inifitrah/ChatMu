@@ -1,18 +1,18 @@
 import React from "react";
 import BackButton from "@/components/BackButton";
-import ChatProfile from "@/components/chat/ChatProfile";
-import ChatMenu from "@/components/chat/ChatMenu";
+import ConversationProfile from "@/components/conversation/ConversationProfile";
+import ConversationMenu from "@/components/conversation/ConversationMenu";
 import { Button } from "../ui/button";
 import { ArrowLeft } from "lucide-react";
 
-interface ChatHeaderProps {
+interface ConversationHeaderProps {
   profileImage?: string;
   status?: string;
   username?: string;
   backButtonClick: () => void;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({
+const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   profileImage,
   status,
   username,
@@ -29,15 +29,15 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         >
           <ArrowLeft size={30} />
         </Button>
-        <ChatProfile src={profileImage} />
+        <ConversationProfile src={profileImage} />
         <div>
           <h1 className="text-xl font-bold">{username}</h1>
           <p className="text-sm ">{status}</p>
         </div>
       </div>
-      <ChatMenu />
+      <ConversationMenu />
     </header>
   );
 };
 
-export default ChatHeader;
+export default ConversationHeader;

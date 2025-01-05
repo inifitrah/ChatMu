@@ -6,7 +6,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import ChatCard from "@/components/chat/ChatCard";
+import ConversationCard from "@/components/conversation/ConversationCard";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -16,11 +16,13 @@ import { useSession } from "next-auth/react";
 import { useDispatch } from "react-redux";
 import { setSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
 
-interface ChatSearchProps {
+interface ConversationSearch {
   setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
+const ConversationSearch: React.FC<ConversationSearch> = ({
+  setIsCommandOpen,
+}) => {
   const { data: session } = useSession();
   const dispatch = useDispatch();
   const [searchResult, setSearchResult] = useState([]);
@@ -65,7 +67,7 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
         <CommandEmpty>No results found.</CommandEmpty>
         {searchResult.map((target: any, index) => (
           <CommandItem key={index} value={target.username}>
-            <ChatCard
+            <ConversationCard
               targetId={target.targetId}
               onOpenChat={handleOpenChat}
               profileImage={target.profileImage}
@@ -81,4 +83,4 @@ const ChatSearch: React.FC<ChatSearchProps> = ({ setIsCommandOpen }) => {
   );
 };
 
-export default ChatSearch;
+export default ConversationSearch;

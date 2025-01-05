@@ -2,11 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { getChatsDetails, getOrCreateChat } from "@/app/actions/chatActions";
-import ChatListItems from "./ChatListItems";
+
 import { useDispatch } from "react-redux";
 import { setSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
+import ConversationListItems from "./ConversationListItems";
 
-const ChatList = () => {
+const ConversationList = () => {
   const [chats, setChats] = useState([]);
   const { data: session } = useSession();
   const dispatch = useDispatch();
@@ -28,7 +29,7 @@ const ChatList = () => {
     );
   };
 
-  return <ChatListItems chats={chats} onOpenChat={handleOpenChat} />;
+  return <ConversationListItems chats={chats} onOpenChat={handleOpenChat} />;
 };
 
-export default ChatList;
+export default ConversationList;

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import ChatMessage from "./ChatMessage";
+import Message from "./Message";
 
 interface Message {
   content: string;
@@ -7,11 +7,11 @@ interface Message {
   type: "text" | "server";
 }
 
-interface ChatWindowProps {
+interface MessageContainerProps {
   messages?: Message[];
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
+const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (ref.current) {
@@ -27,7 +27,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
             index > 0 &&
             messages[index - 1].isCurrentUser === message.isCurrentUser;
           return (
-            <ChatMessage
+            <Message
               className={isSameSenderAsPrevious ? "mt-1" : "mt-6"}
               key={index}
               isCurrentUser={message.isCurrentUser}
@@ -42,4 +42,4 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages }) => {
   );
 };
 
-export default ChatWindow;
+export default MessageContainer;

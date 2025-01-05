@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { EllipsisVertical, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import ChatSearch from "@/components/chat/ChatSearch";
+import ConversationSearch from "@/components/conversation/ConversationSearch";
 import { useToast } from "@/hooks/use-toast";
 import NavigationMenu from "@/components/header/NavigationMenu";
 
@@ -23,7 +23,9 @@ const Header = () => {
           >
             <Search size={27} />
           </Button>
-          {isCommandOpen && <ChatSearch setIsCommandOpen={setIsCommandOpen} />}
+          {isCommandOpen && (
+            <ConversationSearch setIsCommandOpen={setIsCommandOpen} />
+          )}
           <NavigationMenu />
         </div>
       </div>

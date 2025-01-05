@@ -1,11 +1,11 @@
 "use client";
 import Header from "@/components/header/Header";
-import ChatList from "@/components/chat/ChatList";
+import ConversationList from "@/components/conversation/ConversationList";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { useSocketContext } from "@/contexts/SocketContext";
-import ChatContainer from "@/components/chat/ChatContainer";
+import ConversationContainer from "@/components/conversation/ConversationContainer";
 import { useSelector } from "react-redux";
 
 export default function Home() {
@@ -31,8 +31,8 @@ export default function Home() {
       <Header />
       <main className="">
         <p>Socket: {isConnected ? "Connected" : "Disconnected"}</p>
-        <ChatList />
-        {selectedConversation.id && <ChatContainer />}
+        <ConversationList />
+        {selectedConversation.id && <ConversationContainer />}
       </main>
     </>
   );

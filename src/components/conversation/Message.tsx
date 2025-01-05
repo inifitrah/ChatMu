@@ -1,13 +1,13 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-interface ChatMessageProps {
+interface MessageProps {
   isCurrentUser?: boolean;
   message: string;
   className?: string;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({
+const Message: React.FC<MessageProps> = ({
   isCurrentUser,
   message,
   className,
@@ -32,4 +32,4 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   );
 };
 
-export default ChatMessage;
+export default Message;

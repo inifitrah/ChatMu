@@ -3,11 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SendHorizontal } from "lucide-react";
 
-interface ChatInputProps {
+interface MessageInputProps {
   onSendMessage: (newMessage: string) => void;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,4 +48,4 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
   );
 };
 
-export default ChatInput;
+export default MessageInput;

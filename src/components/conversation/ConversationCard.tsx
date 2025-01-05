@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/card";
 
 import { Badge } from "@/components/ui/badge";
-import ChatProfile from "./ChatProfile";
+import ConversationProfile from "./ConversationProfile";
 import { Check, CheckCheck } from "lucide-react";
 
-interface ChatCardProps {
+interface ConversationCardProps {
   profileImage?: string;
   username: string;
   lastMessageTime: string;
@@ -23,7 +23,7 @@ interface ChatCardProps {
   onOpenChat: (targetId: string) => void;
 }
 
-const ChatCard: React.FC<ChatCardProps> = ({
+const ConversationCard: React.FC<ConversationCardProps> = ({
   profileImage,
   username,
   lastMessageTime,
@@ -38,7 +38,7 @@ const ChatCard: React.FC<ChatCardProps> = ({
       onClick={() => onOpenChat(targetId)}
       className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2"
     >
-      <ChatProfile src={profileImage} />
+      <ConversationProfile src={profileImage} />
       <div className="flex flex-col basis-auto flex-grow border-t-gray-300 py-3 shadow-none border-t-2 min-w-0 w-full mr-2">
         <div className="flex items-center">
           <CardHeader className="flex-grow items-start m-0 p-0">
@@ -76,4 +76,4 @@ const ChatCard: React.FC<ChatCardProps> = ({
   );
 };
 
-export default ChatCard;
+export default ConversationCard;

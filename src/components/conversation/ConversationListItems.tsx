@@ -1,5 +1,5 @@
 import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
-import ChatCard from "@/components/chat/ChatCard";
+import ConversationCard from "@/components/conversation/ConversationCard";
 
 interface IChat {
   targetId: string;
@@ -11,16 +11,19 @@ interface IChat {
   status: "sent" | "delivered" | "read";
 }
 
-interface ChatListItemsProps {
+interface ConversationListItemsProps {
   chats: IChat[];
   onOpenChat: (targetId: string) => void;
 }
 
-const ChatListItems: React.FC<ChatListItemsProps> = ({ chats, onOpenChat }) => {
+const ConversationListItems: React.FC<ConversationListItemsProps> = ({
+  chats,
+  onOpenChat,
+}) => {
   return (
     <>
       {chats.map((chat: IChat) => (
-        <ChatCard
+        <ConversationCard
           status={chat.status}
           onOpenChat={onOpenChat}
           key={chat.targetId}
@@ -36,4 +39,4 @@ const ChatListItems: React.FC<ChatListItemsProps> = ({ chats, onOpenChat }) => {
   );
 };
 
-export default ChatListItems;
+export default ConversationListItems;

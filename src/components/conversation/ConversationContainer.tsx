@@ -4,9 +4,9 @@ import { getConversation, saveNewMessage } from "@/app/actions/chatActions";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
 import { useSocketContext } from "@/contexts/SocketContext";
-import ChatHeader from "./ChatHeader";
-import ChatWindow from "./ChatWindow";
-import ChatInput from "./ChatInput";
+import ConversationHeader from "./ConversationHeader";
+import MessageContainer from "./MessageContainer";
+import MessageInput from "./MessageInput";
 import { useDispatch, useSelector } from "react-redux";
 import { clearSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
 
@@ -31,7 +31,7 @@ interface IConversation {
   messages?: Message[];
 }
 
-const ChatContainer = () => {
+const ConversationContainer = () => {
   const { socket, isConnected } = useSocketContext();
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -98,16 +98,16 @@ const ChatContainer = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white">
-      <ChatHeader
+      <ConversationHeader
         backButtonClick={() => dispatch(clearSelectedConversation())}
         username={conversation?.username}
         profileImage={conversation?.profileImage}
         status="Online"
       />
-      <ChatWindow messages={messages} />
-      <ChatInput onSendMessage={handleSendMessage} />
+      <MessageContainer messages={messages} />
+      <MessageInput onSendMessage={handleSendMessage} />
     </div>
   );
 };
 
-export default ChatContainer;
+export default ConversationContainer;

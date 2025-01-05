@@ -5,9 +5,9 @@ import { getConversation, saveNewMessage } from "@/app/actions/chatActions";
 import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
 import { useSocketContext } from "@/contexts/SocketContext";
-import ChatHeader from "@/components/chat/ChatHeader";
-import ChatWindow from "@/components/chat/ChatWindow";
-import ChatInput from "@/components/chat/ChatInput";
+import ConversationHeader from "@/components/conversation/ConversationHeader";
+import MessageContainer from "@/components/conversation/MessageContainer";
+import MessageInput from "@/components/conversation/MessageInput";
 interface Message {
   content: string;
   type: "text" | "server";
@@ -87,13 +87,13 @@ const Page = () => {
 
   return (
     <>
-      <ChatHeader
+      <ConversationHeader
         username={conversation?.username}
         profileImage={conversation?.profileImage}
         status="Online"
       />
-      <ChatWindow messages={messages} />
-      <ChatInput onSendMessage={handleSendMessage} />
+      <MessageContainer messages={messages} />
+      <MessageInput onSendMessage={handleSendMessage} />
     </>
   );
 };

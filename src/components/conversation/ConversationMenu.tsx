@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical } from "lucide-react";
 
-const ChatMenu = () => {
+const ConversationMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center ">
@@ -21,4 +21,4 @@ const ChatMenu = () => {
   );
 };
 
-export default ChatMenu;
+export default ConversationMenu;
