@@ -13,8 +13,9 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { searchChats } from "@/app/actions/chatActions";
 import { getOrCreateChat } from "@/app/actions/chatActions";
 import { useSession } from "next-auth/react";
-import { useDispatch } from "react-redux";
+
 import { setSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
+import { useAppDispatch } from "@/hooks/use-dispatch-selector";
 
 interface ConversationSearch {
   setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +25,7 @@ const ConversationSearch: React.FC<ConversationSearch> = ({
   setIsCommandOpen,
 }) => {
   const { data: session } = useSession();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [searchResult, setSearchResult] = useState([]);
   const handleSearch = useDebounce((query: string) => {
     if (query.trim() === "") {

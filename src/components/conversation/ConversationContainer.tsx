@@ -7,8 +7,8 @@ import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationHeader from "./ConversationHeader";
 import MessageContainer from "./MessageContainer";
 import MessageInput from "./MessageInput";
-import { useDispatch, useSelector } from "react-redux";
 import { clearSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 
 interface Message {
   content: string;
@@ -36,10 +36,10 @@ const ConversationContainer = () => {
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState<IConversation>();
-  const selectedConversation = useSelector(
+  const selectedConversation = useAppSelector(
     (state) => state.conversation.selectedConversation
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { toast } = useToast();
 
   const handleSendMessage = (newMessage: string) => {
