@@ -18,9 +18,9 @@ interface ConversationCardProps {
   lastMessageTime: string;
   lastMessageContent?: string;
   unreadMessageCount?: number;
-  targetId: string;
+  otherUserId: string;
   status: "sent" | "delivered" | "read";
-  onOpenChat: (targetId: string) => void;
+  onOpenChat: (otherUserId: string) => void;
 }
 
 const ConversationCard: React.FC<ConversationCardProps> = ({
@@ -29,13 +29,13 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
   lastMessageTime,
   lastMessageContent,
   unreadMessageCount,
-  targetId,
+  otherUserId,
   status,
   onOpenChat,
 }) => {
   return (
     <Card
-      onClick={() => onOpenChat(targetId)}
+      onClick={() => onOpenChat(otherUserId)}
       className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2"
     >
       <ConversationProfile src={profileImage} />

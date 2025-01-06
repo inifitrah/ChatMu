@@ -2,37 +2,52 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
-  getConversationsDetails,
+  getConversations,
   getOrCreateConversation,
 } from "@/app/actions/conversationActions";
 
-import { setSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
+import {
+  setConversations,
+  setSelectedConversation,
+} from "@/redux-toolkit/features/conversations/conversationSlice";
 import ConversationListItems from "./ConversationListItems";
-import { useAppDispatch } from "@/hooks/use-dispatch-selector";
+import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 
 const ConversationList = () => {
   const [chats, setChats] = useState([]);
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
+  const conversations = useAppSelector(
+    (state) => state.conversation.conversations
+  );
   useEffect(() => {
     if (session) {
-      getConversationsDetails(session?.user.id).then((chats) => {
-        const filteredChats = chats.filter(
-          (chat: any) => chat.lastMessageContent !== null
-        );
-        setChats(filteredChats);
+      getConversations(session?.user.id).then((data) => {
+        console.log(data);
+        dispatch(setConversations(data));
       });
     }
   }, [session]);
 
-  const handleOpenChat = async (targetId: string) => {
+  const handleOpenChat = async (otherUserId: string) => {
     if (!session) return;
-    await getOrCreateConversation(session?.user.id, targetId).then((chat) =>
-      dispatch(setSelectedConversation({ id: chat._id }))
-    );
+    await getOrCreateConversation(session?.user.id, otherUserId).then((c) => {
+      dispatch(
+        setSelectedConversation({
+          id: c._id,
+          username: c.user.username,
+          profileImage: c.user.image,
+        })
+      );
+    });
   };
 
-  return <ConversationListItems chats={chats} onOpenChat={handleOpenChat} />;
+  return (
+    <ConversationListItems
+      conversations={conversations}
+      onOpenChat={handleOpenChat}
+    />
+  );
 };
 
 export default ConversationList;

@@ -42,16 +42,28 @@ export const searchConversations = async (
   return JSON.parse(JSON.stringify(result));
 };
 
-export const getConversationsDetails = async (currentUserId: string) => {
-  const conversations = await Conversation.find({ participants: currentUserId })
+interface IConversation {
+  otherUser: string;
+  profileImage: string | null;
+  username: string;
+  lastMessageTime: Date | null;
+  lastMessageContent: string | null;
+  unreadMessageCount: number;
+  status: string;
+}
+
+export const getConversations = async (
+  userId: string
+): Promise<IConversation[]> => {
+  const conversations = await Conversation.find({ participants: userId })
     .populate("participants", "username image")
     .populate("lastMessage", "text timestamp")
     .exec();
 
   const result = await Promise.all(
     conversations.map(async (conversation) => {
-      const targetUser = conversation.participants.find(
-        (p: any) => p._id.toString() !== currentUserId
+      const otherUser = conversation.participants.find(
+        (p: any) => p._id.toString() !== userId
       );
 
       const lastMessage = conversation.lastMessage
@@ -59,14 +71,14 @@ export const getConversationsDetails = async (currentUserId: string) => {
         : null;
 
       return {
-        targetId: targetUser._id,
-        profileImage: targetUser.image || null,
-        username: targetUser.username,
+        otherUserId: otherUser._id,
+        profileImage: otherUser.image || null,
+        username: otherUser.username,
         lastMessageTime: conversation.lastMessage?.timestamp || null,
         lastMessageContent: lastMessage?.content || null,
         unreadMessageCount: await Message.countDocuments({
           conversationId: conversation._id,
-          sender: { $ne: currentUserId },
+          sender: { $ne: userId },
           status: { $ne: "read" },
         }),
         status: lastMessage?.status || "sent",
@@ -77,53 +89,58 @@ export const getConversationsDetails = async (currentUserId: string) => {
   return JSON.parse(JSON.stringify(result));
 };
 
-export const getConversation = async (
-  conversationId: string,
-  currentUserId: string
-) => {
-  const conversation = await Conversation.findOne({ _id: conversationId })
-    .populate("participants", "username image")
-    .exec();
+// export const getConversations = async (
+//   conversationId: string,
+//   currentUserId: string
+// ) => {
+//   const conversation = await Conversation.findOne({ _id: conversationId })
+//     .populate("participants", "username image")
+//     .exec();
 
-  const targetUser = currentUserId
-    ? conversation.participants.find(
-        (u: any) => u._id.toString() !== currentUserId
-      )
-    : null;
+//   const targetUser = currentUserId
+//     ? conversation.participants.find(
+//         (u: any) => u._id.toString() !== currentUserId
+//       )
+//     : null;
 
-  const messages = await Message.find({ conversationId });
+//   const messages = await Message.find({ conversationId });
 
-  const filterMessages = messages.map((message) => {
-    return {
-      content: message.content,
-      isCurrentUser: message.sender.toString() === currentUserId,
-    };
-  });
+//   const filterMessages = messages.map((message) => {
+//     return {
+//       content: message.content,
+//       isCurrentUser: message.sender.toString() === currentUserId,
+//     };
+//   });
 
-  const result = {
-    id: JSON.parse(JSON.stringify(targetUser._id)),
-    username: targetUser?.username,
-    profileImage: targetUser?.image || null,
-    messages: JSON.parse(JSON.stringify(filterMessages)),
-  };
+//   const result = {
+//     id: JSON.parse(JSON.stringify(targetUser._id)),
+//     username: targetUser?.username,
+//     profileImage: targetUser?.image || null,
+//     messages: JSON.parse(JSON.stringify(filterMessages)),
+//   };
 
-  return result;
-};
+//   return result;
+// };
 
 export const getOrCreateConversation = async (
-  userId1: string,
-  userId2: string
+  currentUserId: string,
+  otherUserId: string
 ) => {
-  console.log({ userId1, userId2 });
   let conversation = await Conversation.findOne({
-    participants: { $all: [userId1, userId2] },
-  });
+    participants: { $all: [currentUserId, otherUserId] },
+  }).populate("participants", "username image");
+
   if (!conversation) {
-    conversation = new Conversation({ participants: [userId1, userId2] });
+    conversation = new Conversation({
+      participants: [currentUserId, otherUserId],
+    });
     await conversation.save();
   }
-  // console.log({ conversation });
-  return JSON.parse(JSON.stringify(conversation));
+
+  const filter = conversation.participants.filter((p: any) => {
+    return p._id.toString() !== currentUserId;
+  });
+  return JSON.parse(JSON.stringify({ _id: conversation._id, user: filter[0] }));
 };
 
 export const saveNewMessage = async (

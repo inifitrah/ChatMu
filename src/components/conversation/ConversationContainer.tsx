@@ -27,21 +27,14 @@ interface IReceiveMessage {
   type: string;
 }
 
-interface IConversation {
-  id: "string";
-  username: string;
-  profileImage?: string;
-  messages?: Message[];
-}
-
 const ConversationContainer = () => {
   const { socket, listenSendMessage } = useSocketContext();
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
-  const [conversation, setConversation] = useState<IConversation>();
-  const selectedConversation = useAppSelector(
+  const conversation = useAppSelector(
     (state) => state.conversation.selectedConversation
   );
+
   const dispatch = useAppDispatch();
   const { sendMessage } = useSocketContext();
   const { toast } = useToast();
@@ -52,7 +45,7 @@ const ConversationContainer = () => {
       { content: newMessage, isCurrentUser: true, type: "text" },
     ]);
     sendMessage({
-      conversationId: selectedConversation.id,
+      conversationId: conversation.id,
       sender: {
         id: session?.user.id,
         username: session?.user.username,
@@ -64,25 +57,10 @@ const ConversationContainer = () => {
       content: newMessage,
       type: "text",
     });
-    if (selectedConversation.id && session?.user.id && newMessage) {
-      saveNewMessage(selectedConversation.id, session?.user.id, newMessage);
+    if (conversation.id && session?.user.id && newMessage) {
+      saveNewMessage(conversation.id, session?.user.id, newMessage);
     }
   };
-
-  const fetchConversation = useCallback(async () => {
-    if (selectedConversation.id && session?.user.id) {
-      const conversation = await getConversation(
-        selectedConversation.id,
-        session?.user.id
-      );
-      setMessages([...conversation.messages]);
-      setConversation(conversation);
-    }
-  }, [selectedConversation.id, session]);
-
-  useEffect(() => {
-    fetchConversation();
-  }, [fetchConversation]);
 
   useEffect(() => {
     if (socket) {

@@ -1,8 +1,8 @@
 import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
 import ConversationCard from "@/components/conversation/ConversationCard";
 
-interface IChat {
-  targetId: string;
+interface IConversation {
+  otherUserId: string;
   profileImage: string;
   username: string;
   lastMessageTime: Date;
@@ -12,27 +12,27 @@ interface IChat {
 }
 
 interface ConversationListItemsProps {
-  chats: IChat[];
-  onOpenChat: (targetId: string) => void;
+  conversations: IConversation[];
+  onOpenChat: (otherUserId: string) => void;
 }
 
 const ConversationListItems: React.FC<ConversationListItemsProps> = ({
-  chats,
+  conversations,
   onOpenChat,
 }) => {
   return (
     <>
-      {chats.map((chat: IChat) => (
+      {conversations.map((c: IConversation) => (
         <ConversationCard
-          status={chat.status}
+          status={c.status}
           onOpenChat={onOpenChat}
-          key={chat.targetId}
-          targetId={chat.targetId}
-          profileImage={chat.profileImage}
-          username={chat.username}
-          lastMessageTime={formatLastMessageTime(chat.lastMessageTime || "")}
-          lastMessageContent={chat.lastMessageContent || ""}
-          unreadMessageCount={chat.unreadMessageCount || 0}
+          key={c.otherUserId}
+          otherUserId={c.otherUserId}
+          profileImage={c.profileImage}
+          username={c.username}
+          lastMessageTime={formatLastMessageTime(c.lastMessageTime || "")}
+          lastMessageContent={c.lastMessageContent || ""}
+          unreadMessageCount={c.unreadMessageCount || 0}
         />
       ))}
     </>
