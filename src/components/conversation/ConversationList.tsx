@@ -26,6 +26,7 @@ const ConversationList = () => {
         console.log(data);
         dispatch(setConversations(data));
       });
+      console.log(conversations);
     }
   }, [session]);
 

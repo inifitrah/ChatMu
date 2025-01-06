@@ -11,7 +11,10 @@ import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationHeader from "./ConversationHeader";
 import MessageContainer from "./MessageContainer";
 import MessageInput from "./MessageInput";
-import { clearSelectedConversation } from "@/redux-toolkit/features/conversations/conversationSlice";
+import {
+  clearSelectedConversation,
+  setLastMessage,
+} from "@/redux-toolkit/features/conversations/conversationSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 
 interface Message {
@@ -90,6 +93,17 @@ const ConversationContainer = () => {
           });
         }
       });
+      console.log({ messages });
+      if (messages.length > 0) {
+        const lastMessage = messages[messages.length - 1].content;
+        dispatch(
+          setLastMessage({
+            conversationId: conversation.id,
+            lastMessageContent: lastMessage,
+            lastMessageTime: new Date().toString(),
+          })
+        );
+      }
     }
   }, [messages, socket, session]);
 

@@ -1,6 +1,26 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+interface IConversation {
+  id: string;
+  otherUserId: string;
+  profileImage: string;
+  username: string;
+  lastMessageTime: Date;
+  lastMessageContent: string;
+  unreadMessageCount: number;
+  status: "sent" | "delivered" | "read";
+}
+interface IState {
+  conversations: IConversation[];
+  selectedConversation: {
+    id: string;
+    userId: string;
+    username: string;
+    profileImage: string;
+  };
+}
+
+const initialState: IState = {
   conversations: [],
   selectedConversation: {
     id: "",
@@ -16,6 +36,16 @@ const conversationSlice = createSlice({
     setConversations(state, action) {
       state.conversations = action.payload;
     },
+    setLastMessage(state, action) {
+      const { conversationId, lastMessageContent, lastMessageTime } =
+        action.payload;
+      const conversationIndex = state.conversations.findIndex(
+        (conversation) => conversation.id === conversationId
+      );
+      state.conversations[conversationIndex].lastMessageContent =
+        lastMessageContent;
+      state.conversations[conversationIndex].lastMessageTime = lastMessageTime;
+    },
     setSelectedConversation(state, action) {
       state.selectedConversation = action.payload;
     },
@@ -29,6 +59,7 @@ export const {
   setSelectedConversation,
   clearSelectedConversation,
   setConversations,
+  setLastMessage,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;
