@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   getConversation,
+  getMessages,
   saveNewMessage,
 } from "@/app/actions/conversationActions";
 import { useToast } from "@/hooks/use-toast";
@@ -61,6 +62,14 @@ const ConversationContainer = () => {
       saveNewMessage(conversation.id, session?.user.id, newMessage);
     }
   };
+
+  useEffect(() => {
+    if (session && conversation?.id) {
+      getMessages(conversation.id, session?.user.id).then((data) => {
+        setMessages(data);
+      });
+    }
+  }, [conversation]);
 
   useEffect(() => {
     if (socket) {

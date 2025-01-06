@@ -89,38 +89,18 @@ export const getConversations = async (
   return JSON.parse(JSON.stringify(result));
 };
 
-// export const getConversations = async (
-//   conversationId: string,
-//   currentUserId: string
-// ) => {
-//   const conversation = await Conversation.findOne({ _id: conversationId })
-//     .populate("participants", "username image")
-//     .exec();
+export const getMessages = async (conversationId: string, userId: string) => {
+  const messages = await Message.find({ conversationId });
+  const result = messages.map((message) => {
+    return {
+      content: message.content,
+      isCurrentUser: message.sender.toString() === userId,
+      type: "text",
+    };
+  });
 
-//   const targetUser = currentUserId
-//     ? conversation.participants.find(
-//         (u: any) => u._id.toString() !== currentUserId
-//       )
-//     : null;
-
-//   const messages = await Message.find({ conversationId });
-
-//   const filterMessages = messages.map((message) => {
-//     return {
-//       content: message.content,
-//       isCurrentUser: message.sender.toString() === currentUserId,
-//     };
-//   });
-
-//   const result = {
-//     id: JSON.parse(JSON.stringify(targetUser._id)),
-//     username: targetUser?.username,
-//     profileImage: targetUser?.image || null,
-//     messages: JSON.parse(JSON.stringify(filterMessages)),
-//   };
-
-//   return result;
-// };
+  return JSON.parse(JSON.stringify(result));
+};
 
 export const getOrCreateConversation = async (
   currentUserId: string,
@@ -137,10 +117,13 @@ export const getOrCreateConversation = async (
     await conversation.save();
   }
 
-  const filter = conversation.participants.filter((p: any) => {
-    return p._id.toString() !== currentUserId;
-  });
-  return JSON.parse(JSON.stringify({ _id: conversation._id, user: filter[0] }));
+  const findOtherUser = conversation.participants.find(
+    (user: any) => user._id.toString() !== currentUserId
+  );
+
+  return JSON.parse(
+    JSON.stringify({ _id: conversation._id, user: findOtherUser })
+  );
 };
 
 export const saveNewMessage = async (

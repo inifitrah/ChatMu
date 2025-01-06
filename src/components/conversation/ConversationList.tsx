@@ -35,6 +35,7 @@ const ConversationList = () => {
       dispatch(
         setSelectedConversation({
           id: c._id,
+          userId: c.user._id,
           username: c.user.username,
           profileImage: c.user.image,
         })

@@ -4,6 +4,7 @@ const initialState = {
   conversations: [],
   selectedConversation: {
     id: "",
+    userId: "",
     username: "",
     profileImage: "",
   },
