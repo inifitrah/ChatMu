@@ -55,7 +55,7 @@ const ConversationContainer = () => {
         username: session?.user.username,
       },
       recipient: {
-        id: conversation?.id,
+        id: conversation?.userId,
         username: conversation?.username,
       },
       content: newMessage,
