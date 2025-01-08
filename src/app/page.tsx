@@ -6,14 +6,19 @@ import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationContainer from "@/components/conversation/ConversationContainer";
-import { useAppSelector } from "@/hooks/use-dispatch-selector";
+import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 import { useEffect } from "react";
+import { setLastMessage } from "@/redux-toolkit/features/conversations/conversationSlice";
 
 export default function Home() {
-  const { connected } = useSocketContext();
+  const { socket, connected, listenSendMessage } = useSocketContext();
   const selectedConversation = useAppSelector(
     (state) => state.conversation.selectedConversation
   );
+  const conversation = useAppSelector(
+    (state) => state.conversation.conversations
+  );
+  const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { data: session } = useSession({
     required: true,
@@ -24,6 +29,29 @@ export default function Home() {
       redirect("/auth");
     },
   });
+
+  useEffect(() => {
+    if (socket && conversation.length) {
+      listenSendMessage((data) => {
+        const { conversationId, content } = data;
+        conversation.forEach((c) => {
+          if (c.id === conversationId) {
+            dispatch(
+              setLastMessage({
+                conversationId: conversationId,
+                lastMessageContent: content,
+                lastMessageTime: new Date().toString(),
+              })
+            );
+          }
+        });
+        toast({
+          title: "new message",
+          description: content,
+        });
+      });
+    }
+  }, [listenSendMessage, conversation]);
 
   return (
     <>
