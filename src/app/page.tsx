@@ -33,7 +33,8 @@ export default function Home() {
   useEffect(() => {
     if (socket && conversation.length) {
       listenSendMessage((data) => {
-        const { conversationId, content } = data;
+        const { conversationId, content, sender } = data;
+        console.log({ data });
         conversation.forEach((c) => {
           if (c.id === conversationId) {
             dispatch(
@@ -46,7 +47,7 @@ export default function Home() {
           }
         });
         toast({
-          title: "new message",
+          title: sender.username,
           description: content,
         });
       });
