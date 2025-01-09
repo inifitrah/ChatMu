@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface IConversation {
+interface Conversation {
   id: string;
   otherUserId: string;
   profileImage: string;
@@ -10,23 +10,25 @@ interface IConversation {
   unreadMessageCount: number;
   status: "sent" | "delivered" | "read";
 }
-interface IState {
-  conversations: IConversation[];
-  selectedConversation: {
-    id: string;
-    userId: string;
-    username: string;
-    profileImage: string;
-  };
+
+interface SelectedConversation {
+  id: string | undefined;
+  userId: string | undefined;
+  username: string | undefined;
+  profileImage: string | undefined;
+}
+interface InitialState {
+  conversations: Conversation[];
+  selectedConversation: SelectedConversation;
 }
 
-const initialState: IState = {
+const initialState: InitialState = {
   conversations: [],
   selectedConversation: {
-    id: "",
-    userId: "",
-    username: "",
-    profileImage: "",
+    id: undefined,
+    userId: undefined,
+    username: undefined,
+    profileImage: undefined,
   },
 };
 const conversationSlice = createSlice({
