@@ -3,6 +3,7 @@ import { useParams } from "next/navigation";
 import {
   getConversation,
   getMessages,
+  markMessagesAsRead,
   saveNewMessage,
 } from "@/app/actions/conversationActions";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +14,7 @@ import MessageContainer from "./MessageContainer";
 import MessageInput from "./MessageInput";
 import {
   clearSelectedConversation,
+  setConversationStatus,
   setLastMessage,
 } from "@/redux-toolkit/features/conversations/conversationSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
@@ -32,7 +34,8 @@ interface IReceiveMessage {
 }
 
 const ConversationContainer = () => {
-  const { socket, listenSendMessage } = useSocketContext();
+  const { socket, markAsRead, listenMarkAsRead, listenSendMessage } =
+    useSocketContext();
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const conversation = useAppSelector(
@@ -61,6 +64,9 @@ const ConversationContainer = () => {
       content: newMessage,
       type: "text",
     });
+    dispatch(
+      setConversationStatus({ conversationId: conversation.id, status: "sent" })
+    );
     if (conversation.id && session?.user.id && newMessage) {
       saveNewMessage(conversation.id, session?.user.id, newMessage);
     }
@@ -73,6 +79,28 @@ const ConversationContainer = () => {
       });
     }
   }, [conversation]);
+
+  useEffect(() => {
+    if (session && conversation.id) {
+      if (
+        messages.length > 0 &&
+        messages[messages.length - 1].isCurrentUser === false
+      ) {
+        markAsRead({
+          conversationId: conversation.id,
+          userId: conversation.userId,
+        });
+      }
+
+      if (socket) {
+        listenMarkAsRead((conversationId: string) => {
+          console.log("Mark as read", conversationId);
+          dispatch(setConversationStatus({ conversationId, status: "read" }));
+          markMessagesAsRead(conversationId, session.user.id);
+        });
+      }
+    }
+  }, [conversation.id, session, messages, socket]);
 
   useEffect(() => {
     if (socket) {
@@ -92,18 +120,19 @@ const ConversationContainer = () => {
           ]);
         }
       });
+
       if (messages.length > 0) {
-        const lastMessage = messages[messages.length - 1].content;
+        const lastMessage = messages[messages.length - 1];
         dispatch(
           setLastMessage({
             conversationId: conversation.id,
-            lastMessageContent: lastMessage,
+            lastMessageContent: lastMessage.content,
             lastMessageTime: new Date().toString(),
           })
         );
       }
     }
-  }, [messages, socket, session]);
+  }, [messages, socket, session, conversation.id]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white">

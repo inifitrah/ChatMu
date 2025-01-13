@@ -23,10 +23,8 @@ const ConversationList = () => {
   useEffect(() => {
     if (session) {
       getConversations(session?.user.id).then((data) => {
-        console.log(data);
         dispatch(setConversations(data));
       });
-      console.log(conversations);
     }
   }, [session]);
 

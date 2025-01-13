@@ -140,3 +140,13 @@ export const saveNewMessage = async (
   );
   await newMessage.save();
 };
+
+export const markMessagesAsRead = async (
+  conversationId: string,
+  userId: string
+) => {
+  await Message.updateMany(
+    { conversationId, sender: userId },
+    { status: "read" }
+  );
+};

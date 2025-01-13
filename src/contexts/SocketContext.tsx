@@ -15,12 +15,16 @@ type ContextType = {
   connected: boolean;
   sendMessage: (data: any) => void;
   listenSendMessage: (callback: (data: any) => void) => void;
+  markAsRead: (data: any) => void;
+  listenMarkAsRead: (callback: (data: any) => void) => void;
 };
 
 const defaultValue: ContextType = {
   socket: undefined,
   sendMessage() {},
   listenSendMessage() {},
+  markAsRead() {},
+  listenMarkAsRead() {},
   connected: false,
 };
 
@@ -83,6 +87,16 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       listenSendMessage(callback) {
         if (socket) {
           socket.on("send_message", callback);
+        }
+      },
+      markAsRead(data) {
+        if (socket) {
+          socket.emit("mark_as_read", data);
+        }
+      },
+      listenMarkAsRead(callback) {
+        if (socket) {
+          socket.on("mark_as_read", callback);
         }
       },
     }),

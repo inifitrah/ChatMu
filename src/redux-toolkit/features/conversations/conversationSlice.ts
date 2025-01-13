@@ -38,6 +38,13 @@ const conversationSlice = createSlice({
     setConversations(state, action) {
       state.conversations = action.payload;
     },
+    setConversationStatus(state, action) {
+      const { conversationId, status } = action.payload;
+      const conversationIndex = state.conversations.findIndex(
+        (conversation) => conversation.id === conversationId
+      );
+      state.conversations[conversationIndex].status = status;
+    },
     setLastMessage(state, action) {
       const { conversationId, lastMessageContent, lastMessageTime } =
         action.payload;
@@ -62,6 +69,7 @@ export const {
   clearSelectedConversation,
   setConversations,
   setLastMessage,
+  setConversationStatus,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

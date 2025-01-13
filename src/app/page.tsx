@@ -34,7 +34,6 @@ export default function Home() {
     if (socket && conversation.length) {
       listenSendMessage((data) => {
         const { conversationId, content, sender } = data;
-        console.log({ data });
         conversation.forEach((c) => {
           if (c.id === conversationId) {
             dispatch(
