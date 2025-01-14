@@ -16,7 +16,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   await connectToMongoDB();
-
   return (
     <SessionWrapper>
       <SocketWrapper>

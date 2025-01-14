@@ -12,17 +12,15 @@ const MONGO_URI = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/${M
 
 export const connectToMongoDB = async (): Promise<Mongoose | void> => {
   try {
-    console.log("<MONGODB STATE: ", mongoose.connection.readyState, " >");
     if (mongoose.connection.readyState === 0) {
+      mongoose.connection.removeAllListeners();
       console.log("<Connecting...>");
       await mongoose.connect(MONGO_URI);
     } else {
       console.log("<USING EXISTING CONNECTION>");
     }
-    // console.log("FromMONGOOSE", mongoose.connection.getClient());
   } catch (error) {
     console.log("Error connecting to MongoDB", error);
-    // throw new Error(error.message);
   }
 };
 

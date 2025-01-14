@@ -4,7 +4,7 @@ import NextAuth, { getServerSession } from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { clientMongoose, connectToMongoDB } from "@/lib/db/mongodb";
+import { clientMongoose } from "@/lib/db/mongodb";
 import { LoginSchema } from "@/schemas/zod.schemas";
 import { compare } from "bcryptjs";
 import generateUniqueUsername from "@/utils/generateUniqueUsername";
@@ -28,7 +28,6 @@ export const authOptions: AuthOptions = {
         password: {},
       },
       async authorize(credentials, req) {
-        await connectToMongoDB();
         const validatedFields = LoginSchema.safeParse(credentials);
         if (!validatedFields.success) {
           throw new Error("Invalid Credentials");

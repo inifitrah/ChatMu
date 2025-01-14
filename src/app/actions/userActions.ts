@@ -4,7 +4,6 @@ import { SignupSchema } from "@/schemas/zod.schemas";
 import * as z from "zod";
 import bcrypt from "bcryptjs";
 import generateUniqueUsername from "@/utils/generateUniqueUsername";
-import { connectToMongoDB } from "@/lib/db/mongodb";
 import { generateVerificationToken } from "@/utils/generateVerificationToken";
 import { sendVerificationEmail } from "@/lib/resend/mail";
 import {
@@ -14,11 +13,9 @@ import {
 } from "@/data-access/user";
 import { revalidatePath } from "next/cache";
 import cloudinary from "@/lib/cloudinary";
-import { VerificationToken } from "@/lib/db/models/auth";
 
 export async function createUser(values: z.infer<typeof SignupSchema>) {
   try {
-    await connectToMongoDB();
     const validatedFields = SignupSchema.safeParse(values);
 
     if (!validatedFields.success) {
@@ -79,7 +76,6 @@ export async function updateProfile({
   email: string;
   username: string;
 }) {
-  await connectToMongoDB();
   try {
     const update = await updateUser(
       { email },
@@ -107,7 +103,6 @@ export async function updateProfilePicture({
   formData,
   userId,
 }: UpdateProfilePicture) {
-  await connectToMongoDB();
   try {
     const file = formData.get("file");
 
