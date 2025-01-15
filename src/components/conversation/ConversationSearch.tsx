@@ -43,6 +43,9 @@ const ConversationSearch: React.FC<ConversationSearch> = ({
       dispatch(
         setSelectedConversation({
           id: chat._id,
+          userId: chat.user._id,
+          username: chat.user.username,
+          profileImage: chat.user.image,
         })
       );
     });
@@ -69,6 +72,7 @@ const ConversationSearch: React.FC<ConversationSearch> = ({
         {searchResult.map((target: any, index) => (
           <CommandItem key={index} value={target.username}>
             <ConversationCard
+              status="sent"
               otherUserId={target.targetId}
               onOpenChat={handleOpenChat}
               profileImage={target.profileImage}

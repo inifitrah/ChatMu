@@ -10,7 +10,6 @@ import { compare } from "bcryptjs";
 import generateUniqueUsername from "@/utils/generateUniqueUsername";
 import { generateVerificationToken } from "@/utils/generateVerificationToken";
 import { sendVerificationEmail } from "@/lib/resend/mail";
-
 const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",

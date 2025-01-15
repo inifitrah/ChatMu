@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "TURBOPACK=1 NODE_ENV=development nodemon src/server",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node src/server",
     "lint": "next lint"
   },
   "dependencies": {

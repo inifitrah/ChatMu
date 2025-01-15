@@ -2,33 +2,26 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CircleUser, Pencil } from "lucide-react";
-import { z } from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateProfilePicture } from "@/app/actions/userActions";
 import { useFormStatus } from "react-dom";
 
-const EditProfilePicture = ({ user }) => {
+const EditProfilePicture = ({
+  profilePic,
+  userId,
+}: {
+  profilePic: string;
+  userId: string;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const status = useFormStatus();
@@ -43,7 +36,7 @@ const EditProfilePicture = ({ user }) => {
 
   const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: any) => {
     e.preventDefault();
     const file = e.target.files[0];
 
@@ -52,13 +45,15 @@ const EditProfilePicture = ({ user }) => {
       setFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFilePreview(reader.result);
+        if (typeof reader.result === "string") {
+          setFilePreview(reader.result);
+        }
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSaveChanges = async (e) => {
+  const handleSaveChanges = async (e: any) => {
     try {
       e.preventDefault();
 
@@ -73,7 +68,7 @@ const EditProfilePicture = ({ user }) => {
       const formData = new FormData();
       formData.append("file", file);
       setLoading(true);
-      const update = await updateProfilePicture({ formData, userId: user.id });
+      const update = await updateProfilePicture({ formData, userId });
       if (update?.success) {
         toast({
           description: update.message,
@@ -107,7 +102,7 @@ const EditProfilePicture = ({ user }) => {
         >
           <div className="bg-black/10 h-full w-auto px-7 flex  items-center rounded-2xl">
             <Avatar className="text-black bg-white h-24 w-24 ">
-              <AvatarImage src={filePreview ? filePreview : user.image} />
+              <AvatarImage src={filePreview ? filePreview : profilePic} />
               <AvatarFallback>
                 <CircleUser size={60} />
               </AvatarFallback>

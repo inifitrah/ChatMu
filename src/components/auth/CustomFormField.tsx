@@ -16,7 +16,7 @@ interface FormFieldProps {
   name: string;
   label: string;
   placeholder: string;
-  type?: string;
+  type: string;
   showPasswordToggle?: boolean;
 }
 const CustomFormField = ({

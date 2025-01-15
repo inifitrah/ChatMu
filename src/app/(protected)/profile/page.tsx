@@ -3,7 +3,7 @@ import EditProfile from "@/components/profile/EditProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, CircleUser, UserRound } from "lucide-react";
+import { ArrowLeft, CircleUser, Pencil, UserRound } from "lucide-react";
 import Link from "next/link";
 import EditProfilePicture from "@/components/profile/EditProfilePicture";
 import { useSession } from "next-auth/react";
@@ -29,7 +29,10 @@ const Profile = () => {
               <CircleUser size={60} />
             </AvatarFallback>
           </Avatar>
-          <EditProfilePicture user={session.user} />
+          <EditProfilePicture
+            profilePic={session.user.image}
+            userId={session.user.id}
+          />
         </div>
         <div className="text-center">
           <h1 className="font-semibold text-xl">{session.user.name}</h1>

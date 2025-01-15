@@ -1,7 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import {
-  getConversation,
   getMessages,
   markMessagesAsRead,
   saveNewMessage,
@@ -78,10 +76,10 @@ const ConversationContainer = () => {
         setMessages(data);
       });
     }
-  }, [conversation, session]);
+  }, [conversation]);
 
   useEffect(() => {
-    if (conversation.id && session) {
+    if (session && conversation.id) {
       if (
         messages.length > 0 &&
         messages[messages.length - 1].isCurrentUser === false
@@ -91,18 +89,16 @@ const ConversationContainer = () => {
           userId: conversation.userId,
         });
       }
-    }
-  }, [conversation, session, messages, markAsRead]);
 
-  useEffect(() => {
-    if (socket && session) {
-      listenMarkAsRead((conversationId: string) => {
-        console.log("Mark as read", conversationId);
-        dispatch(setConversationStatus({ conversationId, status: "read" }));
-        markMessagesAsRead(conversationId, session.user.id);
-      });
+      if (socket) {
+        listenMarkAsRead((conversationId: string) => {
+          console.log("Mark as read", conversationId);
+          dispatch(setConversationStatus({ conversationId, status: "read" }));
+          markMessagesAsRead(conversationId, session.user.id);
+        });
+      }
     }
-  }, [socket, listenMarkAsRead, dispatch, session]);
+  }, [conversation.id, session, messages, socket]);
 
   useEffect(() => {
     if (socket) {
@@ -122,21 +118,19 @@ const ConversationContainer = () => {
           ]);
         }
       });
-    }
-  }, [socket, session, conversation.id, listenSendMessage, messages]);
 
-  useEffect(() => {
-    if (messages.length > 0) {
-      const lastMessage = messages[messages.length - 1];
-      dispatch(
-        setLastMessage({
-          conversationId: conversation.id,
-          lastMessageContent: lastMessage.content,
-          lastMessageTime: new Date().toString(),
-        })
-      );
+      if (messages.length > 0) {
+        const lastMessage = messages[messages.length - 1];
+        dispatch(
+          setLastMessage({
+            conversationId: conversation.id,
+            lastMessageContent: lastMessage.content,
+            lastMessageTime: new Date().toString(),
+          })
+        );
+      }
     }
-  }, [messages, conversation.id, dispatch]);
+  }, [messages, socket, session, conversation.id]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white">

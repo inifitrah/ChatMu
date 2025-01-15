@@ -15,5 +15,5 @@ export const useAuthToast = () => {
       });
       redirect("/");
     }
-  }, [status, session, toast]);
+  }, [status, session]);
 };

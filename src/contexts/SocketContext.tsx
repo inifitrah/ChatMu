@@ -73,7 +73,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       }
       return;
     }
-  }, [session, socket, toast]);
+  }, [session]);
 
   const value: ContextType = useMemo(
     () => ({

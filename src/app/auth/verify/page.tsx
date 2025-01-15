@@ -1,16 +1,16 @@
 "use client";
 import { verifyEmail } from "@/app/actions/newVerificationActions";
 import { useSearchParams } from "next/navigation";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 
-const VerifyPage = () => {
+const VerifyToken = () => {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
   const params = useSearchParams();
   const token = params.get("token");
 
   const newVerifyEmail = useCallback(
-    (token: string) => {
+    (token: string | null) => {
       if (!token) return;
       if (success || error) return;
       verifyEmail(token)
@@ -29,14 +29,12 @@ const VerifyPage = () => {
           setError("Verification failed. Please try again.");
         });
     },
-    [success, error]
+    [token]
   );
 
   useEffect(() => {
-    if (token) {
-      newVerifyEmail(token);
-    }
-  }, [newVerifyEmail, token]);
+    newVerifyEmail(token);
+  }, []);
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -44,6 +42,14 @@ const VerifyPage = () => {
       {success && <h1>{success}</h1>}
       {!success && error && <h1 className="text-red-500">{error}</h1>}
     </div>
+  );
+};
+
+const VerifyPage = () => {
+  return (
+    <Suspense>
+      <VerifyToken />
+    </Suspense>
   );
 };
 

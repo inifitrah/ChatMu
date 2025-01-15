@@ -10,7 +10,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-const LogoutAlert = ({ children, onConfirm }) => {
+const LogoutAlert = ({
+  children,
+  onConfirm,
+}: {
+  children: React.ReactNode;
+  onConfirm: () => void;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <AlertDialog open={isOpen}>

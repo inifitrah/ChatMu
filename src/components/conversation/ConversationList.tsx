@@ -26,7 +26,7 @@ const ConversationList = () => {
         dispatch(setConversations(data));
       });
     }
-  }, [session, dispatch]);
+  }, [session]);
 
   const handleOpenChat = async (otherUserId: string) => {
     if (!session) return;
