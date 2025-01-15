@@ -59,7 +59,7 @@ export const useSocket = (): UseSocketReturn => {
       }
       return;
     }
-  }, [session]);
+  }, [session, socket, toast]);
 
   return { socket, isConnected, isOnline, onlineUsers };
 };

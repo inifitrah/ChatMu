@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from "react";
 import {
   Form,
   FormControl,
@@ -7,7 +7,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { Input } from "../ui/input";
+import { Eye, EyeOff } from "lucide-react";
 
 interface FormFieldProps {
   name: string;
@@ -22,7 +25,7 @@ const CustomFormField = ({
   placeholder,
   type = "text",
   showPasswordToggle = false,
-}) => {
+}: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm();
   return (
@@ -52,9 +55,9 @@ const CustomFormField = ({
           </FormControl>
           <FormMessage />
         </FormItem>
-        />
-  )
-}
+      )}
+    />
+  );
+};
 
-
-export default CustomFormField
+export default CustomFormField;

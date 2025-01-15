@@ -51,7 +51,7 @@ export default function Home() {
         });
       });
     }
-  }, [listenSendMessage, conversation]);
+  }, [listenSendMessage, conversation, dispatch, socket, toast]);
 
   return (
     <>

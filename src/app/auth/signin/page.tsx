@@ -69,7 +69,7 @@ const SignIn = () => {
       <DividerWithText text="or" />
       <GoogleSignInButton className="mb-8" />
       <p className="text-center">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link className="font-semibold" href={"/auth/signup"}>
           SignUp
         </Link>

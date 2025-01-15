@@ -9,6 +9,7 @@ const hostname = "localhost";
 const port = 3000;
 const expressApp = express();
 const app = next({ dev, hostname, port });
+
 const handler = app.getRequestHandler();
 
 app.prepare().then(() => {

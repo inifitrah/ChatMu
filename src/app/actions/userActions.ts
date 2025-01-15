@@ -59,7 +59,7 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
       message:
         "Sign up success. Please check your email to verify your account",
     };
-  } catch (e) {
+  } catch (e: any) {
     return {
       success: false,
       message: "Failed create dari server action",

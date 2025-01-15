@@ -69,7 +69,7 @@ const ConversationSearch: React.FC<ConversationSearch> = ({
         {searchResult.map((target: any, index) => (
           <CommandItem key={index} value={target.username}>
             <ConversationCard
-              targetId={target.targetId}
+              otherUserId={target.targetId}
               onOpenChat={handleOpenChat}
               profileImage={target.profileImage}
               username={target.username}

@@ -3,14 +3,14 @@ import EditProfile from "@/components/profile/EditProfile";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, CircleUser, Pencil, UserRound } from "lucide-react";
+import { ArrowLeft, CircleUser, UserRound } from "lucide-react";
 import Link from "next/link";
 import EditProfilePicture from "@/components/profile/EditProfilePicture";
 import { useSession } from "next-auth/react";
 import { useSocketContext } from "@/contexts/SocketContext";
 
 const Profile = () => {
-  const { isOnline } = useSocketContext();
+  const { connected } = useSocketContext();
   const { data: session } = useSession();
   if (!session) return <>Loading..</>;
 
@@ -33,7 +33,7 @@ const Profile = () => {
         </div>
         <div className="text-center">
           <h1 className="font-semibold text-xl">{session.user.name}</h1>
-          <p>{isOnline ? "online" : "offline"}</p>
+          <p>{connected ? "online" : "offline"}</p>
         </div>
         <div className="flex flex-col space-y-1 w-full mt-5">
           <div className="flex justify-between items-center ">

@@ -78,10 +78,10 @@ const ConversationContainer = () => {
         setMessages(data);
       });
     }
-  }, [conversation]);
+  }, [conversation, session]);
 
   useEffect(() => {
-    if (session && conversation.id) {
+    if (conversation.id && session) {
       if (
         messages.length > 0 &&
         messages[messages.length - 1].isCurrentUser === false
@@ -91,16 +91,18 @@ const ConversationContainer = () => {
           userId: conversation.userId,
         });
       }
-
-      if (socket) {
-        listenMarkAsRead((conversationId: string) => {
-          console.log("Mark as read", conversationId);
-          dispatch(setConversationStatus({ conversationId, status: "read" }));
-          markMessagesAsRead(conversationId, session.user.id);
-        });
-      }
     }
-  }, [conversation.id, session, messages, socket]);
+  }, [conversation, session, messages, markAsRead]);
+
+  useEffect(() => {
+    if (socket && session) {
+      listenMarkAsRead((conversationId: string) => {
+        console.log("Mark as read", conversationId);
+        dispatch(setConversationStatus({ conversationId, status: "read" }));
+        markMessagesAsRead(conversationId, session.user.id);
+      });
+    }
+  }, [socket, listenMarkAsRead, dispatch, session]);
 
   useEffect(() => {
     if (socket) {
@@ -120,19 +122,21 @@ const ConversationContainer = () => {
           ]);
         }
       });
-
-      if (messages.length > 0) {
-        const lastMessage = messages[messages.length - 1];
-        dispatch(
-          setLastMessage({
-            conversationId: conversation.id,
-            lastMessageContent: lastMessage.content,
-            lastMessageTime: new Date().toString(),
-          })
-        );
-      }
     }
-  }, [messages, socket, session, conversation.id]);
+  }, [socket, session, conversation.id, listenSendMessage, messages]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      dispatch(
+        setLastMessage({
+          conversationId: conversation.id,
+          lastMessageContent: lastMessage.content,
+          lastMessageTime: new Date().toString(),
+        })
+      );
+    }
+  }, [messages, conversation.id, dispatch]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white">

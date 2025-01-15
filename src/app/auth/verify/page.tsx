@@ -29,12 +29,14 @@ const VerifyPage = () => {
           setError("Verification failed. Please try again.");
         });
     },
-    [token]
+    [success, error]
   );
 
   useEffect(() => {
-    newVerifyEmail(token);
-  }, []);
+    if (token) {
+      newVerifyEmail(token);
+    }
+  }, [newVerifyEmail, token]);
 
   return (
     <div className="flex justify-center items-center h-screen">

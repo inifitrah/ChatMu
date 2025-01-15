@@ -10,7 +10,8 @@ import { compare } from "bcryptjs";
 import generateUniqueUsername from "@/utils/generateUniqueUsername";
 import { generateVerificationToken } from "@/utils/generateVerificationToken";
 import { sendVerificationEmail } from "@/lib/resend/mail";
-export const authOptions: AuthOptions = {
+
+const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
   },
@@ -94,10 +95,6 @@ export const authOptions: AuthOptions = {
     error: "/auth/error",
   },
 };
-
-export function authServerSession() {
-  return getServerSession(authOptions);
-}
 
 const handler = NextAuth(authOptions);
 
