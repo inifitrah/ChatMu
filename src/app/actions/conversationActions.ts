@@ -2,11 +2,13 @@
 
 import { searchUsersByUsername } from "@/data-access/user";
 import { Conversation, Message } from "@/lib/db/models/conversation";
+import { connectToMongoDB } from "@/lib/db/mongodb";
 
 export const searchConversations = async (
   username: string,
   currentUserId: string
 ) => {
+  await connectToMongoDB();
   const users = await searchUsersByUsername(username, ["username", "image"]);
 
   const conversations = await Conversation.find({ participants: currentUserId })
@@ -55,6 +57,7 @@ interface IConversation {
 export const getConversations = async (
   userId: string
 ): Promise<IConversation[]> => {
+  await connectToMongoDB();
   const conversations = await Conversation.find({ participants: userId })
     .populate("participants", "username image")
     .populate("lastMessage", "text timestamp")
@@ -91,6 +94,7 @@ export const getConversations = async (
 };
 
 export const getMessages = async (conversationId: string, userId: string) => {
+  await connectToMongoDB();
   const messages = await Message.find({ conversationId });
   const result = messages.map((message) => {
     return {
@@ -107,6 +111,7 @@ export const getOrCreateConversation = async (
   currentUserId: string,
   otherUserId: string
 ) => {
+  await connectToMongoDB();
   let conversation = await Conversation.findOne({
     participants: { $all: [currentUserId, otherUserId] },
   }).populate("participants", "username image");
@@ -132,6 +137,7 @@ export const saveNewMessage = async (
   senderId: string,
   content: string
 ) => {
+  await connectToMongoDB();
   const newMessage = new Message({ conversationId, sender: senderId, content });
   await Conversation.updateOne(
     { _id: conversationId },

@@ -4,12 +4,13 @@ import NextAuth, { getServerSession } from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { clientMongoose } from "@/lib/db/mongodb";
+import { clientMongoose, connectToMongoDB } from "@/lib/db/mongodb";
 import { LoginSchema } from "@/schemas/zod.schemas";
 import { compare } from "bcryptjs";
 import generateUniqueUsername from "@/utils/generateUniqueUsername";
 import { generateVerificationToken } from "@/utils/generateVerificationToken";
 import { sendVerificationEmail } from "@/lib/resend/mail";
+import { getUserByEmail } from "@/data-access/user";
 const authOptions: AuthOptions = {
   session: {
     strategy: "jwt",
@@ -34,8 +35,8 @@ const authOptions: AuthOptions = {
         }
 
         const { email, password } = validatedFields.data;
-
-        const existingUser = await User.findOne({ email });
+        await connectToMongoDB();
+        const existingUser = await getUserByEmail(email);
         if (!existingUser || !existingUser.password) {
           throw new Error("User not found");
         }
@@ -61,6 +62,7 @@ const authOptions: AuthOptions = {
   events: {
     linkAccount: async ({ user }) => {
       // add emailVerified, username and role to user linked
+      await connectToMongoDB();
       await User.findOneAndUpdate(
         { email: user.email },
         {
@@ -76,6 +78,7 @@ const authOptions: AuthOptions = {
       return true;
     },
     async session({ session, token }) {
+      await connectToMongoDB();
       const user = await User.findOne({ email: token.email }).then(
         (user) => JSON.parse(JSON.stringify(user)) // remove new object_id in user id
       );

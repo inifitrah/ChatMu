@@ -13,8 +13,10 @@ import {
 } from "@/data-access/user";
 import { revalidatePath } from "next/cache";
 import cloudinary from "@/lib/cloudinary";
+import { connectToMongoDB } from "@/lib/db/mongodb";
 
 export async function createUser(values: z.infer<typeof SignupSchema>) {
+  await connectToMongoDB();
   try {
     const validatedFields = SignupSchema.safeParse(values);
 
@@ -76,6 +78,7 @@ export async function updateProfile({
   email: string;
   username: string;
 }) {
+  await connectToMongoDB();
   try {
     const update = await updateUser(
       { email },
@@ -103,6 +106,7 @@ export async function updateProfilePicture({
   formData,
   userId,
 }: UpdateProfilePicture) {
+  await connectToMongoDB();
   try {
     const file = formData.get("file") as File;
 

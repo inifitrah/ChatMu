@@ -4,8 +4,10 @@ import {
   deleteVerificationToken,
   getVerificationTokenByToken,
 } from "@/data-access/verificationToken";
+import { connectToMongoDB } from "@/lib/db/mongodb";
 
 export async function verifyEmail(token: string) {
+  await connectToMongoDB();
   const existingToken = await getVerificationTokenByToken(token);
   if (!existingToken) {
     return { success: false, message: "Invalid token" };
