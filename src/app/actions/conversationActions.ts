@@ -101,6 +101,7 @@ export const getMessages = async (conversationId: string, userId: string) => {
       content: message.content,
       isCurrentUser: message.sender.toString() === userId,
       type: "text",
+      status: message.status,
     };
   });
 

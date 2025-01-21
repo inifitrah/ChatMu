@@ -21,6 +21,7 @@ interface Message {
   content: string;
   type: "text" | "server";
   isCurrentUser: boolean;
+  status: "sent" | "delivered" | "read";
 }
 
 interface IReceiveMessage {
@@ -29,6 +30,7 @@ interface IReceiveMessage {
   recipient: { id: string; username: string };
   content: string;
   type: string;
+  status: "sent" | "delivered" | "read";
 }
 
 const ConversationContainer = () => {
@@ -47,7 +49,12 @@ const ConversationContainer = () => {
   const handleSendMessage = (newMessage: string) => {
     setMessages([
       ...messages,
-      { content: newMessage, isCurrentUser: true, type: "text" },
+      {
+        content: newMessage,
+        isCurrentUser: true,
+        type: "text",
+        status: "sent",
+      },
     ]);
     sendMessage({
       conversationId: conversation.id,
@@ -61,6 +68,7 @@ const ConversationContainer = () => {
       },
       content: newMessage,
       type: "text",
+      status: "sent",
     });
     dispatch(
       setConversationStatus({ conversationId: conversation.id, status: "sent" })
@@ -82,7 +90,8 @@ const ConversationContainer = () => {
     if (session && conversation.id) {
       if (
         messages.length > 0 &&
-        messages[messages.length - 1].isCurrentUser === false
+        messages[messages.length - 1].isCurrentUser === false &&
+        messages[messages.length - 1].status === "sent"
       ) {
         markAsRead({
           conversationId: conversation.id,
@@ -92,18 +101,24 @@ const ConversationContainer = () => {
 
       if (socket) {
         listenMarkAsRead((conversationId: string) => {
-          console.log("Mark as read", conversationId);
           dispatch(setConversationStatus({ conversationId, status: "read" }));
           markMessagesAsRead(conversationId, session.user.id);
         });
       }
+
+      return () => {
+        if (socket) {
+          socket.off("mark_as_read");
+        }
+      };
     }
   }, [conversation.id, session, messages, socket]);
 
   useEffect(() => {
     if (socket) {
       listenSendMessage((data: IReceiveMessage) => {
-        const { conversationId, sender, recipient, content, type } = data;
+        const { conversationId, sender, recipient, content, type, status } =
+          data;
         if (
           recipient.id === session?.user.id &&
           conversationId === conversation.id
@@ -114,6 +129,7 @@ const ConversationContainer = () => {
               content,
               isCurrentUser: false,
               type: type as "text",
+              status,
             },
           ]);
         }
