@@ -10,11 +10,21 @@ import {
   setConversations,
   setSelectedConversation,
 } from "@/redux-toolkit/features/conversations/conversationSlice";
-import ConversationListItems from "./ConversationListItems";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
+import ConversationCard from "@/components/conversation/ConversationCard";
+import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
+
+interface IConversation {
+  otherUserId: string;
+  profileImage: string;
+  username: string;
+  lastMessageTime: Date;
+  lastMessageContent: string;
+  unreadMessageCount: number;
+  status: "sent" | "delivered" | "read";
+}
 
 const ConversationList = () => {
-  const [chats, setChats] = useState([]);
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
   const conversations = useAppSelector(
@@ -43,10 +53,21 @@ const ConversationList = () => {
   };
 
   return (
-    <ConversationListItems
-      conversations={conversations}
-      onOpenChat={handleOpenChat}
-    />
+    <>
+      {conversations.map((c: IConversation) => (
+        <ConversationCard
+          status={c.status}
+          onOpenChat={handleOpenChat}
+          key={c.otherUserId}
+          otherUserId={c.otherUserId}
+          profileImage={c.profileImage}
+          username={c.username}
+          lastMessageTime={formatLastMessageTime(c.lastMessageTime || "")}
+          lastMessageContent={c.lastMessageContent || ""}
+          unreadMessageCount={c.unreadMessageCount || 0}
+        />
+      ))}
+    </>
   );
 };
 
