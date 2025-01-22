@@ -1,25 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-interface Conversation {
-  id: string;
-  otherUserId: string;
-  profileImage: string;
-  username: string;
-  lastMessageTime: Date;
-  lastMessageContent: string;
-  unreadMessageCount: number;
-  status: "sent" | "delivered" | "read";
-}
-
-interface SelectedConversation {
-  id: string | undefined;
-  userId: string | undefined;
-  username: string | undefined;
-  profileImage: string | undefined;
-}
+import { IConversation, ISelectedConversation } from "@/types/conversation";
 interface InitialState {
-  conversations: Conversation[];
-  selectedConversation: SelectedConversation;
+  conversations: IConversation[];
+  selectedConversation: ISelectedConversation;
 }
 
 const initialState: InitialState = {

@@ -14,16 +14,6 @@ import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 import ConversationCard from "@/components/conversation/ConversationCard";
 import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
 
-interface IConversation {
-  otherUserId: string;
-  profileImage: string;
-  username: string;
-  lastMessageTime: Date;
-  lastMessageContent: string;
-  unreadMessageCount: number;
-  status: "sent" | "delivered" | "read";
-}
-
 const ConversationList = () => {
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
@@ -40,31 +30,33 @@ const ConversationList = () => {
 
   const handleOpenChat = async (otherUserId: string) => {
     if (!session) return;
-    await getOrCreateConversation(session?.user.id, otherUserId).then((c) => {
-      dispatch(
-        setSelectedConversation({
-          id: c._id,
-          userId: c.user._id,
-          username: c.user.username,
-          profileImage: c.user.image,
-        })
-      );
-    });
+    await getOrCreateConversation(session?.user.id, otherUserId).then(
+      (conv) => {
+        dispatch(
+          setSelectedConversation({
+            id: conv._id,
+            userId: conv.user._id,
+            username: conv.user.username,
+            profileImage: conv.user.image,
+          })
+        );
+      }
+    );
   };
 
   return (
     <>
-      {conversations.map((c: IConversation) => (
+      {conversations.map((conv) => (
         <ConversationCard
-          status={c.status}
+          status={conv.status}
           onOpenChat={handleOpenChat}
-          key={c.otherUserId}
-          otherUserId={c.otherUserId}
-          profileImage={c.profileImage}
-          username={c.username}
-          lastMessageTime={formatLastMessageTime(c.lastMessageTime || "")}
-          lastMessageContent={c.lastMessageContent || ""}
-          unreadMessageCount={c.unreadMessageCount || 0}
+          key={conv.otherUserId}
+          otherUserId={conv.otherUserId}
+          profileImage={conv.profileImage}
+          username={conv.username}
+          lastMessageTime={formatLastMessageTime(conv.lastMessageTime || "")}
+          lastMessageContent={conv.lastMessageContent || ""}
+          unreadMessageCount={conv.unreadMessageCount || 0}
         />
       ))}
     </>
