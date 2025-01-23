@@ -48,15 +48,18 @@ const ConversationList = () => {
     <>
       {conversations.map((conv) => (
         <ConversationCard
-          status={conv.status}
           onOpenChat={handleOpenChat}
           key={conv.otherUserId}
           otherUserId={conv.otherUserId}
           profileImage={conv.profileImage}
           username={conv.username}
-          lastMessageTime={formatLastMessageTime(conv.lastMessageTime || "")}
-          lastMessageContent={conv.lastMessageContent || ""}
-          unreadMessageCount={conv.unreadMessageCount || 0}
+          lastMessageIsCurrentUser={conv.message.isCurrentUser}
+          lastMessageTime={formatLastMessageTime(
+            conv.message.lastMessageTime || ""
+          )}
+          lastMessageContent={conv.message.lastMessageContent || ""}
+          unreadMessageCount={conv.message.unreadMessageCount || 0}
+          status={conv.message.status}
         />
       ))}
     </>

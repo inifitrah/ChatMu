@@ -3,6 +3,7 @@
 import { searchUsersByUsername } from "@/data-access/user";
 import { Conversation, Message } from "@/lib/db/models/conversation";
 import { connectToMongoDB } from "@/lib/db/mongodb";
+import { IConversation } from "@/types/conversation";
 
 export const searchConversations = async (
   username: string,
@@ -44,16 +45,6 @@ export const searchConversations = async (
   return JSON.parse(JSON.stringify(result));
 };
 
-interface IConversation {
-  otherUser: string;
-  profileImage: string | null;
-  username: string;
-  lastMessageTime: Date | null;
-  lastMessageContent: string | null;
-  unreadMessageCount: number;
-  status: string;
-}
-
 export const getConversations = async (
   userId: string
 ): Promise<IConversation[]> => {
@@ -78,14 +69,17 @@ export const getConversations = async (
         otherUserId: otherUser._id,
         profileImage: otherUser.image || null,
         username: otherUser.username,
-        lastMessageTime: conversation.lastMessage?.timestamp || null,
-        lastMessageContent: lastMessage?.content || null,
-        unreadMessageCount: await Message.countDocuments({
-          conversationId: conversation._id,
-          sender: { $ne: userId },
-          status: { $ne: "read" },
-        }),
-        status: lastMessage?.status || "sent",
+        message: {
+          isCurrentUser: lastMessage?.sender.toString() === userId,
+          lastMessageTime: conversation.lastMessage?.timestamp || null,
+          lastMessageContent: lastMessage?.content || null,
+          unreadMessageCount: await Message.countDocuments({
+            conversationId: conversation._id,
+            sender: { $ne: userId },
+            status: { $ne: "read" },
+          }),
+          status: lastMessage?.status || "sent",
+        },
       };
     })
   );

@@ -18,6 +18,7 @@ interface ConversationCardProps {
   lastMessageTime: string;
   lastMessageContent?: string;
   unreadMessageCount?: number;
+  lastMessageIsCurrentUser: boolean;
   otherUserId: string;
   status: "sent" | "delivered" | "read";
   onOpenChat: (otherUserId: string) => void;
@@ -28,6 +29,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
   username,
   lastMessageTime,
   lastMessageContent,
+  lastMessageIsCurrentUser,
   unreadMessageCount,
   otherUserId,
   status,
@@ -67,9 +69,13 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
             {unreadMessageCount}
           </Badge>
 
-          {status === "sent" && <Check />}
-          {status === "delivered" && <CheckCheck />}
-          {status === "read" && <CheckCheck className="text-violet-500" />}
+          {lastMessageIsCurrentUser && (
+            <>
+              {status === "sent" && <Check />}
+              {status === "delivered" && <CheckCheck />}
+              {status === "read" && <CheckCheck className="text-violet-500" />}
+            </>
+          )}
         </CardContent>
       </div>
     </Card>

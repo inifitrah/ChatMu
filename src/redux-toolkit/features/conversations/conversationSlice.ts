@@ -26,7 +26,7 @@ const conversationSlice = createSlice({
       const conversationIndex = state.conversations.findIndex(
         (conversation) => conversation.id === conversationId
       );
-      state.conversations[conversationIndex].status = status;
+      state.conversations[conversationIndex].message.status = status;
     },
     setLastMessage(state, action) {
       const { conversationId, lastMessageContent, lastMessageTime } =
@@ -34,9 +34,10 @@ const conversationSlice = createSlice({
       const conversationIndex = state.conversations.findIndex(
         (conversation) => conversation.id === conversationId
       );
-      state.conversations[conversationIndex].lastMessageContent =
+      state.conversations[conversationIndex].message.lastMessageContent =
         lastMessageContent;
-      state.conversations[conversationIndex].lastMessageTime = lastMessageTime;
+      state.conversations[conversationIndex].message.lastMessageTime =
+        lastMessageTime;
     },
     setSelectedConversation(state, action) {
       state.selectedConversation = action.payload;
