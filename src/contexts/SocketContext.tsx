@@ -17,6 +17,11 @@ type ContextType = {
   listenSendMessage: (callback: (data: any) => void) => void;
   markAsRead: (data: any) => void;
   listenMarkAsRead: (callback: (data: any) => void) => void;
+  listenOnlineUsers: (
+    callback: (
+      data: { userId: string; username: string; socketId: string }[]
+    ) => void
+  ) => void;
 };
 
 const defaultValue: ContextType = {
@@ -25,6 +30,7 @@ const defaultValue: ContextType = {
   listenSendMessage() {},
   markAsRead() {},
   listenMarkAsRead() {},
+  listenOnlineUsers() {},
   connected: false,
 };
 
@@ -97,6 +103,11 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       listenMarkAsRead(callback) {
         if (socket) {
           socket.on("mark_as_read", callback);
+        }
+      },
+      listenOnlineUsers(callback) {
+        if (socket) {
+          socket.on("get_online_users", callback);
         }
       },
     }),

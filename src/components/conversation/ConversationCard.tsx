@@ -22,6 +22,7 @@ interface ConversationCardProps {
   otherUserId: string;
   status: "sent" | "delivered" | "read";
   onOpenChat: (otherUserId: string) => void;
+  isOnline?: boolean;
 }
 
 const ConversationCard: React.FC<ConversationCardProps> = ({
@@ -33,6 +34,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
   unreadMessageCount,
   otherUserId,
   status,
+  isOnline,
   onOpenChat,
 }) => {
   return (
@@ -40,7 +42,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
       onClick={() => onOpenChat(otherUserId)}
       className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2"
     >
-      <ConversationProfile src={profileImage} />
+      <ConversationProfile isOnline={isOnline} src={profileImage} />
       <div className="flex flex-col basis-auto flex-grow border-t-gray-300 py-3 shadow-none border-t-2 min-w-0 w-full mr-2">
         <div className="flex items-center">
           <CardHeader className="flex-grow items-start m-0 p-0">
