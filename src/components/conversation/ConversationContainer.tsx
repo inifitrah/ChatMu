@@ -34,13 +34,19 @@ interface IReceiveMessage {
 }
 
 const ConversationContainer = () => {
-  const { socket, markAsRead, listenMarkAsRead, listenSendMessage } =
-    useSocketContext();
+  const {
+    socket,
+    listenOnlineUsers,
+    markAsRead,
+    listenMarkAsRead,
+    listenSendMessage,
+  } = useSocketContext();
   const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const conversation = useAppSelector(
     (state) => state.conversation.selectedConversation
   );
+  const [isOnline, setIsOnline] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
   const { sendMessage } = useSocketContext();
@@ -148,13 +154,28 @@ const ConversationContainer = () => {
     }
   }, [messages, socket, session, conversation.id]);
 
+  useEffect(() => {
+    listenOnlineUsers((data) => {
+      const onlineUser = data.find(
+        (user) => user.userId === conversation.userId
+      );
+      setIsOnline(onlineUser ? true : false);
+    });
+
+    return () => {
+      if (socket) {
+        socket.off("get_online_users");
+      }
+    };
+  }, [socket]);
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white">
       <ConversationHeader
         backButtonClick={() => dispatch(clearSelectedConversation())}
         username={conversation?.username}
         profileImage={conversation?.profileImage}
-        status="Online"
+        status={isOnline ? "online" : "offline"}
       />
       <MessageContainer messages={messages} />
       <MessageInput onSendMessage={handleSendMessage} />
