@@ -46,7 +46,10 @@ const ConversationContainer = () => {
   const conversation = useAppSelector(
     (state) => state.conversation.selectedConversation
   );
-  const [isOnline, setIsOnline] = useState<boolean>(false);
+
+  const isOnline = useAppSelector((state) =>
+    state.user.onlineUsers.find((user) => user.userId === conversation.userId)
+  );
 
   const dispatch = useAppDispatch();
   const { sendMessage } = useSocketContext();
@@ -153,21 +156,6 @@ const ConversationContainer = () => {
       }
     }
   }, [messages, socket, session, conversation.id]);
-
-  useEffect(() => {
-    listenOnlineUsers((data) => {
-      const onlineUser = data.find(
-        (user) => user.userId === conversation.userId
-      );
-      setIsOnline(onlineUser ? true : false);
-    });
-
-    return () => {
-      if (socket) {
-        socket.off("get_online_users");
-      }
-    };
-  }, [socket]);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-white">

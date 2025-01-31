@@ -10,18 +10,17 @@ import {
   setConversations,
   setSelectedConversation,
 } from "@/redux-toolkit/features/conversations/conversationSlice";
+import { setOnlineUsers } from "@/redux-toolkit/features/users/userSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 import ConversationCard from "@/components/conversation/ConversationCard";
 import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
 import { useSocketContext } from "@/contexts/SocketContext";
 
 const ConversationList = () => {
-  const [onlineUsers, setOnlineUsers] = useState<
-    { userId: string; username: string; socketId: string }[]
-  >([]);
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
   const { socket, listenOnlineUsers } = useSocketContext();
+  const onlineUsers = useAppSelector((state) => state.user.onlineUsers);
   const conversations = useAppSelector(
     (state) => state.conversation.conversations
   );
@@ -35,9 +34,9 @@ const ConversationList = () => {
 
   useEffect(() => {
     // Listen to online users
-    console.log("state", onlineUsers);
     listenOnlineUsers((data) => {
-      setOnlineUsers(data);
+      dispatch(setOnlineUsers(data));
+      console.log("state-redux", onlineUsers);
     });
 
     return () => {
@@ -67,9 +66,10 @@ const ConversationList = () => {
     <>
       {conversations.map((conv) => {
         // handle online status
-        const onlineUser = onlineUsers.find(
-          (user) => user.userId === conv.otherUserId
-        );
+        const onlineUser = onlineUsers.find((user) => {
+          console.log("user", user);
+          return user.userId === conv.otherUserId;
+        });
         return (
           <ConversationCard
             onOpenChat={handleOpenChat}
