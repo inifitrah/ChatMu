@@ -56,8 +56,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="">
-        <p>Socket: {connected ? "Connected" : "Disconnected"}</p>
+      <main className="bg-background">
         <ConversationList />
         {selectedConversation.id && <ConversationContainer />}
       </main>

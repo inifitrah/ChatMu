@@ -6,6 +6,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import React, { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeSwitch } from "@/components/ThemeSwitch";
 const Auth = () => {
   const { status } = useSession();
 
@@ -38,7 +39,7 @@ const Auth = () => {
           <Button className="rounded-full h-14 w-full">SignIn</Button>
         </Link>
         <Link href={"/auth/signup"}>
-          <Button className="rounded-full h-14 w-full bg-black/10 hover:text-white text-black">
+          <Button className="rounded-full h-14 w-full bg-black/10 dark:bg-foreground/50 hover:text-white text-black">
             SignUp
           </Button>
         </Link>

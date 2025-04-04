@@ -40,7 +40,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
   return (
     <Card
       onClick={() => onOpenChat(otherUserId)}
-      className="flex active:bg-slate-100 items-center ml-2 shadow-none border-none justify-center gap-2"
+      className="flex bg-card active:bg-card/40 items-center ml-2 shadow-none border-none justify-center gap-2"
     >
       <ConversationProfile isOnline={isOnline} src={profileImage} />
       <div className="flex flex-col basis-auto flex-grow border-t-gray-300 py-3 shadow-none border-t-2 min-w-0 w-full mr-2">
