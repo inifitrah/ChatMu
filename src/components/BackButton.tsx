@@ -6,8 +6,8 @@ import { ArrowLeft } from "lucide-react";
 const BackButton = ({ href }: { href: string }) => {
   return (
     <Link href={href}>
-      <Button className="text-black" size={"box"} variant={"menu"}>
-        <ArrowLeft size={30} />
+      <Button size={"box"} variant={"menu"}>
+        <ArrowLeft className="text-foreground" size={30} />
       </Button>
     </Link>
   );
