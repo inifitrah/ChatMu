@@ -100,7 +100,7 @@ const EditProfilePicture = ({
         gap-5 items-center
           "
         >
-          <div className="bg-black/10 h-full w-auto px-7 flex  items-center rounded-2xl">
+          <div className="bg-foreground/10 h-full w-auto px-7 flex  items-center rounded-2xl">
             <Avatar className="text-black bg-white h-24 w-24 ">
               <AvatarImage src={filePreview ? filePreview : profilePic} />
               <AvatarFallback>
@@ -111,7 +111,7 @@ const EditProfilePicture = ({
           <form onSubmit={handleSaveChanges} className=" flex flex-1 flex-col ">
             <label
               htmlFor="file-upload"
-              className="cursor-pointer select-none text-center bg-black/10 text-black  p-4 rounded-2xl   text-sm"
+              className="cursor-pointer select-none text-center bg-foreground/10 text-foreground  p-4 rounded-2xl   text-sm"
             >
               {fileName}
             </label>

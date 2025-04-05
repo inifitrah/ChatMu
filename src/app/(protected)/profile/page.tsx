@@ -17,7 +17,7 @@ const Profile = () => {
   return (
     <section className="px-5">
       <Link href={"/"}>
-        <Button size={"box"} className="mt-4 text-black" variant={"menu"}>
+        <Button size={"box"} className="mt-4 text-foreground" variant={"menu"}>
           <ArrowLeft size={30} />
         </Button>
       </Link>
