@@ -20,7 +20,10 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
   }, [messages]);
 
   return (
-    <div ref={ref} className="flex flex-1 flex-col overflow-auto py-5 pb-3">
+    <div
+      ref={ref}
+      className="flex flex-1 flex-col bg-background overflow-auto py-5 pb-3"
+    >
       {messages && messages.length != 0 ? (
         messages.map((message, index) => {
           const isSameSenderAsPrevious =

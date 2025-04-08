@@ -19,10 +19,10 @@ const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   backButtonClick,
 }) => {
   return (
-    <header className="flex justify-between p-4 items-center text-black">
+    <header className="flex justify-between p-4 items-center text-foreground bg-background">
       <div className="flex gap-2 items-center ">
         <Button
-          className="text-black"
+          className="text-foreground"
           size={"box"}
           variant={"menu"}
           onClick={backButtonClick}

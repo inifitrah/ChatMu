@@ -24,7 +24,7 @@ const Message: React.FC<MessageProps> = ({
           <div
             className={cn("bg-violet-200 p-3", isCurrentUser && "bg-blue-200")}
           >
-            {message}
+            <p className="text-black">{message}</p>
           </div>
         </div>
       </div>

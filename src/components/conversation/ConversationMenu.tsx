@@ -11,7 +11,7 @@ const ConversationMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center ">
-        <EllipsisVertical className="text-black" />
+        <EllipsisVertical className="text-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="">
         <DropdownMenuItem>Profile</DropdownMenuItem>

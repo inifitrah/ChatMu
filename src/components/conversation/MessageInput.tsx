@@ -28,7 +28,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
   };
 
   return (
-    <div className="flex space-x-3 py-3 w-full px-2">
+    <div className="flex space-x-3 bg-background py-3 w-full px-2">
       <Input
         onChange={handleInputChange}
         value={inputValue}
@@ -42,7 +42,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
         className="text-black rounded-sm active:bg-sky-300"
         variant={"menu"}
       >
-        <SendHorizontal size={30} />
+        <SendHorizontal className="text-foreground" size={30} />
       </Button>
     </div>
   );
