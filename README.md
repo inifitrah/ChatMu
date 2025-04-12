@@ -2,6 +2,8 @@
 
 Chatmu is a chat application
 
+![Screenshot](/public/screenshot/auth.png)
+
 ## Tech Stack
 
 **Client:** Next JS, Socket IO Client, Shadcn/UI, Tailwind CSS
