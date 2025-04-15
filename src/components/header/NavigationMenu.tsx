@@ -13,7 +13,7 @@ const NavigationMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <EllipsisVertical size={27} className="text-inherit" />
+        <EllipsisVertical size={30} className="text-black dark:text-white" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="">
         <Link href="profile">
