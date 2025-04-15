@@ -1,47 +1,37 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 
-import { EllipsisVertical, Search } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import ConversationSearch from "@/components/conversation/ConversationSearch";
-import { useToast } from "@/hooks/use-toast";
+import { CircleUser } from "lucide-react";
 import NavigationMenu from "@/components/header/NavigationMenu";
+import { Input } from "../ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ThemeSwitch } from "../ThemeSwitch";
 
 const Header = () => {
-  const [isCommandOpen, setIsCommandOpen] = useState(false);
-  const { toast } = useToast();
   return (
-    <header className="flex flex-col p-4 gap-2 bg-black/80 border-b border-solid border-black/50">
-      <div className="flex justify-between">
-        <h1 className="text-2xl font-semibold text-white">ChatMu</h1>
-        <div className="space-x-4">
+    <header className="text-black flex flex-col px-8 pt-8 pb-2 bg-[#F8F8F8] dark:bg-[#0D0F12] dark:text-white">
+      <div className="flex items-center justify-between mb-6 ">
+        <div className="flex items-center gap-4">
+          <Avatar className="w-12 h-12">
+            <AvatarImage src={"session.user.image"} />
+            <AvatarFallback>
+              <CircleUser size={60} />
+            </AvatarFallback>
+          </Avatar>
+          <h1 className="text-3xl font-bold text-black dark:text-white">
+            ChatMu
+          </h1>
+        </div>
+        <div className="flex items-center gap-4">
           <ThemeSwitch />
-          <Button
-            className=""
-            onClick={() => setIsCommandOpen(!isCommandOpen)}
-            size={"box"}
-            variant={"menu"}
-          >
-            <Search size={27} />
-          </Button>
-          {isCommandOpen && (
-            <ConversationSearch setIsCommandOpen={setIsCommandOpen} />
-          )}
           <NavigationMenu />
         </div>
       </div>
-      <div className="space-x-4 text-white">
-        <Button size={"sm"} variant={"filter"}>
-          Semua
-        </Button>
-        <Button size={"sm"} variant={"filter"}>
-          Favorit
-        </Button>
-        <Button size={"sm"} variant={"filter"}>
-          Grup
-        </Button>
+      <div>
+        <Input
+          className="dark:bg-[#1A1D24] dark:focus:ring-white/20"
+          placeholder="Search"
+        />
       </div>
     </header>
   );
