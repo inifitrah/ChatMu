@@ -11,7 +11,7 @@ const ConversationProfile = ({
 }) => {
   return (
     <div className="relative">
-      <Avatar className="border-2 cursor-pointer mx-1">
+      <Avatar className="border-2 h-14 w-14 cursor-pointer mr-1">
         <AvatarImage src={src} />
         <AvatarFallback className="cursor-pointer">
           <CircleUser size={60} />
