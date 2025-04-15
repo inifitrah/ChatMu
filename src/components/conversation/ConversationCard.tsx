@@ -40,22 +40,28 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
   return (
     <Card
       onClick={() => onOpenChat(otherUserId)}
-      className="flex bg-card active:bg-card/40 items-center ml-2 shadow-none border-none justify-center gap-2"
+      className="flex pl-7 bg-inherit hover:bg-card items-center shadow-none border-none justify-center gap-2 group"
     >
       <ConversationProfile isOnline={isOnline} src={profileImage} />
-      <div className="flex flex-col basis-auto flex-grow border-t-gray-300 py-3 shadow-none border-t-2 min-w-0 w-full mr-2">
+      <div
+        className="flex flex-col basis-auto flex-grow py-5 pr-7 shadow-none min-w-0 w-full mr-2
+      border-t border-gray-200 dark:border-gray-500 [.group:first-child_&]:border-t-0
+      "
+      >
         <div className="flex items-center">
           <CardHeader className="flex-grow items-start m-0 p-0">
-            <CardTitle className="text-lg">{username}</CardTitle>
+            <CardTitle className="text-lg font-bold leading-none">
+              {username}
+            </CardTitle>
           </CardHeader>
           {lastMessageContent && (
-            <p className="text-violet-500 flex-none text-xs">
+            <p className="text-foreground flex-none text-sm">
               {lastMessageTime}
             </p>
           )}
         </div>
-        <CardContent className="flex mt-1 overflow-hidden items-center p-0">
-          <CardDescription className="flex-grow overflow-hidden max-h-5">
+        <CardContent className="flex overflow-hidden items-center p-0">
+          <CardDescription className="flex-grow overflow-hidden text-sm max-h-5">
             {lastMessageContent}
           </CardDescription>
           <Badge
@@ -75,7 +81,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
             <>
               {status === "sent" && <Check />}
               {status === "delivered" && <CheckCheck />}
-              {status === "read" && <CheckCheck className="text-violet-500" />}
+              {status === "read" && <CheckCheck className="text-sky-600" />}
             </>
           )}
         </CardContent>
