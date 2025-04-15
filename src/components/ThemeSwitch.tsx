@@ -18,14 +18,11 @@ export function ThemeSwitch() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="" asChild>
-        <Button
-          size={"box"}
-          className="bg-transparent hover:bg-transparent focus:bg-transparent"
-        >
-          <Sun className="rotate-0 scale-100 text-white  transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute rotate-90 scale-0 text-white  transition-all dark:rotate-0 dark:scale-100" />
+        <span className="border-black dark:border-white border  bg-[#F0F0F0] dark:bg-[#1A1D24] rounded-[20] -rotate-90">
+          <Sun className="rotate-0 scale-100 text-black dark:text-white  transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="rotate-90 scale-0 text-white  transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
-        </Button>
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
