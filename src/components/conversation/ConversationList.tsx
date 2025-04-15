@@ -72,8 +72,8 @@ const ConversationList = () => {
         });
         return (
           <ConversationCard
-            onOpenChat={handleOpenChat}
             key={conv.otherUserId}
+            onOpenChat={handleOpenChat}
             otherUserId={conv.otherUserId}
             profileImage={conv.profileImage}
             username={conv.username}
