@@ -56,7 +56,7 @@ export default function Home() {
   return (
     <>
       <Header />
-      <main className="bg-background">
+      <main className="bg-background dark:bg-[#0D0F12]">
         <ConversationList />
         {selectedConversation.id && <ConversationContainer />}
       </main>
