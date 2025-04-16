@@ -33,7 +33,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
         onChange={handleInputChange}
         value={inputValue}
         placeholder="Type a message.."
-        className="border-2 w-full rounded-md px-2"
+        className="border-2 w-full rounded-[20] px-2"
         type="text"
         onKeyDown={handleKeyDown}
       />
