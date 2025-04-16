@@ -19,7 +19,7 @@ const Auth = () => {
   const { toast } = useToast();
 
   return (
-    <section className="flex  p-5 flex-col gap-7 h-screen items-center justify-evenly ">
+    <section className="flex wrapper-page  p-5 flex-col gap-7 h-screen items-center justify-evenly ">
       <Image
         width={100}
         height={100}
@@ -36,10 +36,10 @@ const Auth = () => {
       </div>
       <div className="flex-col w-full mt-2 flex space-y-2">
         <Link href={"/auth/signin"}>
-          <Button className="rounded-full h-14 w-full">SignIn</Button>
+          <Button className="rounded-[20] h-14 w-full">SignIn</Button>
         </Link>
         <Link href={"/auth/signup"}>
-          <Button className="rounded-full h-14 w-full bg-black/10 dark:bg-foreground/50 hover:text-white text-black">
+          <Button className="rounded-[20] h-14 w-full bg-primary/75">
             SignUp
           </Button>
         </Link>
