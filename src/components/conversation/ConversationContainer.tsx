@@ -158,7 +158,7 @@ const ConversationContainer = () => {
   }, [messages, socket, session, conversation.id]);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white">
+    <div className="fixed wrapper-page inset-0 z-50 flex flex-col">
       <ConversationHeader
         backButtonClick={() => dispatch(clearSelectedConversation())}
         username={conversation?.username}
