@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense } from "react";
@@ -7,12 +8,12 @@ const ErrorCheck = () => {
   const params = useSearchParams();
   const error = params.get("error");
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-red-100">
-      <h1 className="text-4xl font-bold text-red-600">{error}</h1>
+    <div className="flex flex-col wrapper-page items-center justify-center min-h-screen bg-destructive">
+      <h1 className="text-4xl font-bold text-foreground">{error}</h1>
       <Link href="/auth/signin">
-        <button className="mt-6 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+        <Button variant={"destructive"} className="rounded-20">
           Back to Login
-        </button>
+        </Button>
       </Link>
     </div>
   );
