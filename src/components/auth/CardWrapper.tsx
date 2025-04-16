@@ -26,7 +26,7 @@ const CardWrapper: React.FC<CardWrapperProps> = ({
   backButtonHref,
 }) => {
   return (
-    <Card>
+    <Card className="wrapper-page">
       <CardHeader>
         <Header
           title={headerTitle}
