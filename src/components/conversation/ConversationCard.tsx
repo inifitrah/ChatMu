@@ -45,7 +45,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
       <ConversationProfile isOnline={isOnline} src={profileImage} />
       <div
         className="flex flex-col basis-auto flex-grow py-5 pr-7 shadow-none min-w-0 w-full mr-2
-      border-t border-gray-200 dark:border-gray-500 [.group:first-child_&]:border-t-0
+      border-t [.group:first-child_&]:border-t-0
       "
       >
         <div className="flex items-center">
