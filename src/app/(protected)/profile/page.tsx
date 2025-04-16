@@ -14,7 +14,7 @@ const Profile = () => {
   if (!session) return <>Loading..</>;
 
   return (
-    <section className="px-5">
+    <section className="px-5 wrapper-page">
       <Link href={"/"}>
         <Button size={"box"} className="mt-4 text-foreground" variant={"menu"}>
           <ArrowLeft size={30} />
@@ -22,7 +22,7 @@ const Profile = () => {
       </Link>
       <div className=" flex w-full flex-col items-center justify-center gap-4">
         <div className="flex mt-16 relative">
-          <Avatar className="text-black h-24 w-24 bg-black/10 ">
+          <Avatar className="text-foreground h-24 w-24 bg-background">
             <AvatarImage src={session.user.image} />
             <AvatarFallback>
               <CircleUser size={60} />
