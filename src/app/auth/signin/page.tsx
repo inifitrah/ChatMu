@@ -76,7 +76,7 @@ const SignIn = () => {
       </p>
       <Button
         onClick={form.handleSubmit(handleSignIn)}
-        className="rounded-2xl dark:bg-white/80 text-xl h-14 w-full"
+        className="rounded-[20] text-xl h-14 w-full"
       >
         SignIn
       </Button>
