@@ -28,10 +28,7 @@ const Header = () => {
         </div>
       </div>
       <div>
-        <Input
-          className="dark:bg-[#1A1D24] dark:focus:ring-white/20"
-          placeholder="Search"
-        />
+        <Input className="" placeholder="Search" />
       </div>
     </header>
   );
