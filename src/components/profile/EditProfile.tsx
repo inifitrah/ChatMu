@@ -87,7 +87,7 @@ const EditProfile = ({ user }: EditProfileProps) => {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
-                      className="py-6 border-2 w-full px-3 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
+                      className="py-6 border-2 w-full px-3 rounded-2xl h-10 disabled:cursor-not-allowed"
                       placeholder="Name"
                       {...field}
                     />
@@ -104,7 +104,7 @@ const EditProfile = ({ user }: EditProfileProps) => {
                   <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input
-                      className="py-6 border-2 w-full px-3 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
+                      className="py-6 border-2 w-full rounded-2xl h-10 disabled:cursor-not-allowed"
                       placeholder="Username"
                       {...field}
                     />
