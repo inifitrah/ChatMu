@@ -39,7 +39,7 @@ const CustomFormField = ({
             <div className="relative">
               <Input
                 type={showPasswordToggle && showPassword ? "text" : type}
-                className="py-6 border-2 w-full px-3 pr-12/70 border-black rounded-2xl h-10 disabled:cursor-not-allowed"
+                className="py-6 border-2 w-full px-3 pr-12/70 rounded-2xl h-10 disabled:cursor-not-allowed"
                 placeholder={placeholder}
                 {...field}
               />
