@@ -20,7 +20,7 @@ export default async function RootLayout({
       <SocketWrapper>
         <ReduxWrapper>
           <html lang="en">
-            <body className="text-foreground">
+            <body className="text-foreground bg-background-dim">
               <ThemeProvider
                 attribute="class"
                 enableSystem
