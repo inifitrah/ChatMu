@@ -1,6 +1,6 @@
 "use client";
 import { verifyEmail } from "@/app/actions/newVerificationActions";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 
 const VerifyToken = () => {
@@ -11,7 +11,7 @@ const VerifyToken = () => {
 
   const newVerifyEmail = useCallback(
     (token: string | null) => {
-      if (!token) return;
+      if (!token) redirect("/auth/signin");
       if (success || error) return;
       verifyEmail(token)
         .then((data) => {
