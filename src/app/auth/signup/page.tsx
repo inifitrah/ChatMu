@@ -59,7 +59,7 @@ const SignUp = () => {
       </p>
       <Button
         onClick={form.handleSubmit(handleSignUp)}
-        className="rounded-[20] text-xl h-14 w-full"
+        className="rounded-[20px] text-xl h-14 w-full"
       >
         SignUp
       </Button>

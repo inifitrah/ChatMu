@@ -36,10 +36,10 @@ const Auth = () => {
       </div>
       <div className="flex-col w-full mt-2 flex space-y-2">
         <Link href={"/auth/signin"}>
-          <Button className="rounded-[20] h-14 w-full">SignIn</Button>
+          <Button className="rounded-[20px] h-14 w-full">SignIn</Button>
         </Link>
         <Link href={"/auth/signup"}>
-          <Button className="rounded-[20] h-14 w-full bg-primary/75">
+          <Button className="rounded-[20px] h-14 w-full bg-primary/75">
             SignUp
           </Button>
         </Link>

@@ -18,7 +18,7 @@ export function ThemeSwitch() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="" asChild>
-        <span className="border bg-background rounded-[20] -rotate-90">
+        <span className="border bg-background rounded-[20px] -rotate-90">
           <Sun className="rotate-0 scale-100 text-foreground dark:-rotate-90 dark:scale-0" />
           <Moon className="rotate-90 scale-0 text-foreground dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
