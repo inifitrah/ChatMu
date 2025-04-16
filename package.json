@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "TURBOPACK=1 NODE_ENV=development nodemon src/server",
+    "dev": "next dev",
     "build": "next build",
-    "start": "NODE_ENV=production node src/server",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
