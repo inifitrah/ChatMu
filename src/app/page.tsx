@@ -54,12 +54,12 @@ export default function Home() {
   }, [listenSendMessage, conversation]);
 
   return (
-    <>
+    <div className="wrapper-page">
       <Header />
-      <main className="bg-background dark:bg-[#0D0F12]">
+      <main className="bg-background">
         <ConversationList />
         {selectedConversation.id && <ConversationContainer />}
       </main>
-    </>
+    </div>
   );
 }
