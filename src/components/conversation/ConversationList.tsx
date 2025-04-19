@@ -21,9 +21,14 @@ const ConversationList = () => {
   const dispatch = useAppDispatch();
   const { socket, listenOnlineUsers } = useSocketContext();
   const onlineUsers = useAppSelector((state) => state.user.onlineUsers);
-  const conversations = useAppSelector(
-    (state) => state.conversation.conversations
+  const { conversations, searchConversations, status } = useAppSelector(
+    (state) => state.conversation
   );
+
+  // Check if the user is searching for conversations
+  const showConversations =
+    searchConversations?.length > 0 ? searchConversations : conversations;
+
   useEffect(() => {
     if (session) {
       getConversations(session?.user.id).then((data) => {
@@ -64,30 +69,47 @@ const ConversationList = () => {
 
   return (
     <>
-      {conversations.map((conv) => {
-        // handle online status
-        const onlineUser = onlineUsers.find((user) => {
-          console.log("user", user);
-          return user.userId === conv.otherUserId;
-        });
-        return (
-          <ConversationCard
-            key={conv.otherUserId}
-            onOpenChat={handleOpenChat}
-            otherUserId={conv.otherUserId}
-            profileImage={conv.profileImage}
-            username={conv.username}
-            lastMessageIsCurrentUser={conv.message.isCurrentUser}
-            lastMessageTime={formatLastMessageTime(
-              conv.message.lastMessageTime || ""
-            )}
-            lastMessageContent={conv.message.lastMessageContent || ""}
-            unreadMessageCount={conv.message.unreadMessageCount || 0}
-            status={conv.message.status}
-            isOnline={onlineUser ? true : false}
-          />
-        );
-      })}
+      {(() => {
+        switch (status) {
+          case "failed":
+            return (
+              <div className="flex items-center justify-center w-full mt-5">
+                <p className="text-destructive">User not found</p>
+              </div>
+            );
+          case "loading":
+            return (
+              <div className="flex items-center justify-center w-full mt-5">
+                <span className="w-12 h-12 rounded-full animate-spin border-t-accent-foreground border border-b-accent-foreground"></span>
+              </div>
+            );
+          default:
+            return showConversations?.map((conv) => {
+              // handle online status
+              const onlineUser = onlineUsers.find((user) => {
+                console.log("user", user);
+                return user.userId === conv.otherUserId;
+              });
+              return (
+                <ConversationCard
+                  key={conv.otherUserId}
+                  onOpenChat={handleOpenChat}
+                  otherUserId={conv?.otherUserId}
+                  profileImage={conv?.profileImage}
+                  username={conv?.username}
+                  lastMessageIsCurrentUser={conv?.message?.isCurrentUser}
+                  lastMessageTime={formatLastMessageTime(
+                    conv?.message?.lastMessageTime || ""
+                  )}
+                  lastMessageContent={conv?.message?.lastMessageContent || ""}
+                  unreadMessageCount={conv?.message?.unreadMessageCount || 0}
+                  status={conv?.message?.status}
+                  isOnline={onlineUser ? true : false}
+                />
+              );
+            });
+        }
+      })()}
     </>
   );
 };
