@@ -3,10 +3,10 @@ import React from "react";
 
 import { CircleUser } from "lucide-react";
 import NavigationMenu from "@/components/header/NavigationMenu";
-import { Input } from "../ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ThemeSwitch } from "../ThemeSwitch";
 import { useSession } from "next-auth/react";
+import ConversationSearch from "@/components/conversation/ConversationSearch";
 
 const Header = () => {
   const { data: session } = useSession();
@@ -30,7 +30,7 @@ const Header = () => {
         </div>
       </div>
       <div>
-        <Input className="" placeholder="Search" />
+        <ConversationSearch />
       </div>
     </header>
   );
