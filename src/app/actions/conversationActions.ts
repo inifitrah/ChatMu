@@ -9,6 +9,10 @@ export const searchConversations = async (
   username: string,
   currentUserId: string
 ) => {
+  if (username.trim() === "") {
+    return [];
+  }
+
   await connectToMongoDB();
   const users = await searchUsersByUsername(username, ["username", "image"]);
 
@@ -41,6 +45,10 @@ export const searchConversations = async (
       };
     })
   );
+
+  if (!result || result.length === 0) {
+    throw new Error("No conversations found");
+  }
 
   return JSON.parse(JSON.stringify(result));
 };
