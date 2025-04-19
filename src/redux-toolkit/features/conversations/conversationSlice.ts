@@ -1,8 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IConversation, ISelectedConversation } from "@/types/conversation";
+import { fetchSearchConversations } from "./conversationThunks";
 interface InitialState {
   conversations: IConversation[];
   selectedConversation: ISelectedConversation;
+  searchConversations: IConversation[];
+  status: "idle" | "loading" | "succeeded" | "failed";
 }
 
 const initialState: InitialState = {
@@ -13,6 +16,8 @@ const initialState: InitialState = {
     username: undefined,
     profileImage: undefined,
   },
+  searchConversations: [],
+  status: "idle",
 };
 const conversationSlice = createSlice({
   name: "conversation",
@@ -45,6 +50,19 @@ const conversationSlice = createSlice({
     clearSelectedConversation(state) {
       state.selectedConversation = initialState.selectedConversation;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchSearchConversations.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchSearchConversations.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.searchConversations = action.payload;
+      })
+      .addCase(fetchSearchConversations.rejected, (state) => {
+        state.status = "failed";
+      });
   },
 });
 
