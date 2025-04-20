@@ -5,6 +5,7 @@ interface InitialState {
   conversations: IConversation[];
   selectedConversation: ISelectedConversation;
   searchConversations: IConversation[];
+  query: string;
   status: "idle" | "loading" | "succeeded" | "failed";
 }
 
@@ -17,12 +18,18 @@ const initialState: InitialState = {
     profileImage: undefined,
   },
   searchConversations: [],
+  query: "",
   status: "idle",
 };
 const conversationSlice = createSlice({
   name: "conversation",
   initialState,
   reducers: {
+    clearSearch(state) {
+      state.query = "";
+      state.searchConversations = [];
+      state.status = "idle";
+    },
     setConversations(state, action) {
       state.conversations = action.payload;
     },
@@ -53,8 +60,9 @@ const conversationSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchSearchConversations.pending, (state) => {
+      .addCase(fetchSearchConversations.pending, (state, action) => {
         state.status = "loading";
+        state.query = action.meta.arg.username;
       })
       .addCase(fetchSearchConversations.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -72,6 +80,7 @@ export const {
   setConversations,
   setLastMessage,
   setConversationStatus,
+  clearSearch,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;
