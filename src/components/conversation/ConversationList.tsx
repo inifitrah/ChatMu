@@ -21,13 +21,12 @@ const ConversationList = () => {
   const dispatch = useAppDispatch();
   const { socket, listenOnlineUsers } = useSocketContext();
   const onlineUsers = useAppSelector((state) => state.user.onlineUsers);
-  const { conversations, searchConversations, status } = useAppSelector(
+  const { conversations, query, searchConversations, status } = useAppSelector(
     (state) => state.conversation
   );
 
   // Check if the user is searching for conversations
-  const showConversations =
-    searchConversations?.length > 0 ? searchConversations : conversations;
+  const showConversations = query ? searchConversations : conversations;
 
   useEffect(() => {
     if (session) {
