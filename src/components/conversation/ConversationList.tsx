@@ -98,7 +98,7 @@ const ConversationList = () => {
                   username={conv?.username}
                   lastMessageIsCurrentUser={conv?.message?.isCurrentUser}
                   lastMessageTime={formatLastMessageTime(
-                    conv?.message?.lastMessageTime || ""
+                    conv?.message?.lastMessageTime
                   )}
                   lastMessageContent={conv?.message?.lastMessageContent || ""}
                   unreadMessageCount={conv?.message?.unreadMessageCount || 0}

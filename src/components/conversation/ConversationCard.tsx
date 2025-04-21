@@ -15,12 +15,12 @@ import { Check, CheckCheck } from "lucide-react";
 interface ConversationCardProps {
   profileImage?: string;
   username: string;
-  lastMessageTime: string;
+  lastMessageTime?: string;
   lastMessageContent?: string;
   unreadMessageCount?: number;
-  lastMessageIsCurrentUser: boolean;
+  lastMessageIsCurrentUser?: boolean;
   otherUserId: string;
-  status: "sent" | "delivered" | "read";
+  status?: "sent" | "delivered" | "read";
   onOpenChat: (otherUserId: string) => void;
   isOnline?: boolean;
 }
