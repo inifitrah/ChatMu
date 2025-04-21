@@ -3,12 +3,12 @@ export interface IConversation {
   otherUserId: string;
   profileImage: string;
   username: string;
-  message: {
-    isCurrentUser: boolean;
-    lastMessageTime: Date;
-    lastMessageContent: string;
-    unreadMessageCount: number;
-    status: "sent" | "delivered" | "read";
+  message?: {
+    isCurrentUser?: boolean;
+    lastMessageTime?: Date;
+    lastMessageContent?: string;
+    unreadMessageCount?: number;
+    status?: "sent" | "delivered" | "read";
   };
 }
 

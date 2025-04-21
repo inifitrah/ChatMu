@@ -8,7 +8,7 @@ import { IConversation } from "@/types/conversation";
 export const searchConversations = async (
   username: string,
   currentUserId: string
-) => {
+): Promise<IConversation[]> => {
   if (username.trim() === "") {
     return [];
   }
@@ -18,30 +18,42 @@ export const searchConversations = async (
 
   const conversations = await Conversation.find({ participants: currentUserId })
     .populate("participants", "username image")
-    .populate("lastMessage", "text timestamp")
+    .populate("lastMessage", "sender content timestamp")
     .exec();
 
   const result = await Promise.all(
     users.map(async (user) => {
-      const conversation = conversations.find((c) =>
-        c.participants.some(
-          (p: typeof c.participants) => p._id.toString() === user._id.toString()
+      const conversation = conversations.find((chat) =>
+        chat.participants.some(
+          (partis: typeof chat.participants) =>
+            partis._id.toString() === user._id.toString()
         )
       );
+      const getMessage = async () => {
+        if (!conversation.lastMessage) {
+          return null;
+        }
+        return {
+          isCurrentUser:
+            conversation.lastMessage.sender.toString() === currentUserId,
+          lastMessageTime: conversation.lastMessage.timestamp,
+          lastMessageContent: conversation.lastMessage.content,
+          unreadMessageCount: conversation
+            ? await Message.countDocuments({
+                conversationId: conversation._id,
+                sender: { $ne: currentUserId },
+                status: { $ne: "read" },
+              })
+            : 0,
+        };
+      };
 
       return {
-        targetId: user._id,
+        id: conversation._id,
+        otherUserId: user._id,
         profileImage: user?.image || null,
         username: user.username,
-        lastMessageTime: conversation?.lastMessage?.timestamp || null,
-        lastMessageContent: conversation?.lastMessage?.text || null,
-        unreadMessageCounte: conversation
-          ? await Message.countDocuments({
-              conversationId: conversation._id,
-              sender: { $ne: currentUserId },
-              status: { $ne: "read" },
-            })
-          : 0,
+        message: await getMessage(),
       };
     })
   );
@@ -54,10 +66,10 @@ export const searchConversations = async (
 };
 
 export const getConversations = async (
-  userId: string
+  currentUserId: string
 ): Promise<IConversation[]> => {
   await connectToMongoDB();
-  const conversations = await Conversation.find({ participants: userId })
+  const conversations = await Conversation.find({ participants: currentUserId })
     .populate("participants", "username image")
     .populate("lastMessage", "text timestamp")
     .exec();
@@ -65,7 +77,7 @@ export const getConversations = async (
   const result = await Promise.all(
     conversations.map(async (conversation) => {
       const otherUser = conversation.participants.find(
-        (p: any) => p._id.toString() !== userId
+        (p: any) => p._id.toString() !== currentUserId
       );
 
       const lastMessage = conversation.lastMessage
@@ -78,12 +90,12 @@ export const getConversations = async (
         profileImage: otherUser.image || null,
         username: otherUser.username,
         message: {
-          isCurrentUser: lastMessage?.sender.toString() === userId,
+          isCurrentUser: lastMessage?.sender.toString() === currentUserId,
           lastMessageTime: conversation.lastMessage?.timestamp || null,
           lastMessageContent: lastMessage?.content || null,
           unreadMessageCount: await Message.countDocuments({
             conversationId: conversation._id,
-            sender: { $ne: userId },
+            sender: { $ne: currentUserId },
             status: { $ne: "read" },
           }),
           status: lastMessage?.status || "sent",
