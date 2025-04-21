@@ -1,4 +1,7 @@
-export const formatLastMessageTime = (time: Date) => {
+export const formatLastMessageTime = (time?: Date) => {
+  if (!time) {
+    return "";
+  }
   const now = new Date();
   const messageDate = new Date(time);
 
