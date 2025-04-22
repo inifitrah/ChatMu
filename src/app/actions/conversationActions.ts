@@ -16,6 +16,10 @@ export const searchConversations = async (
   await connectToMongoDB();
   const users = await searchUsersByUsername(username, ["username", "image"]);
 
+  if (!users || users.length === 0) {
+    throw new Error("No users found");
+  }
+
   const conversations = await Conversation.find({ participants: currentUserId })
     .populate("participants", "username image")
     .populate("lastMessage", "sender content timestamp")
@@ -26,9 +30,15 @@ export const searchConversations = async (
       const conversation = conversations.find((chat) =>
         chat.participants.some(
           (partis: typeof chat.participants) =>
-            partis._id.toString() === user._id.toString()
+            partis._id.toString() === user._id.toString() &&
+            partis._id.toString() !== currentUserId // Exclude current user
         )
       );
+
+      if (!conversation) {
+        throw new Error("No conversation found");
+      }
+
       const getMessage = async () => {
         if (!conversation.lastMessage) {
           return null;
@@ -57,10 +67,6 @@ export const searchConversations = async (
       };
     })
   );
-
-  if (!result || result.length === 0) {
-    throw new Error("No conversations found");
-  }
 
   return JSON.parse(JSON.stringify(result));
 };
