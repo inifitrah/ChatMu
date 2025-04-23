@@ -9,66 +9,83 @@ export const searchConversations = async (
   username: string,
   currentUserId: string
 ): Promise<IConversation[]> => {
-  if (username.trim() === "") {
-    return [];
-  }
+  try {
+    if (username.trim() === "") {
+      return [];
+    }
 
-  await connectToMongoDB();
-  const users = await searchUsersByUsername(username, ["username", "image"]);
+    await connectToMongoDB();
+    const users = await searchUsersByUsername(username, [
+      "username",
+      "image",
+    ]).then((users) =>
+      // Filter out the current user from the search results
+      users.filter((user) => user._id.toString() !== currentUserId)
+    );
 
-  if (!users || users.length === 0) {
-    throw new Error("No users found");
-  }
+    if (users.length === 0) {
+      throw new Error("No users found");
+    }
 
-  const conversations = await Conversation.find({ participants: currentUserId })
-    .populate("participants", "username image")
-    .populate("lastMessage", "sender content timestamp")
-    .exec();
-
-  const result = await Promise.all(
-    users.map(async (user) => {
-      const conversation = conversations.find((chat) =>
-        chat.participants.some(
-          (partis: typeof chat.participants) =>
-            partis._id.toString() === user._id.toString() &&
-            partis._id.toString() !== currentUserId // Exclude current user
-        )
-      );
-
-      if (!conversation) {
-        throw new Error("No conversation found");
-      }
-
-      const getMessage = async () => {
-        if (!conversation.lastMessage) {
-          return null;
-        }
-        return {
-          isCurrentUser:
-            conversation.lastMessage.sender.toString() === currentUserId,
-          lastMessageTime: conversation.lastMessage.timestamp,
-          lastMessageContent: conversation.lastMessage.content,
-          unreadMessageCount: conversation
-            ? await Message.countDocuments({
-                conversationId: conversation._id,
-                sender: { $ne: currentUserId },
-                status: { $ne: "read" },
-              })
-            : 0,
-        };
-      };
-
-      return {
-        id: conversation._id,
-        otherUserId: user._id,
-        profileImage: user?.image || null,
-        username: user.username,
-        message: await getMessage(),
-      };
+    // Get conversations for the current user
+    const conversations = await Conversation.find({
+      participants: currentUserId,
     })
-  );
+      .populate("participants", "username image")
+      .populate("lastMessage", "sender content timestamp")
+      .exec();
 
-  return JSON.parse(JSON.stringify(result));
+    const result = await Promise.all(
+      users.map(async (user) => {
+        const conversation = conversations.find((chat) =>
+          chat.participants.some(
+            (partis: any) => partis._id.toString() === user._id.toString()
+          )
+        );
+
+        if (!conversation) {
+          return {
+            otherUserId: user._id,
+            profileImage: user.image || null,
+            username: user.username,
+          };
+        }
+
+        const getMessage = async () => {
+          if (!conversation.lastMessage) {
+            return null;
+          }
+
+          return {
+            isCurrentUser:
+              conversation.lastMessage.sender.toString() === currentUserId,
+            lastMessageTime: conversation.lastMessage.timestamp,
+            lastMessageContent: conversation.lastMessage.content,
+            unreadMessageCount: conversation
+              ? await Message.countDocuments({
+                  conversationId: conversation._id,
+                  sender: { $ne: currentUserId },
+                  status: { $ne: "read" },
+                })
+              : 0,
+          };
+        };
+
+        return {
+          id: conversation._id,
+          otherUserId: user._id,
+          profileImage: user?.image || null,
+          username: user.username,
+          message: await getMessage(),
+        };
+      })
+    );
+
+    return JSON.parse(JSON.stringify(result));
+  } catch (error) {
+    console.error("Error searching conversations:", error);
+    throw new Error("Error searching conversations");
+  }
 };
 
 export const getConversations = async (
