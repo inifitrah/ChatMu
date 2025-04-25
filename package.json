@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev",
+    "dev:socket": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" ts-node server.mts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -37,14 +38,17 @@
     "react-hook-form": "^7.53.1",
     "react-redux": "^9.2.0",
     "resend": "^4.0.1",
+    "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.0",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
     "uuid": "^11.0.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
