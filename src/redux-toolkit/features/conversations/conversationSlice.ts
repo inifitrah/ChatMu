@@ -6,7 +6,7 @@ interface InitialState {
   selectedConversation: ISelectedConversation;
   searchConversations: IConversation[];
   query: string;
-  status: "idle" | "loading" | "succeeded" | "failed";
+  status?: "idle" | "loading" | "succeeded" | "failed";
 }
 
 const initialState: InitialState = {
@@ -38,6 +38,7 @@ const conversationSlice = createSlice({
       const conversationIndex = state.conversations.findIndex(
         (conversation) => conversation.id === conversationId
       );
+      if (!state.conversations[conversationIndex].message) return;
       state.conversations[conversationIndex].message.status = status;
     },
     setLastMessage(state, action) {
@@ -46,6 +47,9 @@ const conversationSlice = createSlice({
       const conversationIndex = state.conversations.findIndex(
         (conversation) => conversation.id === conversationId
       );
+
+      if (!state.conversations[conversationIndex].message) return;
+
       state.conversations[conversationIndex].message.lastMessageContent =
         lastMessageContent;
       state.conversations[conversationIndex].message.lastMessageTime =
