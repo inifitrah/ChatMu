@@ -3,6 +3,8 @@ import { createServer } from "http";
 import next from "next";
 import { Server } from "socket.io";
 
+import { IMessage } from "@/types/conversation";
+
 const port = parseInt(process.env.PORT || "3003", 10);
 const hostname = "localhost";
 const dev = process.env.NODE_ENV !== "production";
@@ -35,8 +37,7 @@ nextApp.prepare().then(() => {
     }
 
     io.emit("get_online_users", onlineUsers);
-
-    socket.on("send_message", (data) => {
+    socket.on("send_message", (data: IMessage) => {
       const receivedUser = onlineUsers.find(
         (user) => user.userId === data.recipient.id
       );
