@@ -1,9 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { IConversation, ISelectedConversation } from "@/types/conversation";
+import {
+  IConversation,
+  ISelectedConversation,
+  IMessage,
+} from "@/types/conversation";
 import { fetchSearchConversations } from "./conversationThunks";
 interface InitialState {
   conversations: IConversation[];
-  selectedConversation: ISelectedConversation;
+  messages: IMessage[];
+  selectedConversation: ISelectedConversation | null;
   searchConversations: IConversation[];
   query: string;
   status?: "idle" | "loading" | "succeeded" | "failed";
@@ -11,12 +16,8 @@ interface InitialState {
 
 const initialState: InitialState = {
   conversations: [],
-  selectedConversation: {
-    id: undefined,
-    userId: undefined,
-    username: undefined,
-    profileImage: undefined,
-  },
+  messages: [],
+  selectedConversation: null,
   searchConversations: [],
   query: "",
   status: "idle",
@@ -41,6 +42,9 @@ const conversationSlice = createSlice({
       if (!state.conversations[conversationIndex].message) return;
       state.conversations[conversationIndex].message.status = status;
     },
+    setMessage(state, action: { payload: IMessage }) {
+      state.messages = [...state.messages, action.payload];
+    },
     setLastMessage(state, action) {
       const { conversationId, lastMessageContent, lastMessageTime } =
         action.payload;
@@ -55,7 +59,7 @@ const conversationSlice = createSlice({
       state.conversations[conversationIndex].message.lastMessageTime =
         lastMessageTime;
     },
-    setSelectedConversation(state, action) {
+    setSelectedConversation(state, action: { payload: ISelectedConversation }) {
       state.selectedConversation = action.payload;
     },
     clearSelectedConversation(state) {
@@ -82,6 +86,7 @@ export const {
   setSelectedConversation,
   clearSelectedConversation,
   setConversations,
+  setMessage,
   setLastMessage,
   setConversationStatus,
   clearSearch,
