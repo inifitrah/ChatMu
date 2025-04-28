@@ -10,11 +10,12 @@ import {
 import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
+import { IMessage } from "@/types/conversation";
 type ContextType = {
   socket: Socket | undefined;
   connected: boolean;
-  sendMessage: (data: any) => void;
-  listenSendMessage: (callback: (data: any) => void) => void;
+  sendMessage: (data: IMessage) => void;
+  listenMessage: (callback: (data: IMessage) => void) => void;
   markAsRead: (data: any) => void;
   listenMarkAsRead: (callback: (data: any) => void) => void;
   listenOnlineUsers: (
@@ -27,7 +28,7 @@ type ContextType = {
 const defaultValue: ContextType = {
   socket: undefined,
   sendMessage() {},
-  listenSendMessage() {},
+  listenMessage() {},
   markAsRead() {},
   listenMarkAsRead() {},
   listenOnlineUsers() {},
@@ -90,7 +91,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
           socket.emit("send_message", data);
         }
       },
-      listenSendMessage(callback) {
+      listenMessage(callback) {
         if (socket) {
           socket.on("send_message", callback);
         }
