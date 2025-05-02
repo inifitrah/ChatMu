@@ -40,7 +40,6 @@ const ConversationList = () => {
     // Listen to online users
     listenOnlineUsers((data) => {
       dispatch(setOnlineUsers(data));
-      console.log("state-redux", onlineUsers);
     });
 
     return () => {
@@ -86,7 +85,6 @@ const ConversationList = () => {
             return showConversations?.map((conv) => {
               // handle online status
               const onlineUser = onlineUsers.find((user) => {
-                console.log("user", user);
                 return user.userId === conv.otherUserId;
               });
               return (
