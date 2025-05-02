@@ -1,10 +1,4 @@
 import React, { useEffect, useState } from "react";
-import {
-  getMessages,
-  markMessagesAsRead,
-  saveNewMessage,
-} from "@/app/actions/conversationActions";
-import { useToast } from "@/hooks/use-toast";
 import { useSession } from "next-auth/react";
 import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationHeader from "./ConversationHeader";
@@ -13,87 +7,65 @@ import MessageInput from "./MessageInput";
 import {
   clearSelectedConversation,
   setConversationStatus,
-  setLastMessage,
+  setMessage,
 } from "@/redux-toolkit/features/conversations/conversationSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
-
-interface Message {
-  content: string;
-  type: "text" | "server";
-  isCurrentUser: boolean;
-  status: "sent" | "delivered" | "read";
+import { IMessage, ISelectedConversation } from "@/types/conversation";
+import { selectMessageByConversationId } from "@/redux-toolkit/features/conversations/conversationSelectors";
+import { shallowEqual } from "react-redux";
+interface ConversationContainerProps {
+  conversation: ISelectedConversation;
 }
 
-interface IReceiveMessage {
-  conversationId: string;
-  sender: { id: string; username: string };
-  recipient: { id: string; username: string };
-  content: string;
-  type: string;
-  status: "sent" | "delivered" | "read";
-}
-
-const ConversationContainer = () => {
-  const {
-    socket,
-    listenOnlineUsers,
-    markAsRead,
-    listenMarkAsRead,
-    listenSendMessage,
-  } = useSocketContext();
+const ConversationContainer = ({
+  conversation,
+}: ConversationContainerProps) => {
+  const { socket, markAsRead, listenMarkAsRead, listenMessage } =
+    useSocketContext();
   const { data: session } = useSession();
-  const [messages, setMessages] = useState<Message[]>([]);
-  const conversation = useAppSelector(
-    (state) => state.conversation.selectedConversation
-  );
 
-  const isOnline = useAppSelector((state) =>
-    state.user.onlineUsers.find((user) => user.userId === conversation.userId)
+  const { isOnline, messages } = useAppSelector(
+    (state) => ({
+      messages: selectMessageByConversationId(
+        state,
+        conversation.id,
+        session?.user.id
+      ),
+      isOnline: state.user.onlineUsers.find(
+        (user) => user.userId === conversation.userId
+      ),
+    }),
+    shallowEqual
   );
 
   const dispatch = useAppDispatch();
   const { sendMessage } = useSocketContext();
-  const { toast } = useToast();
 
   const handleSendMessage = (newMessage: string) => {
-    setMessages([
-      ...messages,
-      {
-        content: newMessage,
-        isCurrentUser: true,
-        type: "text",
-        status: "sent",
-      },
-    ]);
-    sendMessage({
+    if (!session || newMessage === "") return;
+    const messageData: IMessage = {
       conversationId: conversation.id,
       sender: {
-        id: session?.user.id,
-        username: session?.user.username,
+        id: session.user.id,
+        username: session.user.username,
       },
       recipient: {
-        id: conversation?.userId,
-        username: conversation?.username,
+        id: conversation.userId,
+        username: conversation.username,
       },
       content: newMessage,
       type: "text",
       status: "sent",
-    });
+    };
+    sendMessage(messageData);
+    dispatch(setMessage(messageData));
     dispatch(
-      setConversationStatus({ conversationId: conversation.id, status: "sent" })
+      setConversationStatus({
+        conversationId: messageData.conversationId,
+        status: messageData.status,
+      })
     );
-    if (conversation.id && session?.user.id && newMessage) {
-      saveNewMessage(conversation.id, session?.user.id, newMessage);
-    }
   };
-
-  useEffect(() => {
-    if (session && conversation?.id) {
-      getMessages(conversation.id, session?.user.id).then((data) => {
-        setMessages(data);
-      });
-    }
-  }, [conversation]);
 
   useEffect(() => {
     if (session && conversation.id) {
@@ -111,58 +83,17 @@ const ConversationContainer = () => {
       if (socket) {
         listenMarkAsRead((conversationId: string) => {
           dispatch(setConversationStatus({ conversationId, status: "read" }));
-          markMessagesAsRead(conversationId, session.user.id);
         });
       }
-
-      return () => {
-        if (socket) {
-          socket.off("mark_as_read");
-        }
-      };
     }
   }, [conversation.id, session, messages, socket]);
-
-  useEffect(() => {
-    if (socket) {
-      listenSendMessage((data: IReceiveMessage) => {
-        const { conversationId, sender, recipient, content, type, status } =
-          data;
-        if (
-          recipient.id === session?.user.id &&
-          conversationId === conversation.id
-        ) {
-          setMessages([
-            ...messages,
-            {
-              content,
-              isCurrentUser: false,
-              type: type as "text",
-              status,
-            },
-          ]);
-        }
-      });
-
-      if (messages.length > 0) {
-        const lastMessage = messages[messages.length - 1];
-        dispatch(
-          setLastMessage({
-            conversationId: conversation.id,
-            lastMessageContent: lastMessage.content,
-            lastMessageTime: new Date().toString(),
-          })
-        );
-      }
-    }
-  }, [messages, socket, session, conversation.id]);
 
   return (
     <div className="fixed wrapper-page inset-0 z-50 flex flex-col">
       <ConversationHeader
         backButtonClick={() => dispatch(clearSelectedConversation())}
-        username={conversation?.username}
-        profileImage={conversation?.profileImage}
+        username={conversation.username}
+        profileImage={conversation.profileImage}
         status={isOnline ? "online" : "offline"}
       />
       <MessageContainer messages={messages} />

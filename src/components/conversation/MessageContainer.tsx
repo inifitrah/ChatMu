@@ -5,6 +5,7 @@ interface Message {
   content: string;
   isCurrentUser: boolean;
   type: "text" | "server";
+  status: "sent" | "delivered" | "read";
 }
 
 interface MessageContainerProps {
