@@ -88,26 +88,31 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       connected: alreadyConnect,
       sendMessage(data) {
         if (socket) {
+          socket.off("send_message");
           socket.emit("send_message", data);
         }
       },
       listenMessage(callback) {
         if (socket) {
+          socket.off("send_message");
           socket.on("send_message", callback);
         }
       },
       markAsRead(data) {
         if (socket) {
+          socket.off("mark_as_read");
           socket.emit("mark_as_read", data);
         }
       },
       listenMarkAsRead(callback) {
         if (socket) {
+          socket.off("mark_as_read");
           socket.on("mark_as_read", callback);
         }
       },
       listenOnlineUsers(callback) {
         if (socket) {
+          socket.off("get_online_users");
           socket.on("get_online_users", callback);
         }
       },
