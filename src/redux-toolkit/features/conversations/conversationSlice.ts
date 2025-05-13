@@ -34,13 +34,37 @@ const conversationSlice = createSlice({
     setConversations(state, action) {
       state.conversations = action.payload;
     },
-    setConversationStatus(state, action) {
+    setConversationStatus(
+      state,
+      action: {
+        payload: {
+          conversationId: string;
+          status: "sent" | "delivered" | "read";
+        };
+      }
+    ) {
       const { conversationId, status } = action.payload;
       const conversationIndex = state.conversations.findIndex(
         (conversation) => conversation.id === conversationId
       );
-      if (!state.conversations[conversationIndex].message) return;
+
+      // Check if the conversation exists or if the message status is already set
+      if (
+        !state.conversations[conversationIndex].message ||
+        state.conversations[conversationIndex].message.status === status
+      ) {
+        return;
+      }
+
+      // Update the status of the conversation
       state.conversations[conversationIndex].message.status = status;
+
+      // Update the status of the message in the messages array
+      state.messages.forEach((msg) => {
+        if (msg.conversationId === conversationId && msg.status !== status) {
+          msg.status = status;
+        }
+      });
     },
     setMessage(state, action: { payload: IMessage }) {
       state.messages = [...state.messages, action.payload];
