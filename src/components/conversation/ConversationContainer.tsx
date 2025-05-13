@@ -72,7 +72,7 @@ const ConversationContainer = ({
       if (
         messages.length > 0 &&
         messages[messages.length - 1].isCurrentUser === false &&
-        messages[messages.length - 1].status === "sent"
+        messages[messages.length - 1].status !== "read"
       ) {
         markAsRead({
           conversationId: conversation.id,
@@ -80,7 +80,11 @@ const ConversationContainer = ({
         });
       }
 
-      if (socket) {
+      if (
+        socket &&
+        messages.length > 0 &&
+        messages[messages.length - 1].isCurrentUser === true
+      ) {
         listenMarkAsRead((conversationId: string) => {
           dispatch(setConversationStatus({ conversationId, status: "read" }));
         });
