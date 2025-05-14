@@ -37,17 +37,7 @@ export default function Home() {
     if (socket && conversation.length && session) {
       listenMessage((data) => {
         const { conversationId, content, sender } = data;
-        conversation.forEach((c) => {
-          if (c.id === conversationId) {
-            dispatch(
-              setLastMessage({
-                conversationId: conversationId,
-                lastMessageContent: content,
-                lastMessageTime: new Date().toString(),
-              })
-            );
-          }
-        });
+
         dispatch(
           setMessage({
             conversationId: conversationId,
@@ -62,6 +52,13 @@ export default function Home() {
             content: content,
             type: "text",
             status: "sent",
+          })
+        );
+        dispatch(
+          setLastMessage({
+            conversationId: conversationId,
+            lastMessageContent: content,
+            lastMessageTime: new Date().toString(),
           })
         );
         toast({
