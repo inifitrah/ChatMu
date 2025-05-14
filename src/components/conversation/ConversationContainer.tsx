@@ -7,6 +7,7 @@ import MessageInput from "./MessageInput";
 import {
   clearSelectedConversation,
   setConversationStatus,
+  setLastMessage,
   setMessage,
 } from "@/redux-toolkit/features/conversations/conversationSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
@@ -59,6 +60,13 @@ const ConversationContainer = ({
     };
     sendMessage(messageData);
     dispatch(setMessage(messageData));
+    dispatch(
+      setLastMessage({
+        conversationId: messageData.conversationId,
+        lastMessageContent: messageData.content,
+        lastMessageTime: new Date().toString(),
+      })
+    );
     dispatch(
       setConversationStatus({
         conversationId: messageData.conversationId,
