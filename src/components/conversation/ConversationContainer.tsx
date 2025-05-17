@@ -82,6 +82,12 @@ const ConversationContainer = ({
         messages[messages.length - 1].isCurrentUser === false &&
         messages[messages.length - 1].status !== "read"
       ) {
+        dispatch(
+          setConversationStatus({
+            conversationId: conversation.id,
+            status: "read",
+          })
+        );
         markAsRead({
           conversationId: conversation.id,
           userId: conversation.userId,
@@ -89,7 +95,6 @@ const ConversationContainer = ({
       }
 
       if (
-        socket &&
         messages.length > 0 &&
         messages[messages.length - 1].isCurrentUser === true
       ) {
@@ -98,7 +103,7 @@ const ConversationContainer = ({
         });
       }
     }
-  }, [conversation.id, session, messages, socket]);
+  }, [conversation.id, session, messages]);
 
   return (
     <div className="fixed wrapper-page inset-0 z-50 flex flex-col">

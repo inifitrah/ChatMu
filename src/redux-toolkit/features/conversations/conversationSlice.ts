@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import {
   IConversation,
   ISelectedConversation,
@@ -49,25 +49,43 @@ const conversationSlice = createSlice({
       );
 
       // Check if the conversation exists or if the message status is already set
-      if (
-        !state.conversations[conversationIndex].message ||
-        state.conversations[conversationIndex].message.status === status
-      ) {
-        return;
-      }
+      if (!state.conversations[conversationIndex].message) return;
 
       // Update the status of the conversation
       state.conversations[conversationIndex].message.status = status;
-
       // Update the status of the message in the messages array
       state.messages.forEach((msg) => {
         if (msg.conversationId === conversationId && msg.status !== status) {
           msg.status = status;
         }
       });
+
+      // Update the unread message count if the status is "read"
+      if (
+        state.messages.length > 0 &&
+        state.conversations[conversationIndex].message.status === "read"
+      ) {
+        state.conversations[conversationIndex].message.unreadMessageCount = 0;
+      }
     },
     setMessage(state, action: { payload: IMessage }) {
+      const { conversationId, status } = action.payload;
       state.messages = [...state.messages, action.payload];
+
+      if (status === "sent" || status === "delivered") {
+        const conversationIndex = state.conversations.findIndex((conv) => {
+          return conv.id === conversationId;
+        });
+
+        if (conversationIndex >= 0) {
+          if (!state.conversations[conversationIndex].message) return;
+          const currentCount =
+            state.conversations[conversationIndex].message.unreadMessageCount ||
+            0;
+          state.conversations[conversationIndex].message.unreadMessageCount =
+            currentCount + 1;
+        }
+      }
     },
     setLastMessage(state, action) {
       const { conversationId, lastMessageContent, lastMessageTime } =
@@ -85,6 +103,29 @@ const conversationSlice = createSlice({
     },
     setSelectedConversation(state, action: { payload: ISelectedConversation }) {
       state.selectedConversation = action.payload;
+
+      // Auto mark as read when a conversation is selected
+      const conversationIndex = state.conversations.findIndex((conv) => {
+        return conv.id === action.payload.id;
+      });
+
+      const message = state.conversations[conversationIndex].message;
+      const messages = state.messages;
+
+      if (conversationIndex >= 0 && message) {
+        message.unreadMessageCount = 0;
+        message.status = "read";
+
+        messages.forEach((msg) => {
+          if (
+            msg.conversationId === action.payload.id &&
+            msg.status !== "read" &&
+            msg.sender.id === action.payload.userId
+          ) {
+            msg.status = "read";
+          }
+        });
+      }
     },
     clearSelectedConversation(state) {
       state.selectedConversation = initialState.selectedConversation;

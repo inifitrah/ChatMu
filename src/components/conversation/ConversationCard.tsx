@@ -22,7 +22,7 @@ interface ConversationCardProps {
   otherUserId: string;
   status?: "sent" | "delivered" | "read";
   onOpenChat: (otherUserId: string) => void;
-  isOnline?: boolean;
+  isOnline: boolean;
 }
 
 const ConversationCard: React.FC<ConversationCardProps> = ({
@@ -64,6 +64,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
           <CardDescription className="flex-grow overflow-hidden text-sm max-h-5">
             {lastMessageContent}
           </CardDescription>
+
           <Badge
             style={{
               opacity:
@@ -76,7 +77,6 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
           >
             {unreadMessageCount}
           </Badge>
-
           {lastMessageIsCurrentUser && (
             <>
               {status === "sent" && <Check />}

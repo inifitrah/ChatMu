@@ -16,7 +16,7 @@ type ContextType = {
   connected: boolean;
   sendMessage: (data: IMessage) => void;
   listenMessage: (callback: (data: IMessage) => void) => void;
-  markAsRead: (data: any) => void;
+  markAsRead: (data: { conversationId: string; userId: string }) => void;
   listenMarkAsRead: (callback: (data: any) => void) => void;
   listenOnlineUsers: (
     callback: (

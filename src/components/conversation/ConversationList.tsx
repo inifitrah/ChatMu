@@ -8,6 +8,7 @@ import {
 
 import {
   setConversations,
+  setConversationStatus,
   setSelectedConversation,
 } from "@/redux-toolkit/features/conversations/conversationSlice";
 import { setOnlineUsers } from "@/redux-toolkit/features/users/userSlice";
@@ -20,10 +21,11 @@ const ConversationList = () => {
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
   const { socket, listenOnlineUsers } = useSocketContext();
-  const onlineUsers = useAppSelector((state) => state.user.onlineUsers);
-  const { conversations, query, searchConversations, status } = useAppSelector(
-    (state) => state.conversation
-  );
+  // const onlineUsers = useAppSelector((state) => state.user.onlineUsers);
+  const {
+    conversation: { conversations, query, searchConversations, status },
+    user: { onlineUsers },
+  } = useAppSelector((state) => state);
 
   // Check if the user is searching for conversations
   const showConversations = query ? searchConversations : conversations;
@@ -91,9 +93,9 @@ const ConversationList = () => {
                 <ConversationCard
                   key={conv.otherUserId}
                   onOpenChat={handleOpenChat}
-                  otherUserId={conv?.otherUserId}
-                  profileImage={conv?.profileImage}
-                  username={conv?.username}
+                  otherUserId={conv.otherUserId}
+                  profileImage={conv.profileImage}
+                  username={conv.username}
                   lastMessageIsCurrentUser={conv?.message?.isCurrentUser}
                   lastMessageTime={formatLastMessageTime(
                     conv?.message?.lastMessageTime

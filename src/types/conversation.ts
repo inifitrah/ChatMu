@@ -4,11 +4,11 @@ export interface IConversation {
   profileImage: string;
   username: string;
   message?: {
-    isCurrentUser?: boolean;
-    lastMessageTime?: Date;
-    lastMessageContent?: string;
-    unreadMessageCount?: number;
-    status?: "sent" | "delivered" | "read";
+    isCurrentUser: boolean;
+    lastMessageTime: Date;
+    lastMessageContent: string;
+    unreadMessageCount: number;
+    status: "sent" | "delivered" | "read";
   };
 }
 
