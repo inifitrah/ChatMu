@@ -62,6 +62,7 @@ const ConversationContainer = ({
     dispatch(setMessage(messageData));
     dispatch(
       setLastMessage({
+        lastMessageIsCurrentUser: true,
         conversationId: messageData.conversationId,
         lastMessageContent: messageData.content,
         lastMessageTime: new Date().toString(),

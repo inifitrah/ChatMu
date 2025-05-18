@@ -96,7 +96,7 @@ const ConversationList = () => {
                   otherUserId={conv.otherUserId}
                   profileImage={conv.profileImage}
                   username={conv.username}
-                  lastMessageIsCurrentUser={conv?.message?.isCurrentUser}
+                  lastMessageIsCurrentUser={conv.message?.isCurrentUser}
                   lastMessageTime={formatLastMessageTime(
                     conv?.message?.lastMessageTime
                   )}

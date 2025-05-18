@@ -34,9 +34,9 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (socket && conversation.length && session) {
+    if (socket && conversation.length) {
       listenMessage((data) => {
-        const { conversationId, content, sender } = data;
+        const { conversationId, content, sender, recipient } = data;
 
         dispatch(
           setMessage({
@@ -46,8 +46,8 @@ export default function Home() {
               username: sender.username,
             },
             recipient: {
-              id: session.user.id,
-              username: session.user.username,
+              id: recipient.id,
+              username: recipient.username,
             },
             content: content,
             type: "text",
@@ -56,6 +56,7 @@ export default function Home() {
         );
         dispatch(
           setLastMessage({
+            lastMessageIsCurrentUser: sender.id === session?.user.id,
             conversationId: conversationId,
             lastMessageContent: content,
             lastMessageTime: new Date().toString(),
