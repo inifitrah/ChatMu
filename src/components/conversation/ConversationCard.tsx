@@ -67,10 +67,11 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
 
           <Badge
             style={{
-              opacity:
-                unreadMessageCount === undefined || unreadMessageCount === 0
-                  ? "0"
-                  : "1",
+              opacity: !lastMessageIsCurrentUser
+                ? unreadMessageCount && unreadMessageCount !== 0
+                  ? "1"
+                  : "0"
+                : "0",
             }}
             className="bg-violet-500 text-white ml-1 flex justify-center items-center"
             variant="outline"
