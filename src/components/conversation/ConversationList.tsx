@@ -7,25 +7,27 @@ import {
 } from "@/app/actions/conversationActions";
 
 import {
-  setConversations,
-  setConversationStatus,
-  setSelectedConversation,
-} from "@/redux-toolkit/features/conversations/conversationSlice";
-import { setOnlineUsers } from "@/redux-toolkit/features/users/userSlice";
+  useConversation,
+  useConversationActions,
+} from "@/contexts/ConversationContext";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
+import { setOnlineUsers } from "@/redux-toolkit/features/users/userSlice";
 import ConversationCard from "@/components/conversation/ConversationCard";
 import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
 import { useSocketContext } from "@/contexts/SocketContext";
 
 const ConversationList = () => {
   const { data: session } = useSession();
-  const dispatch = useAppDispatch();
   const { socket, listenOnlineUsers } = useSocketContext();
-  // const onlineUsers = useAppSelector((state) => state.user.onlineUsers);
+  const dispatch = useAppDispatch();
+  const { conversations, query, searchConversations, status } =
+    useConversation();
+  const onlineUsers = useAppSelector((state) => state.user.onlineUsers);
   const {
-    conversation: { conversations, query, searchConversations, status },
-    user: { onlineUsers },
-  } = useAppSelector((state) => state);
+    setConversations,
+    setSelectedConversation,
+    updateConversationStatus,
+  } = useConversationActions();
 
   // Check if the user is searching for conversations
   const showConversations = query ? searchConversations : conversations;
@@ -33,7 +35,21 @@ const ConversationList = () => {
   useEffect(() => {
     if (session) {
       getConversations(session?.user.id).then((data) => {
-        dispatch(setConversations(data));
+        // Convert Date objects to strings and ensure all properties match Conversation type
+        const formattedData = data.map((conv) => ({
+          ...conv,
+          message: conv.message
+            ? {
+                ...conv.message,
+                lastMessageTime:
+                  conv.message.lastMessageTime?.toString() ||
+                  new Date().toString(),
+                status: conv.message.status || "sent",
+                unreadMessageCount: conv.message.unreadMessageCount || 0,
+              }
+            : undefined,
+        }));
+        setConversations(formattedData);
       });
     }
   }, [session]);
@@ -55,14 +71,14 @@ const ConversationList = () => {
     if (!session) return;
     await getOrCreateConversation(session?.user.id, otherUserId).then(
       (conv) => {
-        dispatch(
-          setSelectedConversation({
-            id: conv._id,
-            userId: conv.user._id,
-            username: conv.user.username,
-            profileImage: conv.user.image,
-          })
-        );
+        // Mark conversation as read when opening
+        updateConversationStatus(otherUserId, "read" as const);
+        setSelectedConversation({
+          id: conv._id,
+          userId: conv.user._id,
+          username: conv.user.username,
+          profileImage: conv.user.image,
+        });
       }
     );
   };
@@ -99,10 +115,14 @@ const ConversationList = () => {
                   lastMessageIsCurrentUser={conv.message?.isCurrentUser}
                   lastMessageTime={formatLastMessageTime(
                     conv?.message?.lastMessageTime
+                      ? new Date(conv.message.lastMessageTime)
+                      : conv?.message
+                      ? new Date()
+                      : undefined
                   )}
                   lastMessageContent={conv?.message?.lastMessageContent || ""}
                   unreadMessageCount={conv?.message?.unreadMessageCount || 0}
-                  status={conv?.message?.status}
+                  status={conv?.message?.status || "sent"}
                   isOnline={onlineUser ? true : false}
                 />
               );
