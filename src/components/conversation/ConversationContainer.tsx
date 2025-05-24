@@ -4,16 +4,12 @@ import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationHeader from "./ConversationHeader";
 import MessageContainer from "./MessageContainer";
 import MessageInput from "./MessageInput";
-import {
-  clearSelectedConversation,
-  setConversationStatus,
-  setLastMessage,
-  setMessage,
-} from "@/redux-toolkit/features/conversations/conversationSlice";
-import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 import { IMessage, ISelectedConversation } from "@/types/conversation";
-import { selectMessageByConversationId } from "@/redux-toolkit/features/conversations/conversationSelectors";
-import { shallowEqual } from "react-redux";
+import {
+  useConversation,
+  useConversationActions,
+} from "@/contexts/ConversationContext";
+import { useAppSelector } from "@/hooks/use-dispatch-selector";
 interface ConversationContainerProps {
   conversation: ISelectedConversation;
 }
@@ -24,22 +20,19 @@ const ConversationContainer = ({
   const { socket, markAsRead, listenMarkAsRead, listenMessage } =
     useSocketContext();
   const { data: session } = useSession();
-
-  const { isOnline, messages } = useAppSelector(
-    (state) => ({
-      messages: selectMessageByConversationId(
-        state,
-        conversation.id,
-        session?.user.id
-      ),
-      isOnline: state.user.onlineUsers.find(
-        (user) => user.userId === conversation.userId
-      ),
-    }),
-    shallowEqual
+  const { messages: msgDatas } = useConversation();
+  const messages = msgDatas.filter(
+    (message) => message.conversationId === conversation.id
   );
-
-  const dispatch = useAppDispatch();
+  const {
+    addMessage,
+    setLastMessage,
+    updateConversationStatus,
+    setSelectedConversation,
+  } = useConversationActions();
+  const isOnline = useAppSelector((state) =>
+    state.user.onlineUsers.find((user) => user.userId === conversation.userId)
+  );
   const { sendMessage } = useSocketContext();
 
   const handleSendMessage = (newMessage: string) => {
@@ -55,25 +48,19 @@ const ConversationContainer = ({
         username: conversation.username,
       },
       content: newMessage,
-      type: "text",
-      status: "sent",
+      type: "text" as const,
+      status: "sent" as const,
+      isCurrentUser: true,
     };
     sendMessage(messageData);
-    dispatch(setMessage(messageData));
-    dispatch(
-      setLastMessage({
-        lastMessageIsCurrentUser: true,
-        conversationId: messageData.conversationId,
-        lastMessageContent: messageData.content,
-        lastMessageTime: new Date().toString(),
-      })
-    );
-    dispatch(
-      setConversationStatus({
-        conversationId: messageData.conversationId,
-        status: messageData.status,
-      })
-    );
+    addMessage(messageData);
+    setLastMessage({
+      lastMessageIsCurrentUser: true,
+      conversationId: messageData.conversationId,
+      lastMessageContent: messageData.content,
+      lastMessageTime: new Date().toString(),
+    });
+    updateConversationStatus(messageData.conversationId, messageData.status);
   };
 
   useEffect(() => {
@@ -83,12 +70,7 @@ const ConversationContainer = ({
         messages[messages.length - 1].isCurrentUser === false &&
         messages[messages.length - 1].status !== "read"
       ) {
-        dispatch(
-          setConversationStatus({
-            conversationId: conversation.id,
-            status: "read",
-          })
-        );
+        updateConversationStatus(conversation.id, "read" as const);
         markAsRead({
           conversationId: conversation.id,
           userId: conversation.userId,
@@ -100,7 +82,7 @@ const ConversationContainer = ({
         messages[messages.length - 1].isCurrentUser === true
       ) {
         listenMarkAsRead((conversationId: string) => {
-          dispatch(setConversationStatus({ conversationId, status: "read" }));
+          updateConversationStatus(conversationId, "read" as const);
         });
       }
     }
@@ -109,7 +91,7 @@ const ConversationContainer = ({
   return (
     <div className="fixed wrapper-page inset-0 z-50 flex flex-col">
       <ConversationHeader
-        backButtonClick={() => dispatch(clearSelectedConversation())}
+        backButtonClick={() => setSelectedConversation(null)}
         username={conversation.username}
         profileImage={conversation.profileImage}
         status={isOnline ? "online" : "offline"}
