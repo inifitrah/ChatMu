@@ -32,4 +32,5 @@ export interface IMessage {
   content: string;
   type: "text" | "image" | "video" | "audio";
   status: "sent" | "delivered" | "read";
+  isCurrentUser: boolean;
 }
