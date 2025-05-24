@@ -2,37 +2,31 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSession } from "next-auth/react";
-import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
-import { fetchSearchConversations } from "@/redux-toolkit/features/conversations/conversationThunks";
 import { X } from "lucide-react";
-import { clearSearch } from "@/redux-toolkit/features/conversations/conversationSlice";
+import { useConversationActions } from "@/contexts/ConversationContext";
 
 const ConversationSearch = () => {
-  const dispatch = useAppDispatch();
   const { data: session } = useSession();
   const [inputValue, setInputValue] = useState("");
 
+  const { setSearchQuery, clearSearch } = useConversationActions();
+
   const handleSearch = useCallback(
-    useDebounce((query) => {
+    useDebounce((query: string) => {
       query = query.trim(); // Remove leading and trailing spaces
 
       if (session && query.trim()) {
-        dispatch(
-          fetchSearchConversations({
-            username: query,
-            currentUserId: session.user.id,
-          })
-        );
+        setSearchQuery(query);
       } else {
-        dispatch(clearSearch());
+        clearSearch();
       }
     }, 888),
-    [dispatch, session]
+    [session]
   );
 
   const handleClear = () => {
     setInputValue("");
-    dispatch(clearSearch());
+    clearSearch();
   };
 
   useEffect(() => {
