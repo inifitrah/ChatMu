@@ -1,15 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import Message from "./Message";
-
-interface Message {
-  content: string;
-  isCurrentUser: boolean;
-  type: "text" | "server";
-  status: "sent" | "delivered" | "read";
-}
+import { IMessage } from "@/types/conversation";
 
 interface MessageContainerProps {
-  messages?: Message[];
+  messages?: IMessage[];
 }
 
 const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
