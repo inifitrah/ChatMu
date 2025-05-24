@@ -6,22 +6,16 @@ import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationContainer from "@/components/conversation/ConversationContainer";
-import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 import { useEffect } from "react";
 import {
-  setLastMessage,
-  setMessage,
-} from "@/redux-toolkit/features/conversations/conversationSlice";
+  useConversation,
+  useConversationActions,
+} from "@/contexts/ConversationContext";
 
 export default function Home() {
   const { socket, connected, listenMessage } = useSocketContext();
-  const selectedConversation = useAppSelector(
-    (state) => state.conversation.selectedConversation
-  );
-  const conversation = useAppSelector(
-    (state) => state.conversation.conversations
-  );
-  const dispatch = useAppDispatch();
+  const { selectedConversation, conversations } = useConversation();
+  const { addMessage, setLastMessage } = useConversationActions();
   const { toast } = useToast();
   const { data: session } = useSession({
     required: true,
@@ -34,41 +28,64 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (socket && conversation.length) {
-      listenMessage((data) => {
+    if (socket && conversations.length) {
+      const handleMessage = (data: {
+        conversationId: string;
+        content: string;
+        sender: { id: string; username: string };
+        recipient: { id: string; username: string };
+        status?: "sent" | "delivered" | "read";
+      }) => {
         const { conversationId, content, sender, recipient } = data;
 
-        dispatch(
-          setMessage({
-            conversationId: conversationId,
-            sender: {
-              id: sender.id,
-              username: sender.username,
-            },
-            recipient: {
-              id: recipient.id,
-              username: recipient.username,
-            },
-            content: content,
-            type: "text",
-            status: "sent",
-          })
-        );
-        dispatch(
-          setLastMessage({
-            lastMessageIsCurrentUser: sender.id === session?.user.id,
-            conversationId: conversationId,
-            lastMessageContent: content,
-            lastMessageTime: new Date().toString(),
-          })
-        );
-        toast({
-          title: sender.username,
-          description: content,
+        const messageData = {
+          conversationId: conversationId,
+          sender: {
+            id: sender.id,
+            username: sender.username,
+          },
+          recipient: {
+            id: recipient.id,
+            username: recipient.username,
+          },
+          content: content,
+          type: "text" as const,
+          status: data.status || ("sent" as const),
+          isCurrentUser: sender.id === session?.user.id,
+        };
+
+        const isCurrentUser = sender.id === session?.user.id;
+        addMessage(messageData);
+        setLastMessage({
+          lastMessageIsCurrentUser: isCurrentUser,
+          conversationId: conversationId,
+          lastMessageContent: content,
+          lastMessageTime: new Date().toString(),
         });
-      });
+
+        // Only show toast for messages from others
+        if (!isCurrentUser) {
+          toast({
+            title: sender.username,
+            description: content,
+          });
+        }
+      };
+      listenMessage(handleMessage);
+
+      return () => {
+        socket.off("message", handleMessage);
+      };
     }
-  }, [listenMessage, conversation]);
+  }, [
+    listenMessage,
+    conversations,
+    session?.user.id,
+    socket,
+    addMessage,
+    setLastMessage,
+    toast,
+  ]);
 
   return (
     <div className="wrapper-page">
