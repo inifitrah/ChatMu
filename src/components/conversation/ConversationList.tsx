@@ -12,9 +12,8 @@ import {
 } from "@/contexts/ConversationContext";
 import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
 import { setOnlineUsers } from "@/redux-toolkit/features/users/userSlice";
-import ConversationCard from "@/components/conversation/ConversationCard";
-import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
 import { useSocketContext } from "@/contexts/SocketContext";
+import ConversationItem from "./ConversationItem";
 
 const ConversationList = () => {
   const { data: session } = useSession();
@@ -22,7 +21,7 @@ const ConversationList = () => {
   const dispatch = useAppDispatch();
   const { conversations, query, searchConversations, status } =
     useConversation();
-  const onlineUsers = useAppSelector((state) => state.user.onlineUsers);
+
   const {
     setConversations,
     setSelectedConversation,
@@ -100,33 +99,13 @@ const ConversationList = () => {
               </div>
             );
           default:
-            return showConversations?.map((conv) => {
-              // handle online status
-              const onlineUser = onlineUsers.find((user) => {
-                return user.userId === conv.otherUserId;
-              });
-              return (
-                <ConversationCard
-                  key={conv.otherUserId}
-                  onOpenChat={handleOpenChat}
-                  otherUserId={conv.otherUserId}
-                  profileImage={conv.profileImage}
-                  username={conv.username}
-                  lastMessageIsCurrentUser={conv.message?.isCurrentUser}
-                  lastMessageTime={formatLastMessageTime(
-                    conv?.message?.lastMessageTime
-                      ? new Date(conv.message.lastMessageTime)
-                      : conv?.message
-                      ? new Date()
-                      : undefined
-                  )}
-                  lastMessageContent={conv?.message?.lastMessageContent || ""}
-                  unreadMessageCount={conv?.message?.unreadMessageCount || 0}
-                  status={conv?.message?.status || "sent"}
-                  isOnline={onlineUser ? true : false}
-                />
-              );
-            });
+            return showConversations?.map((conv) => (
+              <ConversationItem
+                key={conv.id}
+                conv={conv}
+                handleOpenChat={handleOpenChat}
+              />
+            ));
         }
       })()}
     </>
