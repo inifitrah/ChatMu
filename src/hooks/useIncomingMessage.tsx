@@ -6,27 +6,22 @@ import {
   useConversationActions,
 } from "@/contexts/ConversationContext";
 import { useSession } from "next-auth/react";
+import { IMessage } from "@/types/conversation";
 
 const useIncomingMessage = () => {
-  const { socket, listenMessage } = useSocketContext();
-  const { conversations } = useConversation();
+  const { socket, listenMessage, markAsDelivered } = useSocketContext();
   const { addMessage, setLastMessage } = useConversationActions();
+  const { conversations } = useConversation();
   const { toast } = useToast();
   const { data: session } = useSession();
 
   useEffect(() => {
     if (socket && conversations.length) {
-      const handleMessage = (data: {
-        conversationId: string;
-        content: string;
-        sender: { id: string; username: string };
-        recipient: { id: string; username: string };
-        status?: "sent" | "delivered" | "read";
-      }) => {
+      const handleReceiveMessage = (data: IMessage) => {
         const { conversationId, content, sender, recipient } = data;
 
         const messageData = {
-          conversationId: conversationId,
+          conversationId,
           sender: {
             id: sender.id,
             username: sender.username,
@@ -37,17 +32,23 @@ const useIncomingMessage = () => {
           },
           content: content,
           type: "text" as const,
-          status: data.status || ("sent" as const),
+          status: data.status,
           isCurrentUser: sender.id === session?.user.id,
+          timeStamp: new Date(),
         };
 
         const isCurrentUser = sender.id === session?.user.id;
         addMessage(messageData);
         setLastMessage({
           lastMessageIsCurrentUser: isCurrentUser,
-          conversationId: conversationId,
+          conversationId,
           lastMessageContent: content,
           lastMessageTime: new Date().toString(),
+          status: data.status,
+        });
+        markAsDelivered({
+          conversationId,
+          senderId: sender.id,
         });
 
         // Only show toast for messages from others
@@ -58,11 +59,7 @@ const useIncomingMessage = () => {
           });
         }
       };
-      listenMessage(handleMessage);
-
-      return () => {
-        socket.off("message", handleMessage);
-      };
+      listenMessage(handleReceiveMessage);
     }
   }, [
     listenMessage,
