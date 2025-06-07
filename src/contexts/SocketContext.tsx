@@ -15,7 +15,19 @@ type ContextType = {
   socket: Socket | undefined;
   connected: boolean;
   sendMessage: (data: IMessage) => void;
+  markAsDelivered: (data: { senderId: string; conversationId: string }) => void;
   listenMessage: (callback: (data: IMessage) => void) => void;
+  listenMessageReceived: (
+    callback: (data: { senderId: string; conversationId: string }) => void
+  ) => void;
+  listenMessageSent: (
+    callback: (data: {
+      tempId: string;
+      serverId: string;
+      timeStamp: number;
+      conversationId: string;
+    }) => void
+  ) => void;
   markAsRead: (data: { conversationId: string; userId: string }) => void;
   listenMarkAsRead: (callback: (data: any) => void) => void;
   listenOnlineUsers: (
@@ -28,6 +40,9 @@ type ContextType = {
 const defaultValue: ContextType = {
   socket: undefined,
   sendMessage() {},
+  markAsDelivered() {},
+  listenMessageSent() {},
+  listenMessageReceived() {},
   listenMessage() {},
   markAsRead() {},
   listenMarkAsRead() {},
@@ -88,14 +103,32 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       connected: alreadyConnect,
       sendMessage(data) {
         if (socket) {
-          socket.off("send_message");
-          socket.emit("send_message", data);
+          socket.off("client:send_message");
+          socket.emit("client:send_message", data);
+        }
+      },
+      listenMessageReceived(callback) {
+        if (socket) {
+          socket.off("server:message_received");
+          socket.on("server:message_received", callback);
+        }
+      },
+      markAsDelivered(data) {
+        if (socket) {
+          socket.off("client:message_received");
+          socket.emit("client:message_received", data);
+        }
+      },
+      listenMessageSent(callback) {
+        if (socket) {
+          socket.off("server:message_sent");
+          socket.on("server:message_sent", callback);
         }
       },
       listenMessage(callback) {
         if (socket) {
-          socket.off("send_message");
-          socket.on("send_message", callback);
+          socket.off("server:new_message");
+          socket.on("server:new_message", callback);
         }
       },
       markAsRead(data) {
