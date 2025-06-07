@@ -2,7 +2,9 @@ import React from "react";
 import ConversationCard from "./ConversationCard";
 import { useAppSelector } from "@/hooks/use-dispatch-selector";
 import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
+import { IMessage } from "@/types/conversation";
 
+type MessageStatus = IMessage["status"];
 interface ConversationItemProps {
   conv: {
     otherUserId: string;
@@ -13,7 +15,7 @@ interface ConversationItemProps {
       lastMessageTime?: string | Date;
       lastMessageContent?: string;
       unreadMessageCount?: number;
-      status?: "sent" | "delivered" | "read";
+      status?: MessageStatus;
     };
   };
   handleOpenChat: (otherUserId: string) => void;
@@ -39,7 +41,7 @@ const ConversationItem = ({ conv, handleOpenChat }: ConversationItemProps) => {
           ? new Date()
           : undefined
       )}
-      lastMessageContent={conv?.message?.lastMessageContent || ""}
+      lastMessageContent={conv.message?.lastMessageContent || ""}
       unreadMessageCount={conv?.message?.unreadMessageCount || 0}
       status={conv?.message?.status || "sent"}
       isOnline={onlineUser ? true : false}
