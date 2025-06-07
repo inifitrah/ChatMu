@@ -2,13 +2,14 @@ import React, { createContext, useContext, useReducer, ReactNode } from "react";
 import { IMessage, ISelectedConversation } from "@/types/conversation";
 
 import { IConversation } from "@/types/conversation";
+type MessageStatus = IMessage["status"];
 type Conversation = Omit<IConversation, "message"> & {
   message?: {
     isCurrentUser: boolean;
     lastMessageTime: string; // We'll convert Date to string for internal state
     lastMessageContent: string;
     unreadMessageCount?: number;
-    status: "sent" | "delivered" | "read";
+    status: MessageStatus;
   };
 };
 
@@ -25,12 +26,13 @@ type ConversationAction =
   | { type: "SET_CONVERSATIONS"; payload: Conversation[] }
   | { type: "SET_SELECTED_CONVERSATION"; payload: ISelectedConversation | null }
   | { type: "SET_MESSAGES"; payload: IMessage[] }
+  | { type: "UPDATE_MESSAGES"; payload: IMessage[] }
   | { type: "ADD_MESSAGE"; payload: IMessage }
   | {
       type: "UPDATE_CONVERSATION_STATUS";
       payload: {
         conversationId: string;
-        status: "sent" | "delivered" | "read";
+        status: MessageStatus;
       };
     }
   | {
@@ -40,6 +42,7 @@ type ConversationAction =
         lastMessageContent: string;
         lastMessageTime: string;
         lastMessageIsCurrentUser: boolean;
+        status: MessageStatus;
       };
     }
   | { type: "SET_SEARCH_QUERY"; payload: string }
@@ -88,7 +91,7 @@ function conversationReducer(
       return {
         ...state,
         conversations: state.conversations.map((conv) =>
-          conv.message && conv.id === action.payload.conversationId
+          conv.message && conv.conversationId === action.payload.conversationId
             ? {
                 ...conv,
                 message: {
@@ -107,8 +110,8 @@ function conversationReducer(
     case "SET_LAST_MESSAGE": {
       return {
         ...state,
-        conversations: state.conversations.map((conv) =>
-          conv.id === action.payload.conversationId
+        conversations: state.conversations.map((conv) => {
+          return conv.conversationId === action.payload.conversationId
             ? {
                 ...conv,
                 message: {
@@ -122,15 +125,14 @@ function conversationReducer(
                   lastMessageContent: action.payload.lastMessageContent,
                   lastMessageTime: action.payload.lastMessageTime,
                   isCurrentUser: action.payload.lastMessageIsCurrentUser,
-                  status: "sent",
+                  status: action.payload.status,
                 },
               }
-            : conv
-        ),
+            : conv;
+        }),
       };
     }
     case "SET_SEARCH_QUERY": {
-      console.log("state", state);
       return {
         ...state,
         query: action.payload,
@@ -207,9 +209,12 @@ export function useConversationActions() {
     addMessage: (message: IMessage) => {
       dispatch({ type: "ADD_MESSAGE", payload: message });
     },
+    updateMessages: (messages: IMessage[]) => {
+      dispatch({ type: "UPDATE_MESSAGES", payload: messages });
+    },
     updateConversationStatus: (
       conversationId: string,
-      status: "sent" | "delivered" | "read"
+      status: MessageStatus
     ) => {
       dispatch({
         type: "UPDATE_CONVERSATION_STATUS",
@@ -221,6 +226,7 @@ export function useConversationActions() {
       lastMessageContent: string;
       lastMessageTime: string;
       lastMessageIsCurrentUser: boolean;
+      status: MessageStatus;
     }) => {
       dispatch({ type: "SET_LAST_MESSAGE", payload: data });
     },
