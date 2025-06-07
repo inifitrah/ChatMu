@@ -5,8 +5,13 @@ import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import ConversationContainer from "@/components/conversation/ConversationContainer";
-import { useConversation } from "@/contexts/ConversationContext";
+import {
+  useConversation,
+  useConversationActions,
+} from "@/contexts/ConversationContext";
 import useIncomingMessage from "@/hooks/useIncomingMessage";
+import { useEffect } from "react";
+import { useSocketContext } from "@/contexts/SocketContext";
 
 function ConversationArea() {
   const { selectedConversation } = useConversation();
@@ -21,6 +26,8 @@ function ConversationArea() {
 }
 
 export default function Home() {
+  const { listenMessageSent, listenMessageReceived } = useSocketContext();
+  const { updateConversationStatus } = useConversationActions();
   const { toast } = useToast();
   useSession({
     required: true,
@@ -33,6 +40,18 @@ export default function Home() {
   });
 
   useIncomingMessage();
+
+  useEffect(() => {
+    listenMessageSent((data) => {
+      updateConversationStatus(data.conversationId, "sent");
+    });
+  }, [listenMessageSent]);
+
+  useEffect(() => {
+    listenMessageReceived((data) => {
+      updateConversationStatus(data.conversationId, "delivered");
+    });
+  }, [listenMessageReceived]);
 
   return (
     <div className="wrapper-page">
