@@ -10,7 +10,7 @@ import {
   useConversation,
   useConversationActions,
 } from "@/contexts/ConversationContext";
-import { useAppDispatch, useAppSelector } from "@/hooks/use-dispatch-selector";
+import { useAppDispatch } from "@/hooks/use-dispatch-selector";
 import { setOnlineUsers } from "@/redux-toolkit/features/users/userSlice";
 import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationItem from "./ConversationItem";
@@ -33,21 +33,23 @@ const ConversationList = () => {
 
   useEffect(() => {
     if (session) {
-      getConversations(session?.user.id).then((data) => {
+      getConversations(session.user.id).then((data) => {
         // Convert Date objects to strings and ensure all properties match Conversation type
-        const formattedData = data.map((conv) => ({
-          ...conv,
-          message: conv.message
-            ? {
-                ...conv.message,
-                lastMessageTime:
-                  conv.message.lastMessageTime?.toString() ||
-                  new Date().toString(),
-                status: conv.message.status || "sent",
-                unreadMessageCount: conv.message.unreadMessageCount || 0,
-              }
-            : undefined,
-        }));
+        const formattedData = data.map((conv) => {
+          return {
+            ...conv,
+            message: conv.message
+              ? {
+                  ...conv.message,
+                  lastMessageTime:
+                    conv.message.lastMessageTime?.toString() ||
+                    new Date().toString(),
+                  status: conv.message.status,
+                  unreadMessageCount: conv.message.unreadMessageCount || 0,
+                }
+              : undefined,
+          };
+        });
         setConversations(formattedData);
       });
     }
@@ -71,9 +73,9 @@ const ConversationList = () => {
     await getOrCreateConversation(session?.user.id, otherUserId).then(
       (conv) => {
         // Mark conversation as read when opening
-        updateConversationStatus(otherUserId, "read" as const);
+        updateConversationStatus(conv._id, "read" as const);
         setSelectedConversation({
-          id: conv._id,
+          conversationId: conv._id,
           userId: conv.user._id,
           username: conv.user.username,
           profileImage: conv.user.image,
@@ -99,9 +101,9 @@ const ConversationList = () => {
               </div>
             );
           default:
-            return showConversations?.map((conv) => (
+            return showConversations.map((conv) => (
               <ConversationItem
-                key={conv.id}
+                key={conv.conversationId}
                 conv={conv}
                 handleOpenChat={handleOpenChat}
               />
