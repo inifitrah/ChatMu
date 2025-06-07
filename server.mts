@@ -37,15 +37,44 @@ nextApp.prepare().then(() => {
     }
 
     io.emit("get_online_users", onlineUsers);
-    socket.on("send_message", (data: IMessage) => {
+
+    socket.on("client:send_message", (data: IMessage) => {
+      const savedMessage = {
+        ...data,
+        status: "sent",
+        timeStamp: Date.now(),
+        id: `server-${data.id}`,
+        conversationId: data.conversationId,
+      };
+      socket.emit("server:message_sent", {
+        tempId: data.id,
+        serverId: savedMessage.id,
+        timeStamp: Date.now(),
+        conversationId: savedMessage.conversationId,
+      });
+
       const receivedUser = onlineUsers.find(
         (user) => user.userId === data.recipient.id
       );
 
       if (receivedUser) {
-        socket.to(receivedUser.socketId).emit("send_message", data);
+        socket
+          .to(receivedUser.socketId)
+          .emit("server:new_message", savedMessage);
       }
     });
+
+    socket.on(
+      "client:message_received",
+      (data: { conversationId: string; senderId: string }) => {
+        const senderUser = onlineUsers.find(
+          (user) => user.userId === data.senderId
+        );
+        if (!senderUser) return;
+
+        socket.to(senderUser.socketId).emit("server:message_received", data);
+      }
+    );
 
     socket.on("mark_as_read", ({ conversationId, userId }) => {
       const receivedUser = onlineUsers.find((user) => user.userId === userId);
