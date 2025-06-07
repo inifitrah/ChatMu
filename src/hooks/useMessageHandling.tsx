@@ -12,16 +12,20 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
   const { data: session } = useSession();
   const { messages: allMessages } = useConversation();
   const messages = allMessages.filter(
-    (message) => message.conversationId === conversation.id
+    (message) => message.conversationId === conversation.conversationId
   );
-  const { addMessage, setLastMessage, updateConversationStatus } =
-    useConversationActions();
+  const {
+    addMessage: setMessage,
+    setLastMessage,
+    updateConversationStatus,
+  } = useConversationActions();
   const { sendMessage } = useSocketContext();
 
   const handleSendMessage = (newMessage: string) => {
     if (!session || newMessage === "") return;
     const messageData: IMessage = {
-      conversationId: conversation.id,
+      tempId: Math.random().toString(26),
+      conversationId: conversation.conversationId,
       sender: {
         id: session.user.id,
         username: session.user.username,
@@ -32,30 +36,32 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
       },
       content: newMessage,
       type: "text" as const,
-      status: "sent" as const,
+      status: "sending" as const,
       isCurrentUser: true,
+      timeStamp: new Date(),
     };
     sendMessage(messageData);
-    addMessage(messageData);
+    setMessage(messageData);
     setLastMessage({
       lastMessageIsCurrentUser: true,
       conversationId: messageData.conversationId,
       lastMessageContent: messageData.content,
       lastMessageTime: new Date().toString(),
+      status: messageData.status,
     });
-    updateConversationStatus(messageData.conversationId, messageData.status);
+    // updateConversationStatus(messageData.conversationId, messageData.status);
   };
 
   useEffect(() => {
-    if (session && conversation.id) {
+    if (session && conversation.conversationId) {
       if (
         messages.length > 0 &&
         messages[messages.length - 1].isCurrentUser === false &&
         messages[messages.length - 1].status !== "read"
       ) {
-        updateConversationStatus(conversation.id, "read" as const);
+        updateConversationStatus(conversation.conversationId, "read" as const);
         markAsRead({
-          conversationId: conversation.id,
+          conversationId: conversation.conversationId,
           userId: conversation.userId,
         });
       }
@@ -69,7 +75,7 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
         });
       }
     }
-  }, [conversation.id, session, messages]);
+  }, [conversation.conversationId, session, messages]);
 
   return { messages, handleSendMessage };
 };
