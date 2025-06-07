@@ -1,5 +1,5 @@
 export interface IConversation {
-  id: string;
+  conversationId: string;
   otherUserId: string;
   profileImage: string;
   username: string;
@@ -8,18 +8,20 @@ export interface IConversation {
     lastMessageTime: Date;
     lastMessageContent: string;
     unreadMessageCount: number;
-    status: "sent" | "delivered" | "read";
+    status: "sending" | "sent" | "delivered" | "read" | "failed";
   };
 }
 
 export interface ISelectedConversation {
-  id: string;
+  conversationId: string;
   userId: string;
   username: string;
   profileImage: string;
 }
 
 export interface IMessage {
+  id?: string;
+  tempId?: string;
   conversationId: string;
   sender: {
     id: string;
@@ -31,6 +33,7 @@ export interface IMessage {
   };
   content: string;
   type: "text" | "image" | "video" | "audio";
-  status: "sent" | "delivered" | "read";
+  status: "sending" | "sent" | "delivered" | "read" | "failed";
   isCurrentUser: boolean;
+  timeStamp: Date;
 }
