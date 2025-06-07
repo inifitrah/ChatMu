@@ -108,7 +108,7 @@ export const getConversations = async (
         : null;
 
       return {
-        id: conversation._id,
+        conversationId: conversation._id,
         otherUserId: otherUser._id,
         profileImage: otherUser.image || null,
         username: otherUser.username,
