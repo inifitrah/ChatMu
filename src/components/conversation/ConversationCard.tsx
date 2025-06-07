@@ -10,7 +10,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import ConversationProfile from "./ConversationProfile";
-import { Check, CheckCheck } from "lucide-react";
+import { ClockArrowUp, Check, CheckCheck, Loader } from "lucide-react";
 
 interface ConversationCardProps {
   profileImage?: string;
@@ -20,7 +20,7 @@ interface ConversationCardProps {
   unreadMessageCount?: number;
   lastMessageIsCurrentUser?: boolean;
   otherUserId: string;
-  status?: "sent" | "delivered" | "read";
+  status?: "sending" | "sent" | "delivered" | "read" | "failed";
   onOpenChat: (otherUserId: string) => void;
   isOnline: boolean;
 }
@@ -80,6 +80,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
           </Badge>
           {lastMessageIsCurrentUser && (
             <>
+              {status === "sending" && <Loader />}
               {status === "sent" && <Check />}
               {status === "delivered" && <CheckCheck />}
               {status === "read" && <CheckCheck className="text-sky-600" />}
