@@ -5,14 +5,18 @@ import {
 import { useSocketContext } from "@/contexts/SocketContext";
 import { IMessage, ISelectedConversation } from "@/types/conversation";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const useMessageHandling = (conversation: ISelectedConversation) => {
-  const { markAsRead, listenMarkAsRead } = useSocketContext();
+  const { markAsRead } = useSocketContext();
   const { data: session } = useSession();
   const { messages: allMessages } = useConversation();
-  const messages = allMessages.filter(
-    (message) => message.conversationId === conversation.conversationId
+  const messages = useMemo(
+    () =>
+      allMessages.filter(
+        (message) => message.conversationId === conversation.conversationId
+      ),
+    [allMessages, conversation.conversationId]
   );
   const {
     addMessage: setMessage,
@@ -49,33 +53,23 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
       lastMessageTime: new Date().toString(),
       status: messageData.status,
     });
-    // updateConversationStatus(messageData.conversationId, messageData.status);
   };
 
   useEffect(() => {
-    if (session && conversation.conversationId) {
+    if (conversation.conversationId) {
       if (
         messages.length > 0 &&
         messages[messages.length - 1].isCurrentUser === false &&
         messages[messages.length - 1].status !== "read"
       ) {
-        updateConversationStatus(conversation.conversationId, "read" as const);
+        updateConversationStatus(conversation.conversationId, "read");
         markAsRead({
           conversationId: conversation.conversationId,
           userId: conversation.userId,
         });
       }
-
-      if (
-        messages.length > 0 &&
-        messages[messages.length - 1].isCurrentUser === true
-      ) {
-        listenMarkAsRead((conversationId: string) => {
-          updateConversationStatus(conversationId, "read" as const);
-        });
-      }
     }
-  }, [conversation.conversationId, session, messages]);
+  }, [conversation.conversationId, messages.length]);
 
   return { messages, handleSendMessage };
 };
