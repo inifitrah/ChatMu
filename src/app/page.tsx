@@ -26,7 +26,8 @@ function ConversationArea() {
 }
 
 export default function Home() {
-  const { listenMessageSent, listenMessageReceived } = useSocketContext();
+  const { listenMessageSent, listenMessageReceived, listenMessageRead } =
+    useSocketContext();
   const { updateConversationStatus } = useConversationActions();
   const { toast } = useToast();
   useSession({
@@ -42,16 +43,27 @@ export default function Home() {
   useIncomingMessage();
 
   useEffect(() => {
-    listenMessageSent((data) => {
+    const listener = listenMessageSent((data) => {
       updateConversationStatus(data.conversationId, "sent");
     });
+
+    return () => listener.off();
   }, [listenMessageSent]);
 
   useEffect(() => {
-    listenMessageReceived((data) => {
+    const listener = listenMessageReceived((data) => {
       updateConversationStatus(data.conversationId, "delivered");
     });
+
+    return () => listener.off();
   }, [listenMessageReceived]);
+
+  useEffect(() => {
+    const listener = listenMessageRead((conversationId: string) => {
+      updateConversationStatus(conversationId, "read");
+    });
+    return () => listener.off();
+  }, [listenMessageRead]);
 
   return (
     <div className="wrapper-page">
