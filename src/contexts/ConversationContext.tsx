@@ -90,8 +90,9 @@ function conversationReducer(
     case "UPDATE_CONVERSATION_STATUS": {
       return {
         ...state,
-        conversations: state.conversations.map((conv) =>
-          conv.message && conv.conversationId === action.payload.conversationId
+        conversations: state.conversations.map((conv) => {
+          return conv.message &&
+            conv.conversationId === action.payload.conversationId
             ? {
                 ...conv,
                 message: {
@@ -103,8 +104,8 @@ function conversationReducer(
                       : conv.message.unreadMessageCount || 0,
                 },
               }
-            : conv
-        ),
+            : conv;
+        }),
       };
     }
     case "SET_LAST_MESSAGE": {
