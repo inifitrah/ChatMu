@@ -22,11 +22,8 @@ const ConversationList = () => {
   const { conversations, query, searchConversations, status } =
     useConversation();
 
-  const {
-    setConversations,
-    setSelectedConversation,
-    updateConversationStatus,
-  } = useConversationActions();
+  const { setConversations, setSelectedConversation } =
+    useConversationActions();
 
   // Check if the user is searching for conversations
   const showConversations = query ? searchConversations : conversations;
@@ -34,7 +31,6 @@ const ConversationList = () => {
   useEffect(() => {
     if (session) {
       getConversations(session.user.id).then((data) => {
-        // Convert Date objects to strings and ensure all properties match Conversation type
         const formattedData = data.map((conv) => {
           return {
             ...conv,
@@ -73,7 +69,7 @@ const ConversationList = () => {
     await getOrCreateConversation(session?.user.id, otherUserId).then(
       (conv) => {
         // Mark conversation as read when opening
-        updateConversationStatus(conv._id, "read" as const);
+        // updateConversationStatus(conv._id, "read" as const);
         setSelectedConversation({
           conversationId: conv._id,
           userId: conv.user._id,
