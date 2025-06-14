@@ -50,7 +50,6 @@ const useIncomingMessage = () => {
           conversationId,
           senderId: sender.id,
         });
-
         // Only show toast for messages from others
         if (!isCurrentUser) {
           toast({
@@ -59,7 +58,10 @@ const useIncomingMessage = () => {
           });
         }
       };
-      listenMessage(handleReceiveMessage);
+      const listener = listenMessage(handleReceiveMessage);
+
+      // Cleanup listener
+      return () => listener.off();
     }
   }, [
     listenMessage,
@@ -69,6 +71,7 @@ const useIncomingMessage = () => {
     addMessage,
     setLastMessage,
     toast,
+    markAsDelivered,
   ]);
 };
 
