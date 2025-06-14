@@ -76,11 +76,13 @@ nextApp.prepare().then(() => {
       }
     );
 
-    socket.on("mark_as_read", ({ conversationId, userId }) => {
+    socket.on("client:message_read", ({ conversationId, userId }) => {
       const receivedUser = onlineUsers.find((user) => user.userId === userId);
 
       if (receivedUser) {
-        socket.to(receivedUser.socketId).emit("mark_as_read", conversationId);
+        socket
+          .to(receivedUser.socketId)
+          .emit("server:mark_as_read", conversationId);
       }
     });
 
