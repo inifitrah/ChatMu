@@ -6,9 +6,9 @@ import { X } from "lucide-react";
 import { useConversationActions } from "@/contexts/ConversationContext";
 
 const ConversationSearch = () => {
+  const { setIsSearchActive } = useConversationActions();
   const { data: session } = useSession();
   const [inputValue, setInputValue] = useState("");
-
   const { setSearchQuery, clearSearch } = useConversationActions();
 
   const handleSearch = useCallback(
@@ -24,7 +24,17 @@ const ConversationSearch = () => {
     [session]
   );
 
-  const handleClear = () => {
+  const handleSearchFocus = () => {
+    setIsSearchActive(true);
+  };
+
+  const handleSearchBlur = () => {
+    if (!inputValue) {
+      setIsSearchActive(false);
+    }
+  };
+
+  const handleSearchClear = () => {
     setInputValue("");
     clearSearch();
   };
@@ -40,11 +50,13 @@ const ConversationSearch = () => {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Search by username"
+        onBlur={handleSearchBlur}
+        onFocus={handleSearchFocus}
         className="flex-grow"
       />
       {inputValue && (
         <span
-          onClick={handleClear}
+          onClick={handleSearchClear}
           className="absolute active:bg-destructive/50 rounded-full border-border border cursor-pointer right-4"
         >
           <X />
