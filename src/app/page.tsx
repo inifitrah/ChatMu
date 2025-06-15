@@ -19,17 +19,17 @@ function ConversationArea() {
   return (
     <div className="relative flex flex-col">
       <ConversationList
-        className={`absolute transition-all duration-300 ease-in-out ${
+        className={`absolute z-30 transition-all duration-300 ease-in-out ${
           isSearchActive
-            ? "opacity-0 translate-y-5 -rotate-x-10"
+            ? "opacity-0 translate-y-7 -rotate-x-10"
             : "opacity-100 translate-y-0 rotate-x-0"
         }`}
       />
       <ConversationSearchResult
-        className={`absolute  transition-all duration-300 ease-in-out ${
+        className={`absolute z-20 transition-all duration-300 ease-in-out ${
           isSearchActive
             ? "opacity-100 translate-y-0 rotate-x-0"
-            : "opacity-0 translate-y-5 -rotate-x-10"
+            : "opacity-0 -translate-y-2 rotate-x-10"
         }`}
       />
       {selectedConversation && (
