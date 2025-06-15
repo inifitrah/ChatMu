@@ -19,6 +19,7 @@ interface ConversationState {
   messages: IMessage[];
   status: "idle" | "loading" | "failed";
   query: string;
+  isSearchActive: boolean;
   searchConversations: Conversation[];
 }
 
@@ -28,6 +29,7 @@ type ConversationAction =
   | { type: "SET_MESSAGES"; payload: IMessage[] }
   | { type: "UPDATE_MESSAGES"; payload: IMessage[] }
   | { type: "ADD_MESSAGE"; payload: IMessage }
+  | { type: "SET_SEARCH_ACTIVE"; payload: boolean }
   | {
       type: "UPDATE_CONVERSATION_STATUS";
       payload: {
@@ -54,7 +56,8 @@ const initialState: ConversationState = {
   selectedConversation: null,
   messages: [],
   status: "idle",
-  query: "fitrah",
+  query: "",
+  isSearchActive: false,
   searchConversations: [],
 };
 
@@ -131,6 +134,12 @@ function conversationReducer(
               }
             : conv;
         }),
+      };
+    }
+    case "SET_SEARCH_ACTIVE": {
+      return {
+        ...state,
+        isSearchActive: action.payload,
       };
     }
     case "SET_SEARCH_QUERY": {
@@ -230,6 +239,9 @@ export function useConversationActions() {
       status: MessageStatus;
     }) => {
       dispatch({ type: "SET_LAST_MESSAGE", payload: data });
+    },
+    setIsSearchActive: (isActive: boolean) => {
+      dispatch({ type: "SET_SEARCH_ACTIVE", payload: isActive });
     },
     setSearchQuery: (query: string) => {
       dispatch({ type: "SET_SEARCH_QUERY", payload: query });
