@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import {
   getConversations,
@@ -14,19 +14,16 @@ import { useAppDispatch } from "@/hooks/use-dispatch-selector";
 import { setOnlineUsers } from "@/redux-toolkit/features/users/userSlice";
 import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationItem from "./ConversationItem";
+import { cn } from "@/lib/utils";
 
-const ConversationList = () => {
+const ConversationList = ({ className }: { className?: string }) => {
   const { data: session } = useSession();
   const { socket, listenOnlineUsers } = useSocketContext();
   const dispatch = useAppDispatch();
-  const { conversations, query, searchConversations, status } =
-    useConversation();
+  const { conversations, status } = useConversation();
 
   const { setConversations, setSelectedConversation } =
     useConversationActions();
-
-  // Check if the user is searching for conversations
-  const showConversations = query ? searchConversations : conversations;
 
   useEffect(() => {
     if (session) {
@@ -68,8 +65,6 @@ const ConversationList = () => {
     if (!session) return;
     await getOrCreateConversation(session?.user.id, otherUserId).then(
       (conv) => {
-        // Mark conversation as read when opening
-        // updateConversationStatus(conv._id, "read" as const);
         setSelectedConversation({
           conversationId: conv._id,
           userId: conv.user._id,
@@ -81,7 +76,7 @@ const ConversationList = () => {
   };
 
   return (
-    <>
+    <div className={cn(className)}>
       {(() => {
         switch (status) {
           case "failed":
@@ -97,7 +92,7 @@ const ConversationList = () => {
               </div>
             );
           default:
-            return showConversations.map((conv) => (
+            return conversations.map((conv) => (
               <ConversationItem
                 key={conv.conversationId}
                 conv={conv}
@@ -106,7 +101,7 @@ const ConversationList = () => {
             ));
         }
       })()}
-    </>
+    </div>
   );
 };
 
