@@ -12,16 +12,30 @@ import {
 import useIncomingMessage from "@/hooks/useIncomingMessage";
 import { useEffect } from "react";
 import { useSocketContext } from "@/contexts/SocketContext";
+import ConversationSearchResult from "@/components/conversation/ConversationSearchContainer";
 
 function ConversationArea() {
-  const { selectedConversation } = useConversation();
+  const { selectedConversation, isSearchActive } = useConversation();
   return (
-    <>
-      <ConversationList />
+    <div className="relative flex flex-col">
+      <ConversationList
+        className={`absolute transition-all duration-300 ease-in-out ${
+          isSearchActive
+            ? "opacity-0 translate-y-5 -rotate-x-10"
+            : "opacity-100 translate-y-0 rotate-x-0"
+        }`}
+      />
+      <ConversationSearchResult
+        className={`absolute  transition-all duration-300 ease-in-out ${
+          isSearchActive
+            ? "opacity-100 translate-y-0 rotate-x-0"
+            : "opacity-0 translate-y-5 -rotate-x-10"
+        }`}
+      />
       {selectedConversation && (
         <ConversationContainer conversation={selectedConversation} />
       )}
-    </>
+    </div>
   );
 }
 
