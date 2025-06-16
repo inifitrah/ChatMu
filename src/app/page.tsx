@@ -12,7 +12,7 @@ import {
 import useIncomingMessage from "@/hooks/useIncomingMessage";
 import { useEffect } from "react";
 import { useSocketContext } from "@/contexts/SocketContext";
-import ConversationSearchResult from "@/components/conversation/ConversationSearchContainer";
+import ConversationSearchResult from "@/components/conversation/ConversationSearchResult";
 
 function ConversationArea() {
   const { selectedConversation, isSearchActive } = useConversation();
