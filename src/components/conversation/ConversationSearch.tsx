@@ -37,6 +37,7 @@ const ConversationSearch = () => {
   const handleSearchClear = () => {
     setInputValue("");
     clearSearch();
+    setIsSearchActive(false);
   };
 
   useEffect(() => {
