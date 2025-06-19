@@ -1,11 +1,15 @@
 "use client";
-import React from "react";
+import React, { RefObject } from "react";
 import Image from "next/image";
 import NavigationMenu from "@/components/header/NavigationMenu";
 import { ThemeSwitch } from "../ThemeSwitch";
 import ConversationSearch from "@/components/conversation/ConversationSearch";
 
-const Header = () => {
+interface HeaderProps {
+  searchContainerRef: RefObject<HTMLDivElement>;
+}
+
+const Header = ({ searchContainerRef }: HeaderProps) => {
   return (
     <header className="text-black flex flex-col px-7 pt-8 pb-2 bg-[#F8F8F8] dark:bg-[#0D0F12] dark:text-white">
       <div className="flex items-center justify-between mb-6 ">
@@ -31,7 +35,7 @@ const Header = () => {
         </div>
       </div>
       <div>
-        <ConversationSearch />
+        <ConversationSearch searchContainerRef={searchContainerRef} />
       </div>
     </header>
   );
