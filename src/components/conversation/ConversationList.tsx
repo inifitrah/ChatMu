@@ -76,7 +76,7 @@ const ConversationList = ({ className }: { className?: string }) => {
   };
 
   return (
-    <div className={cn(className)}>
+    <div className={cn("w-full", className)}>
       {(() => {
         switch (status) {
           case "failed":
