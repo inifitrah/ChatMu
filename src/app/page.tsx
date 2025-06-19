@@ -10,26 +10,32 @@ import {
   useConversationActions,
 } from "@/contexts/ConversationContext";
 import useIncomingMessage from "@/hooks/useIncomingMessage";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationSearchResult from "@/components/conversation/ConversationSearchResult";
+import useClickOutside from "@/hooks/useClickOutside";
 
-function ConversationArea() {
+function ConversationArea({
+  resultsContainerRef,
+}: {
+  resultsContainerRef: React.RefObject<HTMLDivElement>;
+}) {
   const { selectedConversation, isSearchActive } = useConversation();
   return (
     <div className="relative flex flex-col">
       <ConversationList
-        className={`absolute z-30 transition-all duration-300 ease-in-out ${
+        className={`absolute transition-all duration-300 ease-in-out ${
           isSearchActive
-            ? "opacity-0 translate-y-7 -rotate-x-10"
-            : "opacity-100 translate-y-0 rotate-x-0"
+            ? "opacity-0 translate-y-7 pointer-events-none -rotate-x-10"
+            : "opacity-100 translate-y-0 pointer-events-auto rotate-x-0"
         }`}
       />
       <ConversationSearchResult
-        className={`absolute z-20 transition-all duration-300 ease-in-out ${
+        resultContainerRef={resultsContainerRef}
+        className={`absolute transition-all duration-300 ease-in-out ${
           isSearchActive
-            ? "opacity-100 translate-y-0 rotate-x-0"
-            : "opacity-0 -translate-y-2 rotate-x-10"
+            ? "opacity-100 translate-y-0 pointer-events-auto rotate-x-0"
+            : "opacity-0 -translate-y-2 pointer-events-none rotate-x-10"
         }`}
       />
       {selectedConversation && (
@@ -40,9 +46,13 @@ function ConversationArea() {
 }
 
 export default function Home() {
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const resultsContainerRef = useRef<HTMLDivElement>(null);
   const { listenMessageSent, listenMessageReceived, listenMessageRead } =
     useSocketContext();
-  const { updateConversationStatus } = useConversationActions();
+  const { isSearchActive } = useConversation();
+  const { updateConversationStatus, setIsSearchActive } =
+    useConversationActions();
   const { toast } = useToast();
   useSession({
     required: true,
@@ -52,6 +62,12 @@ export default function Home() {
       });
       redirect("/auth");
     },
+  });
+
+  useClickOutside([searchContainerRef, resultsContainerRef], () => {
+    if (isSearchActive) {
+      setIsSearchActive(false);
+    }
   });
 
   useIncomingMessage();
@@ -81,9 +97,9 @@ export default function Home() {
 
   return (
     <div className="wrapper-page">
-      <Header />
+      <Header searchContainerRef={searchContainerRef} />
       <main className="bg-background">
-        <ConversationArea />
+        <ConversationArea resultsContainerRef={resultsContainerRef} />
       </main>
     </div>
   );
