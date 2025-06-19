@@ -1,15 +1,25 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, RefObject } from "react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useSession } from "next-auth/react";
 import { X } from "lucide-react";
-import { useConversationActions } from "@/contexts/ConversationContext";
+import {
+  useConversation,
+  useConversationActions,
+} from "@/contexts/ConversationContext";
 
-const ConversationSearch = () => {
-  const { setIsSearchActive } = useConversationActions();
+interface ConversationSearchProps {
+  searchContainerRef: RefObject<HTMLDivElement>;
+}
+
+const ConversationSearch = ({
+  searchContainerRef,
+}: ConversationSearchProps) => {
   const { data: session } = useSession();
   const [inputValue, setInputValue] = useState("");
-  const { setSearchQuery, clearSearch } = useConversationActions();
+  const { isSearchActive } = useConversation();
+  const { setSearchQuery, clearSearch, setIsSearchActive } =
+    useConversationActions();
 
   const handleSearch = useCallback(
     useDebounce((query: string) => {
@@ -28,12 +38,6 @@ const ConversationSearch = () => {
     setIsSearchActive(true);
   };
 
-  const handleSearchBlur = () => {
-    if (!inputValue) {
-      setIsSearchActive(false);
-    }
-  };
-
   const handleSearchClear = () => {
     setInputValue("");
     clearSearch();
@@ -45,17 +49,16 @@ const ConversationSearch = () => {
   }, [inputValue]);
 
   return (
-    <div className="relative flex items-center">
+    <div ref={searchContainerRef} className="relative flex items-center">
       <Input
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         placeholder="Search by username"
-        onBlur={handleSearchBlur}
         onFocus={handleSearchFocus}
         className="flex-grow"
       />
-      {inputValue && (
+      {isSearchActive && (
         <span
           onClick={handleSearchClear}
           className="absolute active:bg-destructive/50 rounded-full border-border border cursor-pointer right-4"

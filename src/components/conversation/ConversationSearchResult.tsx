@@ -1,15 +1,24 @@
 import { cn } from "@/lib/utils";
-import React from "react";
+import React, { RefObject } from "react";
 
-const ConversationSearchResult = ({ className }: { className?: string }) => {
+interface ConversationSearchResultProps {
+  resultContainerRef: RefObject<HTMLDivElement>;
+  className?: string;
+}
+
+const ConversationSearchResult = ({
+  resultContainerRef,
+  className,
+}: ConversationSearchResultProps) => {
   return (
     <div
+      ref={resultContainerRef}
       className={cn(
-        "absolute rounded-md bg-background flex-col p-2 h-40 w-full",
+        "absolute rounded-md bg-white flex-col p-2 px-7 w-full",
         className
       )}
     >
-      <h2 className="text-lg font-semibold">Search Results</h2>
+      <h2 className="text-lg text-black font-semibold">Search Results</h2>
       <p className="text-gray-500">No results found.</p>
     </div>
   );
