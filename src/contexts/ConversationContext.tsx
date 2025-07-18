@@ -2,11 +2,12 @@ import React, { createContext, useContext, useReducer, ReactNode } from "react";
 import { IMessage, ISelectedConversation } from "@/types/conversation";
 
 import { IConversation } from "@/types/conversation";
+import { SearchResultItem } from "@/types/search";
 type MessageStatus = IMessage["status"];
 type Conversation = Omit<IConversation, "message"> & {
   message?: {
     isCurrentUser: boolean;
-    lastMessageTime: string; // We'll convert Date to string for internal state
+    lastMessageTime?: Date;
     lastMessageContent: string;
     unreadMessageCount?: number;
     status: MessageStatus;
@@ -20,7 +21,8 @@ interface ConversationState {
   status: "idle" | "loading" | "failed";
   query: string;
   isSearchActive: boolean;
-  searchConversations: Conversation[];
+  isSearchLoading: boolean;
+  searchConversations: SearchResultItem[];
 }
 
 type ConversationAction =
@@ -30,6 +32,7 @@ type ConversationAction =
   | { type: "UPDATE_MESSAGES"; payload: IMessage[] }
   | { type: "ADD_MESSAGE"; payload: IMessage }
   | { type: "SET_SEARCH_ACTIVE"; payload: boolean }
+  | { type: "SET_SEARCH_LOADING"; payload: boolean }
   | {
       type: "UPDATE_CONVERSATION_STATUS";
       payload: {
@@ -42,7 +45,7 @@ type ConversationAction =
       payload: {
         conversationId: string;
         lastMessageContent: string;
-        lastMessageTime: string;
+        lastMessageTime: Date;
         lastMessageIsCurrentUser: boolean;
         status: MessageStatus;
       };
@@ -58,6 +61,7 @@ const initialState: ConversationState = {
   status: "idle",
   query: "",
   isSearchActive: false,
+  isSearchLoading: false,
   searchConversations: [],
 };
 
@@ -67,6 +71,7 @@ function conversationReducer(
 ): ConversationState {
   switch (action.type) {
     case "SET_CONVERSATIONS": {
+      console.log("set conversations", action.payload);
       return {
         ...state,
         conversations: action.payload,
@@ -148,16 +153,45 @@ function conversationReducer(
         query: action.payload,
       };
     }
+    case "SET_SEARCH_LOADING": {
+      return {
+        ...state,
+        isSearchLoading: action.payload,
+      };
+    }
     case "SET_SEARCH_CONVERSATIONS": {
-      const filteredConversations = state.conversations.filter((conv) => {
-        const query = state.query.toLowerCase().trim();
-        if (!query || query === "") return;
-        return conv.username.toLowerCase().includes(query);
-      });
+      const query = state.query.toLowerCase().trim();
+
+      if (!query) {
+        return {
+          ...state,
+          searchConversations: [],
+          isSearchLoading: false,
+        };
+      }
+
+      const filteredConversations: SearchResultItem[] = state.conversations
+        .filter((conv) => {
+          if (!query || query === "") return false;
+          return conv.username.toLowerCase().includes(query);
+        })
+        .map((conv) => {
+          console.log({ conv });
+          return {
+            id: conv.conversationId,
+            type: "chat",
+            title: conv.username,
+            profileImage: conv.profileImage,
+            timestamp: conv.message?.lastMessageTime,
+            messagePreview: conv.message?.lastMessageContent,
+            unreadCount: conv.message?.unreadMessageCount,
+          };
+        });
 
       return {
         ...state,
         searchConversations: filteredConversations,
+        isSearchLoading: false,
       };
     }
     case "SET_STATUS": {
@@ -234,7 +268,7 @@ export function useConversationActions() {
     setLastMessage: (data: {
       conversationId: string;
       lastMessageContent: string;
-      lastMessageTime: string;
+      lastMessageTime: Date;
       lastMessageIsCurrentUser: boolean;
       status: MessageStatus;
     }) => {
@@ -243,12 +277,16 @@ export function useConversationActions() {
     setIsSearchActive: (isActive: boolean) => {
       dispatch({ type: "SET_SEARCH_ACTIVE", payload: isActive });
     },
+    setIsSearchLoading: (isLoading: boolean) => {
+      dispatch({ type: "SET_SEARCH_LOADING", payload: isLoading });
+    },
     setSearchQuery: (query: string) => {
       dispatch({ type: "SET_SEARCH_QUERY", payload: query });
       dispatch({ type: "SET_SEARCH_CONVERSATIONS" });
     },
     clearSearch: () => {
       dispatch({ type: "SET_SEARCH_QUERY", payload: "" });
+      dispatch({ type: "SET_SEARCH_CONVERSATIONS" });
     },
   };
 }
