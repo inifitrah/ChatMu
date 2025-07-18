@@ -18,7 +18,7 @@ const ConversationSearch = ({
   const { data: session } = useSession();
   const [inputValue, setInputValue] = useState("");
   const { isSearchActive } = useConversation();
-  const { setSearchQuery, clearSearch, setIsSearchActive } =
+  const { setSearchQuery, setIsSearchLoading, clearSearch, setIsSearchActive } =
     useConversationActions();
 
   const handleSearch = useCallback(
@@ -26,6 +26,7 @@ const ConversationSearch = ({
       query = query.trim(); // Remove leading and trailing spaces
 
       if (session && query.trim()) {
+        setIsSearchLoading(true);
         setSearchQuery(query);
       } else {
         clearSearch();
@@ -54,7 +55,7 @@ const ConversationSearch = ({
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        placeholder="Search by username"
+        placeholder="Search"
         onFocus={handleSearchFocus}
         className="flex-grow"
       />
