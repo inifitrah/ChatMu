@@ -34,9 +34,7 @@ const ConversationList = ({ className }: { className?: string }) => {
             message: conv.message
               ? {
                   ...conv.message,
-                  lastMessageTime:
-                    conv.message.lastMessageTime?.toString() ||
-                    new Date().toString(),
+                  lastMessageTime: conv.message.lastMessageTime,
                   status: conv.message.status,
                   unreadMessageCount: conv.message.unreadMessageCount || 0,
                 }

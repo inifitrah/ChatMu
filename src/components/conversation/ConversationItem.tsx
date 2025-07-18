@@ -12,7 +12,7 @@ interface ConversationItemProps {
     username: string;
     message?: {
       isCurrentUser?: boolean;
-      lastMessageTime?: string | Date;
+      lastMessageTime?: Date;
       lastMessageContent?: string;
       unreadMessageCount?: number;
       status?: MessageStatus;
@@ -34,13 +34,7 @@ const ConversationItem = ({ conv, handleOpenChat }: ConversationItemProps) => {
       profileImage={conv.profileImage}
       username={conv.username}
       lastMessageIsCurrentUser={conv.message?.isCurrentUser}
-      lastMessageTime={formatLastMessageTime(
-        conv?.message?.lastMessageTime
-          ? new Date(conv.message.lastMessageTime)
-          : conv?.message
-          ? new Date()
-          : undefined
-      )}
+      lastMessageTime={conv.message?.lastMessageTime}
       lastMessageContent={conv.message?.lastMessageContent || ""}
       unreadMessageCount={conv?.message?.unreadMessageCount || 0}
       status={conv?.message?.status || "sent"}

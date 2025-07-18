@@ -11,11 +11,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import ConversationProfile from "./ConversationProfile";
 import { ClockArrowUp, Check, CheckCheck, Loader } from "lucide-react";
+import { formatLastMessageTime } from "@/utils/formatLastMessageTime";
 
 interface ConversationCardProps {
   profileImage?: string;
   username: string;
-  lastMessageTime?: string;
+  lastMessageTime?: Date;
   lastMessageContent?: string;
   unreadMessageCount?: number;
   lastMessageIsCurrentUser?: boolean;
@@ -56,7 +57,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({
           </CardHeader>
           {lastMessageContent && (
             <p className="text-foreground flex-none text-sm">
-              {lastMessageTime}
+              {formatLastMessageTime(lastMessageTime)}
             </p>
           )}
         </div>
