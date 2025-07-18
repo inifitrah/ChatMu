@@ -20,7 +20,13 @@ function ConversationArea({
 }: {
   resultsContainerRef: React.RefObject<HTMLDivElement>;
 }) {
-  const { selectedConversation, isSearchActive } = useConversation();
+  const {
+    selectedConversation,
+    isSearchLoading,
+    isSearchActive,
+    searchConversations,
+    query,
+  } = useConversation();
   return (
     <div className="relative flex flex-col">
       <ConversationList
@@ -31,7 +37,10 @@ function ConversationArea({
         }`}
       />
       <ConversationSearchResult
+        isLoading={isSearchLoading}
         resultContainerRef={resultsContainerRef}
+        results={searchConversations}
+        searchQuery={query}
         className={`absolute transition-all duration-300 ease-in-out ${
           isSearchActive
             ? "opacity-100 translate-y-0 pointer-events-auto rotate-x-0"
