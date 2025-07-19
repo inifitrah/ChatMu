@@ -176,7 +176,6 @@ function conversationReducer(
           return conv.username.toLowerCase().includes(query);
         })
         .map((conv) => {
-          console.log({ conv });
           return {
             id: conv.conversationId,
             type: "chat",
@@ -188,9 +187,32 @@ function conversationReducer(
           };
         });
 
+      const filteredMessages: SearchResultItem[] = state.messages
+        .filter((msg) => {
+          if (!query || query === "") return false;
+
+          const contentMatch = msg.content.toLowerCase().includes(query);
+          const typeMatch = msg.type === "text";
+
+          return contentMatch && typeMatch;
+        })
+        .map((msg) => {
+          return {
+            id: msg.id || msg.tempId || "",
+            type: "message",
+            title: msg.sender.username,
+            timestamp: msg.timeStamp,
+            messagePreview: msg.content,
+          };
+        });
+
+      // TODO: filtered users
+
+      const allResults = [...filteredConversations, ...filteredMessages];
+
       return {
         ...state,
-        searchConversations: filteredConversations,
+        searchConversations: allResults,
         isSearchLoading: false,
       };
     }
