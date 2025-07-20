@@ -14,6 +14,7 @@ import { useEffect, useRef } from "react";
 import { useSocketContext } from "@/contexts/SocketContext";
 import ConversationSearchResult from "@/components/conversation/ConversationSearchResult";
 import useClickOutside from "@/hooks/useClickOutside";
+import { ISelectedConversation } from "@/types/conversation";
 
 function ConversationArea({
   resultsContainerRef,
@@ -27,6 +28,10 @@ function ConversationArea({
     searchConversations,
     query,
   } = useConversation();
+
+  const { setSelectedConversation, clearSearch, setIsSearchActive } =
+    useConversationActions();
+
   return (
     <div className="relative flex flex-col">
       <ConversationList
@@ -41,6 +46,19 @@ function ConversationArea({
         resultContainerRef={resultsContainerRef}
         results={searchConversations}
         searchQuery={query}
+        onItemClick={(item) => {
+          if (item.type === "chat" || item.type === "user") {
+            setIsSearchActive(false);
+            const conversation: ISelectedConversation = {
+              conversationId: item.id,
+              userId: item.userId || "",
+              username: item.title,
+              profileImage: item.profileImage || "",
+            };
+
+            setSelectedConversation(conversation);
+          }
+        }}
         className={`absolute transition-all duration-300 ease-in-out ${
           isSearchActive
             ? "opacity-100 translate-y-0 pointer-events-auto rotate-x-0"
