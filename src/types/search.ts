@@ -1,6 +1,5 @@
-export interface SearchResultItem {
+interface BaseSearchResult {
   id: string;
-  type: "chat" | "user" | "message";
   title: string;
   subtitle?: string;
   profileImage?: string;
@@ -13,6 +12,25 @@ export interface SearchResultItem {
   userId?: string;
   messageId?: string;
 }
+
+export interface ChatSearchResult extends BaseSearchResult {
+  type: "chat";
+  unreadCount?: number;
+}
+
+export interface UserSearchResult extends BaseSearchResult {
+  type: "user";
+}
+
+export interface MessageSearchResult extends BaseSearchResult {
+  type: "message";
+  messagePreview: string;
+}
+
+export type SearchResultItem =
+  | ChatSearchResult
+  | UserSearchResult
+  | MessageSearchResult;
 
 export interface SearchFilters {
   includeChats?: boolean;
