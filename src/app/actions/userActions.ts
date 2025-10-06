@@ -10,6 +10,7 @@ import {
   isUserExists,
   createUser as createUserInDB,
   updateUser,
+  searchUsersByUsername,
 } from "@/data-access/user";
 import { revalidatePath } from "next/cache";
 import cloudinary from "@/lib/cloudinary";
@@ -148,5 +149,27 @@ export async function updateProfilePicture({
     }
   } catch (error) {
     console.log(" ERROR from updateProfilePicture ==> ", error);
+  }
+}
+
+export async function searchUsers(query: string) {
+  await connectToMongoDB();
+  if (!query || !query.trim()) return [];
+  try {
+    const users = await searchUsersByUsername(query.trim(), [
+      "_id",
+      "username",
+      "name",
+      "image",
+    ]);
+    return users.map((u: any) => ({
+      id: String(u._id),
+      username: u.username,
+      name: u.name || "",
+      image: u.image || undefined,
+    }));
+  } catch (e) {
+    console.error("searchUsers error", e);
+    return [];
   }
 }
