@@ -23,6 +23,7 @@ interface ConversationState {
   isSearchActive: boolean;
   isSearchLoading: boolean;
   searchConversations: SearchResultItem[];
+  users?: { id: string; username: string; name?: string; image?: string }[];
 }
 
 type ConversationAction =
@@ -52,7 +53,8 @@ type ConversationAction =
     }
   | { type: "SET_SEARCH_QUERY"; payload: string }
   | { type: "SET_SEARCH_CONVERSATIONS" }
-  | { type: "SET_STATUS"; payload: "idle" | "loading" | "failed" };
+  | { type: "SET_STATUS"; payload: "idle" | "loading" | "failed" }
+  | { type: "SET_USERS"; payload: ConversationState["users"] };
 
 const initialState: ConversationState = {
   conversations: [],
@@ -63,6 +65,7 @@ const initialState: ConversationState = {
   isSearchActive: false,
   isSearchLoading: false,
   searchConversations: [],
+  users: [],
 };
 
 function conversationReducer(
@@ -71,7 +74,6 @@ function conversationReducer(
 ): ConversationState {
   switch (action.type) {
     case "SET_CONVERSATIONS": {
-      console.log("set conversations", action.payload);
       return {
         ...state,
         conversations: action.payload,
@@ -178,7 +180,7 @@ function conversationReducer(
         .map((conv) => {
           return {
             id: conv.conversationId,
-            type: "chat",
+            type: "chat" as const,
             title: conv.username,
             profileImage: conv.profileImage,
             timestamp: conv.message?.lastMessageTime,
@@ -186,6 +188,26 @@ function conversationReducer(
             unreadCount: conv.message?.unreadMessageCount,
           };
         });
+
+      const filteredUsers: SearchResultItem[] = (state.users || [])
+        .filter((u) => {
+          if (!query) return false;
+          const filterUsername = u.username.toLowerCase().includes(query);
+          const filterName = u.name
+            ? u.name.toLowerCase().includes(query)
+            : false;
+          const excludeExistingChats = !state.conversations.some(
+            (conv) => conv.username === u.username
+          );
+          return (filterUsername || filterName) && excludeExistingChats;
+        })
+        .map((u) => ({
+          id: u.id,
+          type: "user" as const,
+          title: u.username,
+          profileImage: u.image,
+          messagePreview: u.name,
+        }));
 
       const filteredMessages: SearchResultItem[] = state.messages
         .filter((msg) => {
@@ -199,16 +221,18 @@ function conversationReducer(
         .map((msg) => {
           return {
             id: msg.id || msg.tempId || "",
-            type: "message",
+            type: "message" as const,
             title: msg.sender.username,
             timestamp: msg.timeStamp,
             messagePreview: msg.content,
           };
         });
 
-      // TODO: filtered users
-
-      const allResults = [...filteredConversations, ...filteredMessages];
+      const allResults = [
+        ...filteredConversations,
+        ...filteredMessages,
+        ...filteredUsers,
+      ];
 
       return {
         ...state,
@@ -221,6 +245,9 @@ function conversationReducer(
         ...state,
         status: action.payload,
       };
+    }
+    case "SET_USERS": {
+      return { ...state, users: action.payload || [] };
     }
     default: {
       return state;
@@ -308,6 +335,11 @@ export function useConversationActions() {
     },
     clearSearch: () => {
       dispatch({ type: "SET_SEARCH_QUERY", payload: "" });
+      dispatch({ type: "SET_SEARCH_CONVERSATIONS" });
+    },
+    setUsers: (users: ConversationState["users"]) => {
+      dispatch({ type: "SET_USERS", payload: users });
+      // refresh search results if query exists
       dispatch({ type: "SET_SEARCH_CONVERSATIONS" });
     },
   };

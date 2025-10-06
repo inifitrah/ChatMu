@@ -18,8 +18,24 @@ const ConversationSearch = ({
   const { data: session } = useSession();
   const [inputValue, setInputValue] = useState("");
   const { isSearchActive } = useConversation();
-  const { setSearchQuery, setIsSearchLoading, clearSearch, setIsSearchActive } =
-    useConversationActions();
+  const {
+    setSearchQuery,
+    setIsSearchLoading,
+    clearSearch,
+    setIsSearchActive,
+    setUsers,
+  } = useConversationActions();
+
+  const performSearch = async (query: string) => {
+    try {
+      const { searchUsers } = await import("@/app/actions/userActions");
+      const users = await searchUsers(query);
+      setUsers(users);
+    } catch (e) {
+      console.error("Failed to fetch users", e);
+      setUsers([]);
+    }
+  };
 
   const handleSearch = useCallback(
     useDebounce((query: string) => {
@@ -28,10 +44,12 @@ const ConversationSearch = ({
       if (session && query.trim()) {
         setIsSearchLoading(true);
         setSearchQuery(query);
+        performSearch(query);
       } else {
         clearSearch();
+        setUsers([]);
       }
-    }, 888),
+    }, 600),
     [session]
   );
 
@@ -42,9 +60,11 @@ const ConversationSearch = ({
   const handleSearchClear = () => {
     setInputValue("");
     clearSearch();
+    setUsers([]);
     setIsSearchActive(false);
   };
 
+  // Trigger search when inputValue changes
   useEffect(() => {
     handleSearch(inputValue);
   }, [inputValue]);
