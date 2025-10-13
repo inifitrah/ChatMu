@@ -23,10 +23,12 @@ interface ConversationState {
   isSearchActive: boolean;
   isSearchLoading: boolean;
   searchConversations: SearchResultItem[];
+  currentUserId: string;
   users?: { id: string; username: string; name?: string; image?: string }[];
 }
 
 type ConversationAction =
+  | { type: "SET_CURRENT_USER_ID"; payload: string }
   | { type: "SET_CONVERSATIONS"; payload: Conversation[] }
   | { type: "SET_SELECTED_CONVERSATION"; payload: ISelectedConversation | null }
   | { type: "SET_MESSAGES"; payload: IMessage[] }
@@ -65,6 +67,7 @@ const initialState: ConversationState = {
   isSearchActive: false,
   isSearchLoading: false,
   searchConversations: [],
+  currentUserId: "",
   users: [],
 };
 
@@ -73,6 +76,13 @@ function conversationReducer(
   action: ConversationAction
 ): ConversationState {
   switch (action.type) {
+    case "SET_CURRENT_USER_ID": {
+      return {
+        ...state,
+        currentUserId: action.payload,
+      };
+    }
+
     case "SET_CONVERSATIONS": {
       return {
         ...state,
@@ -199,7 +209,12 @@ function conversationReducer(
           const excludeExistingChats = !state.conversations.some(
             (conv) => conv.username === u.username
           );
-          return (filterUsername || filterName) && excludeExistingChats;
+          const excludeCurrentUser = u.id !== state.currentUserId;
+          return (
+            (filterUsername || filterName) &&
+            excludeExistingChats &&
+            excludeCurrentUser
+          );
         })
         .map((u) => ({
           id: u.id,
@@ -293,6 +308,9 @@ export function useConversationActions() {
   const { dispatch } = useConversation();
 
   return {
+    setCurrentUserId: (userId: string) => {
+      dispatch({ type: "SET_CURRENT_USER_ID", payload: userId });
+    },
     setConversations: (conversations: Conversation[]) => {
       dispatch({ type: "SET_CONVERSATIONS", payload: conversations });
     },
