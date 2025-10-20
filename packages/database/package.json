@@ -1,0 +1,28 @@
+{
+  "name": "@chatmu/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./models": "./dist/models/index.js",
+    "./data-access": "./dist/data-access/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@chatmu/shared": "*",
+    "mongoose": "^8.7.2",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "typescript": "^5"
+  }
+}

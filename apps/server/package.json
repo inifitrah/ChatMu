@@ -1,0 +1,26 @@
+{
+  "name": "@chatmu/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" ts-node src/index.ts",
+    "build": "tsc",
+    "start": "NODE_ENV=production node dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@chatmu/shared": "*",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  }
+}
