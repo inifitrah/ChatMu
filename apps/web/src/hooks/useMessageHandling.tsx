@@ -50,7 +50,7 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
       lastMessageIsCurrentUser: true,
       conversationId: messageData.conversationId,
       lastMessageContent: messageData.content,
-      lastMessageTime: new Date().toString(),
+      lastMessageTime: new Date(),
       status: messageData.status,
     });
   };

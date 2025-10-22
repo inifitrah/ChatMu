@@ -73,6 +73,11 @@ const authOptions: AuthOptions = {
   ],
   events: {
     linkAccount: async ({ user }) => {
+
+      if(!user.email){
+         throw new Error("No email associated with this account");
+      }
+
       // add emailVerified, username and role to user linked
       await connectToMongoDB(configDB);
       await User.findOneAndUpdate(

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuthToast } from "@/hooks/useAuthToast";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@chatmu/ui";
 import { SignupSchema } from "@chatmu/shared";
 import DividerWithText from "@/components/auth/DividerWithText";
 import GoogleSignInButton from "@/components/auth/GoogleSignInButton";

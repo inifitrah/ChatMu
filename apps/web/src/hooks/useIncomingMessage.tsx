@@ -43,7 +43,7 @@ const useIncomingMessage = () => {
           lastMessageIsCurrentUser: isCurrentUser,
           conversationId,
           lastMessageContent: content,
-          lastMessageTime: new Date().toString(),
+          lastMessageTime: new Date(),
           status: data.status,
         });
         markAsDelivered({

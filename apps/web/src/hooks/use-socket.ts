@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { useToast } from "./use-toast";
+import { useToast } from "@chatmu/ui";
 import { useSession } from "next-auth/react";
 
 interface UseSocketReturn {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Message from "./Message";
-import { IMessage } from "@chatmu/shared/conversation";
+import { IMessage } from "@chatmu/shared";
 
 interface MessageContainerProps {
   messages?: IMessage[];
