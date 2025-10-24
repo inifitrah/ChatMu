@@ -61,7 +61,18 @@ services:
     environment:
       NODE_ENV: production
       NEXT_PUBLIC_SOCKET_URL: http://localhost:3003
-      MONGODB_URI: mongodb://root:admin123@mongo:27017/ChatMu
+      MONGODB_URI: ${MONGODB_URI}
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DB: ${MONGO_DB}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      RESEND_API_KEY: ${RESEND_API_KEY}
     depends_on:
       - server
       - mongo
@@ -70,7 +81,12 @@ services:
     volumes:
       - ./apps/web/src:/app/apps/web/src
       - /app/node_modules
-
+  # test:
+  #   image: alpine
+  #   env_file:
+  #     - .env
+  #     - .env.local
+  #   command: sh -c "echo ENV_VALUE=${HELLO_WORLD}"
 networks:
   chatmu-network:
     driver: bridge
