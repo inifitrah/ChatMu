@@ -1,8 +1,8 @@
-# ChatMu - Monorepo
+# ChatMu
 
-ChatMu is a real-time chat application built with a modern monorepo architecture using npm workspaces.
+ChatMu is a real-time chat application built with a modern architecture using npm workspaces.
 
-![Screenshot](/public/screenshot/auth.png)
+![Screenshot](/apps/web/public/screenshot/auth.png)
 
 ## 🏗️ Monorepo Structure
 
@@ -181,6 +181,7 @@ Database layer:
 Reusable UI components:
 
 - Shadcn/UI components
+- Shadcn/UI hooks (useToast, etc.)
 - Custom styled components
 - Shared utilities (cn helper)
 
