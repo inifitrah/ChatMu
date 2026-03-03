@@ -22,10 +22,10 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
 
   const configDBconnection = {
     mongo: {
-      uri: process.env.MONGODB_URI as string,
-      db: process.env.MONGODB_DB_NAME as string,
-      password: process.env.MONGODB_PASSWORD as string,
-      user: process.env.MONGO_USER as string,
+      uri: process.env.MONGODB_URI || "",
+      db: process.env.MONGODB_DB_NAME || "",
+      password: process.env.MONGODB_PASSWORD || "",
+      user: process.env.MONGO_USER || "",
     },
   };
 
@@ -77,7 +77,7 @@ export async function createUser(values: z.infer<typeof SignupSchema>) {
   } catch (e) {
     return {
       success: false,
-      message: "Failed create dari server action",
+      message: "An error occurred, try again later",
     };
   }
 }
@@ -164,7 +164,7 @@ export async function updateProfilePicture({
         revalidatePath(`/profile`);
         return {
           success: true,
-          message: "Profile picture updated",
+          message: "Profile updated successfully",
         };
       }
     } else {
