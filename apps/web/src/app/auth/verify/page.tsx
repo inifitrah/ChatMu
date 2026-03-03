@@ -1,5 +1,7 @@
 "use client";
 import { verifyEmail } from "@/app/actions/newVerificationActions";
+import { Button } from "@chatmu/ui";
+import Link from "next/link";
 import { redirect, useSearchParams } from "next/navigation";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 
@@ -37,10 +39,17 @@ const VerifyToken = () => {
   }, []);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      {!success && !error && <h1>LOADING..</h1>}
+    <div className="flex justify-center flex-col items-center h-screen">
+      {!success && !error && <h1 className="animate-bounce">Loading.</h1>}
       {success && <h1>{success}</h1>}
       {!success && error && <h1 className="text-red-500">{error}</h1>}
+      {
+          success && (<Button className="mt-4">
+              <Link href={"/auth/signin"}>
+                  SignIn
+              </Link>
+          </Button>)
+      }
     </div>
   );
 };
