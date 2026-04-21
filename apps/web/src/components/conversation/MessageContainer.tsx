@@ -26,6 +26,7 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
             messages[index - 1].isCurrentUser === message.isCurrentUser;
           return (
             <Message
+              status={message.status}
               className={isSameSenderAsPrevious ? "mt-1" : "mt-6"}
               key={index}
               isCurrentUser={message.isCurrentUser}
