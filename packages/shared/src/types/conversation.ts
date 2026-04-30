@@ -16,7 +16,7 @@ export interface ISelectedConversation {
   conversationId: string;
   userId: string;
   username: string;
-  profileImage: string;
+  profileImage?: string;
 }
 
 export interface IMessage {

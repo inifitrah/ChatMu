@@ -131,11 +131,11 @@ const ConversationSearchResult = ({
                   </div>
                 </div>
 
-                {categoryResults.map((item) => {
+                {categoryResults.map((item, index) => {
                   console.log({ item });
                   return (
                     <div
-                      key={item.id}
+                      key={index}
                       onClick={() => handleItemClick(item)}
                       className="flex items-center space-x-3 px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors"
                     >
@@ -150,13 +150,13 @@ const ConversationSearchResult = ({
                             {highlightText(item.title, searchQuery)}
                           </h4>
                           <div className="flex items-center space-x-2">
-                            {item.timestamp && (
+                            {item.type === "chat" && item.timestamp && (
                               <span className="text-xs text-muted-foreground flex items-center">
                                 <Clock size={12} className="mr-1" />
                                 {formatLastMessageTime(item.timestamp)}
                               </span>
                             )}
-                            {(item.unreadCount || 0) > 0 && (
+                            {item.type === "chat" && (item.unreadCount || 0) > 0 && (
                               <Badge className="bg-primary text-primary-foreground text-xs">
                                 {item.unreadCount}
                               </Badge>

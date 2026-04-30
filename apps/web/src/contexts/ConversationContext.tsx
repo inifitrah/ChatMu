@@ -3,6 +3,9 @@ import { IMessage, ISelectedConversation } from "@chatmu/shared";
 
 import { IConversation } from "@chatmu/shared";
 import { SearchResultItem } from "@chatmu/shared";
+import { ChatSearchResult } from "@chatmu/shared";
+import { UserSearchResult } from "@chatmu/shared";
+import { MessageSearchResult } from "@chatmu/shared";
 type MessageStatus = IMessage["status"];
 type Conversation = Omit<IConversation, "message"> & {
   message?: {
@@ -184,14 +187,15 @@ function conversationReducer(
         };
       }
 
-      const filteredConversations: SearchResultItem[] = state.conversations
+      const filteredConversations: ChatSearchResult[] = state.conversations
         .filter((conv) => {
           if (!query || query === "") return false;
           return conv.username.toLowerCase().includes(query);
         })
         .map((conv) => {
           return {
-            id: conv.conversationId,
+            conversationId: conv.conversationId,
+            userId: conv.otherUserId,
             type: "chat" as const,
             title: conv.username,
             profileImage: conv.profileImage,
@@ -201,7 +205,7 @@ function conversationReducer(
           };
         });
 
-      const filteredUsers: SearchResultItem[] = (state.users || [])
+      const filteredUsers: UserSearchResult[] = (state.users || [])
         .filter((u) => {
           if (!query) return false;
           const filterUsername = u.username.toLowerCase().includes(query);
@@ -220,14 +224,14 @@ function conversationReducer(
           );
         })
         .map((u) => ({
-          id: u.id,
+          userId: u.id,
           type: "user" as const,
           title: u.username,
           profileImage: u.image,
           messagePreview: u.name,
         }));
 
-      const filteredMessages: SearchResultItem[] = state.messages
+      const filteredMessages: MessageSearchResult[] = state.messages
         .filter((msg) => {
           if (!query || query === "") return false;
 
@@ -238,7 +242,7 @@ function conversationReducer(
         })
         .map((msg) => {
           return {
-            id: msg.id || msg.tempId || "",
+            messageId: (msg.id  || msg.tempId) as string,
             type: "message" as const,
             title: msg.sender.username,
             timestamp: msg.timeStamp,

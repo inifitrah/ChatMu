@@ -46,17 +46,28 @@ function ConversationArea({
         results={searchConversations}
         searchQuery={query}
         onItemClick={(item) => {
-          if (item.type === "chat" || item.type === "user") {
             setIsSearchActive(false);
+          if (item.type === "chat") {
             const conversation: ISelectedConversation = {
-              conversationId: item.id,
-              userId: item.userId || "",
+              conversationId: item.conversationId,
+              userId: item.userId,
               username: item.title,
-              profileImage: item.profileImage || "",
-            };
+              profileImage: item.profileImage,
+            }
 
             setSelectedConversation(conversation);
-          }
+          }  else if (item.type === "user") {
+              console.log({ID: item.userId})
+                     const conversation: ISelectedConversation = {
+                       conversationId: "", 
+                       userId: item.userId || "",
+                       username: item.title,
+                       profileImage: item.profileImage || "",
+                     };
+
+                     setSelectedConversation(conversation);
+                   }
+
         }}
         className={`absolute transition-all duration-300 ease-in-out ${isSearchActive
           ? "opacity-100 translate-y-0 pointer-events-auto rotate-x-0"

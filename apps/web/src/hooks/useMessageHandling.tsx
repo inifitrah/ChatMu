@@ -6,6 +6,7 @@ import { useSocketContext } from "@/contexts/SocketContext";
 import { IMessage, ISelectedConversation } from "@chatmu/shared";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
+import { getOrCreateConversation } from "@/app/actions/conversationActions";
 
 const useMessageHandling = (conversation: ISelectedConversation) => {
   const { markAsRead } = useSocketContext();
@@ -22,14 +23,47 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
     addMessage: setMessage,
     setLastMessage,
     updateConversationStatus,
+    setSelectedConversation,
   } = useConversationActions();
   const { sendMessage } = useSocketContext();
 
-  const handleSendMessage = (newMessage: string) => {
+  const ensureConversationId = async (): Promise<string | null> => {
+       if (conversation.conversationId) {
+         return conversation.conversationId;
+       }
+
+       if (!session) {
+         return null;
+       }
+
+       const result = await getOrCreateConversation(
+         session.user.id,
+         conversation.userId
+       );
+       const conversationId = result?._id;
+
+       if (!conversationId) {
+         return null;
+       }
+
+       setSelectedConversation({
+         conversationId,
+         userId: conversation.userId,
+         username: conversation.username,
+         profileImage: conversation.profileImage,
+       });
+
+       return conversationId;
+     };
+
+  const handleSendMessage = async (newMessage: string) => {
     if (!session || newMessage === "") return;
+     const conversationId = await ensureConversationId()
+     if(!conversationId) return
+
     const messageData: IMessage = {
       tempId: Math.random().toString(26),
-      conversationId: conversation.conversationId,
+      conversationId,
       sender: {
         id: session.user.id,
         username: session.user.username,
@@ -48,7 +82,7 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
     setMessage(messageData);
     setLastMessage({
       lastMessageIsCurrentUser: true,
-      conversationId: messageData.conversationId,
+      conversationId,
       lastMessageContent: messageData.content,
       lastMessageTime: new Date(),
       status: messageData.status,

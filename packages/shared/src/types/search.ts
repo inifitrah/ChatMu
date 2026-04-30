@@ -1,30 +1,31 @@
 interface BaseSearchResult {
-  id: string;
   title: string;
   subtitle?: string;
   profileImage?: string;
-  timestamp?: Date;
-  messagePreview?: string;
   isOnline?: boolean;
-  unreadCount?: number;
-  matchedText?: string;
-  chatId?: string;
-  userId?: string;
-  messageId?: string;
 }
 
 export interface ChatSearchResult extends BaseSearchResult {
   type: "chat";
+  conversationId: string;
+  userId: string;
+  timestamp?: Date;
+  messagePreview?: string;
   unreadCount?: number;
 }
 
 export interface UserSearchResult extends BaseSearchResult {
-  type: "user";
+    type: "user";
+    userId: string;
+    messagePreview?: string;
 }
 
 export interface MessageSearchResult extends BaseSearchResult {
-  type: "message";
-  messagePreview: string;
+    type: "message";
+    messageId: string;
+    timestamp: Date;
+    messagePreview: string;
+    matchedText?: string;
 }
 
 export type SearchResultItem =
