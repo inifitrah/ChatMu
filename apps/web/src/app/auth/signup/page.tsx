@@ -51,7 +51,7 @@ const SignUp = () => {
       <FormSignUp form={form} />
       <DividerWithText text="or" />
       <GoogleSignInButton className="mb-8" />
-      <p className="text-center">
+      <p className="text-center mb-2">
         You have an account?{" "}
         <Link className="font-semibold" href={"/auth/signin"}>
           SignIn
@@ -59,7 +59,7 @@ const SignUp = () => {
       </p>
       <Button
         onClick={form.handleSubmit(handleSignUp)}
-        className="rounded-[20px] text-xl h-14 w-full"
+        className="rounded-[20px]  text-xl h-14 bg-input text-foreground hover:bg-foreground/50 border border-foreground w-full"
       >
         SignUp
       </Button>

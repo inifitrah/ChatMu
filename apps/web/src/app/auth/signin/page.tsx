@@ -68,7 +68,7 @@ const SignIn = () => {
       <FormSignIn form={form} />
       <DividerWithText text="or" />
       <GoogleSignInButton className="mb-8" />
-      <p className="text-center">
+      <p className="text-center mb-2">
         Don't have an account?{" "}
         <Link className="font-semibold" href={"/auth/signup"}>
           SignUp
@@ -76,9 +76,9 @@ const SignIn = () => {
       </p>
       <Button
         onClick={form.handleSubmit(handleSignIn)}
-        className="rounded-[20px] text-xl h-14 w-full"
+        className="rounded-[20px]  text-xl h-14 bg-input text-foreground hover:bg-foreground/50 border border-foreground w-full"
       >
-        SignIn
+       SignIn
       </Button>
     </CardWrapper>
   );
