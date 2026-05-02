@@ -35,7 +35,9 @@ type ConversationAction =
   | { type: "SET_CONVERSATIONS"; payload: Conversation[] }
   | { type: "SET_SELECTED_CONVERSATION"; payload: ISelectedConversation | null }
   | { type: "SET_MESSAGES"; payload: IMessage[] }
-  | { type: "UPDATE_MESSAGES"; payload: IMessage[] }
+  | { type: "UPDATE_MESSAGES_STATUS"; payload: {
+      conversationId: IMessage["conversationId"], newStatus: IMessage["status"]
+  } }
   | { type: "ADD_MESSAGE"; payload: IMessage }
   | { type: "SET_SEARCH_ACTIVE"; payload: boolean }
   | { type: "SET_SEARCH_LOADING"; payload: boolean }
@@ -112,6 +114,28 @@ function conversationReducer(
         messages: [...state.messages, action.payload],
       };
     }
+
+    // perlu update status message khususnya di current user
+    case "UPDATE_MESSAGES_STATUS": {
+        const {
+            conversationId,
+            newStatus
+        }= action.payload
+        return {
+            ...state,
+            messages: state.messages.map((msg)=> {
+                if(msg.conversationId === conversationId
+                    && msg.status !== newStatus
+                    && msg.status !== "read" ){
+                    return {
+                        ...msg, status: newStatus
+                    }
+                }
+                return msg
+            })
+        }
+    }
+
     case "UPDATE_CONVERSATION_STATUS": {
       return {
         ...state,
@@ -327,8 +351,12 @@ export function useConversationActions() {
     addMessage: (message: IMessage) => {
       dispatch({ type: "ADD_MESSAGE", payload: message });
     },
-    updateMessages: (messages: IMessage[]) => {
-      dispatch({ type: "UPDATE_MESSAGES", payload: messages });
+    updateMessagesStatus: ({
+        conversationId, newStatus
+    }: {
+        conversationId: IMessage["conversationId"], newStatus: MessageStatus
+    }) => {
+      dispatch({ type: "UPDATE_MESSAGES_STATUS", payload: {conversationId, newStatus} });
     },
     updateConversationStatus: (
       conversationId: string,

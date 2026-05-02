@@ -59,7 +59,7 @@ function ConversationArea({
           }  else if (item.type === "user") {
               console.log({ID: item.userId})
                      const conversation: ISelectedConversation = {
-                       conversationId: "", 
+                       conversationId: "",
                        userId: item.userId || "",
                        username: item.title,
                        profileImage: item.profileImage || "",
@@ -87,7 +87,7 @@ export default function Home() {
   const { listenMessageSent, listenMessageReceived, listenMessageRead } =
     useSocketContext();
   const { isSearchActive } = useConversation();
-  const { setCurrentUserId, updateConversationStatus, setIsSearchActive } =
+  const { setCurrentUserId, updateConversationStatus, updateMessagesStatus, setIsSearchActive } =
     useConversationActions();
   const { toast } = useToast();
   const { data: session, status } = useSession({
@@ -119,6 +119,10 @@ export default function Home() {
   useEffect(() => {
     const listener = listenMessageSent((data) => {
       updateConversationStatus(data.conversationId, "sent");
+      updateMessagesStatus({
+          conversationId: data.conversationId,
+          newStatus: "sent"
+      } )
     });
 
     return () => listener.off();
@@ -127,6 +131,10 @@ export default function Home() {
   useEffect(() => {
     const listener = listenMessageReceived((data) => {
       updateConversationStatus(data.conversationId, "delivered");
+      updateMessagesStatus({
+          conversationId: data.conversationId,
+          newStatus: "delivered"
+      } )
     });
 
     return () => listener.off();
@@ -135,6 +143,10 @@ export default function Home() {
   useEffect(() => {
     const listener = listenMessageRead((conversationId: string) => {
       updateConversationStatus(conversationId, "read");
+      updateMessagesStatus({
+          conversationId: conversationId,
+          newStatus: "read"
+      } )
     });
     return () => listener.off();
   }, [listenMessageRead]);

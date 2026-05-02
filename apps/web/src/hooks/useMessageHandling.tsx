@@ -23,6 +23,7 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
     addMessage: setMessage,
     setLastMessage,
     updateConversationStatus,
+    updateMessagesStatus,
     setSelectedConversation,
   } = useConversationActions();
   const { sendMessage } = useSocketContext();
@@ -97,6 +98,10 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
         messages[messages.length - 1].status !== "read"
       ) {
         updateConversationStatus(conversation.conversationId, "read");
+        updateMessagesStatus({
+            conversationId: conversation.conversationId,
+            newStatus: "read"
+        } )
         markAsRead({
           conversationId: conversation.conversationId,
           userId: conversation.userId,
