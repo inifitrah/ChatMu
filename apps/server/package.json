@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {
-    "dev": "nodemon --exec 'NODE_OPTIONS=\"--loader ts-node/esm --no-warnings\" ts-node' src/index.ts",
+    "dev": "nodemon --exec tsx src/index.ts",
     "build": "tsc",
     "start": "NODE_ENV=production node dist/index.js",
     "clean": "rm -rf dist"
@@ -20,8 +20,10 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/node": "^20",
+    "dotenv": "^17.4.2",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

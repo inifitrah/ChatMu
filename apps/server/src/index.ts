@@ -1,48 +1,68 @@
+import 'dotenv/config';
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 import { setupSocketHandlers } from "./socket/handlers.js";
-
+import { connectToMongoDB } from "@chatmu/database";
 const port = parseInt(process.env.PORT || "3003", 10);
 const hostname = process.env.HOSTNAME || "localhost";
 
-// Create Express app
-const app = express();
+const configDBconnection = {
+    mongo: {
+        uri: process.env.MONGODB_URI as string,
+        db: process.env.MONGO_USER as string,
+        password: process.env.MONGO_PASSWORD as string,
+        user: process.env.MONGO_USER as string,
+    }
+}
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+const startServer = async ()=> {
 
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
-});
+    // Init DB once
+    await connectToMongoDB(configDBconnection)
 
-// Create HTTP server
-const server = createServer(app);
+    // Create Express app
+    const app = express();
 
-// Setup Socket.IO
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
+    // Middleware
+    app.use(cors());
+    app.use(express.json());
 
-// Setup socket handlers
-setupSocketHandlers(io);
+    // Health check endpoint
+    app.get("/health", (req, res) => {
+      res.json({ status: "ok", timestamp: new Date().toISOString() });
+    });
 
-// Start server
-server.listen(port, hostname, () => {
-  console.log(`🚀 Socket.IO server running on http://${hostname}:${port}`);
-});
+    // Create HTTP server
+    const server = createServer(app);
 
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  console.log("SIGTERM signal received: closing HTTP server");
-  server.close(() => {
-    console.log("HTTP server closed");
-  });
+    // Setup Socket.IO
+    const io = new Server(server, {
+      cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+        credentials: true,
+      },
+    });
+
+    // Setup socket handlers
+    setupSocketHandlers(io);
+
+    // Start server
+    server.listen(port, hostname, () => {
+      console.log(`🚀 Socket.IO server running on http://${hostname}:${port}`);
+    });
+
+    // Graceful shutdown
+    process.on("SIGTERM", () => {
+      console.log("SIGTERM signal received: closing HTTP server");
+      server.close(() => {
+        console.log("HTTP server closed");
+      });
+    });
+}
+startServer().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
 });
