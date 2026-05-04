@@ -11,7 +11,7 @@ const hostname = process.env.HOSTNAME || "localhost";
 const configDBconnection = {
     mongo: {
         uri: process.env.MONGODB_URI as string,
-        db: process.env.MONGO_USER as string,
+        db: process.env.MONGO_DB as string,
         password: process.env.MONGO_PASSWORD as string,
         user: process.env.MONGO_USER as string,
     }

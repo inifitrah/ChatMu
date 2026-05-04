@@ -4,13 +4,15 @@ import { searchUsersByUsername } from "@chatmu/database";
 import { Conversation, Message } from "@chatmu/database";
 import { connectToMongoDB } from "@chatmu/database";
 const configDBconnection = {
-  mongo: {
-    uri: process.env.MONGODB_URI as string,
-    db: process.env.MONGODB_DB_NAME as string,
-    password: process.env.MONGODB_PASSWORD as string,
-    user: process.env.MONGO_USER as string,
-  },
-};
+    mongo: {
+        uri: process.env.MONGODB_URI as string,
+        db: process.env.MONGO_DB as string,
+        password: process.env.MONGO_PASSWORD as string,
+        user: process.env.MONGO_USER as string,
+    }
+}
+
+
 import { IConversation } from "@chatmu/shared";
 
 export const searchConversations = async (
