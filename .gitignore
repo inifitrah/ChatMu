@@ -41,3 +41,7 @@ coverage/
 
 # Misc
 *.pem
+
+# graphify
+graphify-out
+.agents
