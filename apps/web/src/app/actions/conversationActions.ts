@@ -104,7 +104,7 @@ export const getConversations = async (
   await connectToMongoDB(configDBconnection);
   const conversations = await Conversation.find({ participants: currentUserId })
     .populate("participants", "username image")
-    .populate("lastMessage", "text timestamp")
+    .populate("lastMessage", "content timestamp status sender")
     .exec();
 
   const result = await Promise.all(
@@ -114,45 +114,66 @@ export const getConversations = async (
       );
 
       if(!otherUser){
-        return {}
+        return null;
       }
 
-      const lastMessage = conversation.lastMessage
-        ? await Message.findById(conversation.lastMessage).exec()
-        : null;
+      const lastMessage = conversation.lastMessage as any;
 
       return {
         conversationId: conversation._id,
         otherUserId: otherUser._id,
         profileImage: otherUser.image || null,
         username: otherUser.username,
-        message: {
-          isCurrentUser: lastMessage?.sender.toString() === currentUserId,
-          lastMessageTime: conversation.lastMessage?.timestamp || null,
-          lastMessageContent: lastMessage?.content || null,
+        message: lastMessage ? {
+          isCurrentUser: lastMessage.sender?.toString() === currentUserId,
+          lastMessageTime: lastMessage.timestamp || null,
+          lastMessageContent: lastMessage.content || null,
           unreadMessageCount: await Message.countDocuments({
             conversationId: conversation._id,
             sender: { $ne: currentUserId },
             status: { $ne: "read" },
           }),
-          status: lastMessage?.status || "sent",
-        },
+          status: lastMessage.status || "sent",
+        } : null,
       };
     })
   );
 
-  return JSON.parse(JSON.stringify(result));
+  return JSON.parse(JSON.stringify(result.filter(Boolean)));
 };
 
 export const getMessages = async (conversationId: string, userId: string) => {
   await connectToMongoDB(configDBconnection);
-  const messages = await Message.find({ conversationId });
+  const messages = await Message.find({ conversationId })
+    .populate("sender", "username")
+    .sort({ timestamp: 1 });
+
+  // Get conversation to find recipient
+  const conversation = await Conversation.findById(conversationId)
+    .populate("participants", "username");
+
+  const participants = conversation?.participants || [];
+  const otherUser = participants.find((p: any) => p._id.toString() !== userId);
+
   const result = messages.map((message) => {
+    const senderDoc = message.sender as any;
+    const senderId = senderDoc._id ? senderDoc._id.toString() : message.sender.toString();
     return {
+      id: message._id.toString(),
+      conversationId,
+      sender: {
+        id: senderId,
+        username: senderDoc.username || "",
+      },
+      recipient: {
+        id: otherUser?._id.toString() || "",
+        username: otherUser?.username || "",
+      },
       content: message.content,
-      isCurrentUser: message.sender.toString() === userId,
       type: "text",
-      status: message.status,
+      status: message.status || "sent",
+      isCurrentUser: senderId === userId,
+      timeStamp: message.timestamp || new Date(),
     };
   });
 
