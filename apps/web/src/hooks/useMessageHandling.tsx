@@ -6,7 +6,7 @@ import { useSocketContext } from "@/contexts/SocketContext";
 import { IMessage, ISelectedConversation } from "@chatmu/shared";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo } from "react";
-import { getOrCreateConversation } from "@/app/actions/conversationActions";
+import { getOrCreateConversation, getMessages } from "@/app/actions/conversationActions";
 
 const useMessageHandling = (conversation: ISelectedConversation) => {
   const { markAsRead } = useSocketContext();
@@ -23,9 +23,28 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
     addMessage: setMessage,
     setLastMessage,
     updateConversationStatus,
-    updateMessagesStatus,
+    updateMessageStatus,
     setSelectedConversation,
+    setMessages,
   } = useConversationActions();
+
+  // Load initial messages when conversation is selected
+  useEffect(() => {
+    const loadMessages = async () => {
+      if (!conversation.conversationId || !session?.user?.id) return;
+
+      const fetchedMessages = await getMessages(
+        conversation.conversationId,
+        session.user.id
+      );
+
+      if (fetchedMessages && fetchedMessages.length > 0) {
+        setMessages(fetchedMessages);
+      }
+    };
+
+    loadMessages();
+  }, [conversation.conversationId, session?.user?.id]);
   const { sendMessage } = useSocketContext();
 
   const ensureConversationId = async (): Promise<string | null> => {
@@ -98,7 +117,7 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
         messages[messages.length - 1].status !== "read"
       ) {
         updateConversationStatus(conversation.conversationId, "read");
-        updateMessagesStatus({
+        updateMessageStatus({
             conversationId: conversation.conversationId,
             newStatus: "read"
         } )

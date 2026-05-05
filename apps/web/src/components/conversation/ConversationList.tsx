@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import {
-  getConversations,
   getOrCreateConversation,
 } from "@/app/actions/conversationActions";
 
@@ -22,29 +21,8 @@ const ConversationList = ({ className }: { className?: string }) => {
   const dispatch = useAppDispatch();
   const { conversations, status } = useConversation();
 
-  const { setConversations, setSelectedConversation } =
+  const { setSelectedConversation } =
     useConversationActions();
-
-  useEffect(() => {
-    if (session) {
-      getConversations(session.user.id).then((data) => {
-        const formattedData = data.map((conv) => {
-          return {
-            ...conv,
-            message: conv.message
-              ? {
-                  ...conv.message,
-                  lastMessageTime: conv.message.lastMessageTime,
-                  status: conv.message.status,
-                  unreadMessageCount: conv.message.unreadMessageCount || 0,
-                }
-              : undefined,
-          };
-        });
-        setConversations(formattedData);
-      });
-    }
-  }, [session]);
 
   useEffect(() => {
     // Listen to online users

@@ -35,29 +35,34 @@ type ConversationAction =
   | { type: "SET_CONVERSATIONS"; payload: Conversation[] }
   | { type: "SET_SELECTED_CONVERSATION"; payload: ISelectedConversation | null }
   | { type: "SET_MESSAGES"; payload: IMessage[] }
-  | { type: "UPDATE_MESSAGES_STATUS"; payload: {
-      conversationId: IMessage["conversationId"], newStatus: IMessage["status"]
-  } }
+  | {
+    type: "UPDATE_MESSAGE_STATUS"; payload: {
+      conversationId: IMessage["conversationId"];
+      newStatus: IMessage["status"];
+      tempId?: string;
+      id?: string;
+    }
+  }
   | { type: "ADD_MESSAGE"; payload: IMessage }
   | { type: "SET_SEARCH_ACTIVE"; payload: boolean }
   | { type: "SET_SEARCH_LOADING"; payload: boolean }
   | {
-      type: "UPDATE_CONVERSATION_STATUS";
-      payload: {
-        conversationId: string;
-        status: MessageStatus;
-      };
-    }
+    type: "UPDATE_CONVERSATION_STATUS";
+    payload: {
+      conversationId: string;
+      status: MessageStatus;
+    };
+  }
   | {
-      type: "SET_LAST_MESSAGE";
-      payload: {
-        conversationId: string;
-        lastMessageContent: string;
-        lastMessageTime: Date;
-        lastMessageIsCurrentUser: boolean;
-        status: MessageStatus;
-      };
-    }
+    type: "SET_LAST_MESSAGE";
+    payload: {
+      conversationId: string;
+      lastMessageContent: string;
+      lastMessageTime: Date;
+      lastMessageIsCurrentUser: boolean;
+      status: MessageStatus;
+    };
+  }
   | { type: "SET_SEARCH_QUERY"; payload: string }
   | { type: "SET_SEARCH_CONVERSATIONS" }
   | { type: "SET_STATUS"; payload: "idle" | "loading" | "failed" }
@@ -115,25 +120,32 @@ function conversationReducer(
       };
     }
 
-    // perlu update status message khususnya di current user
-    case "UPDATE_MESSAGES_STATUS": {
-        const {
-            conversationId,
-            newStatus
-        }= action.payload
-        return {
-            ...state,
-            messages: state.messages.map((msg)=> {
-                if(msg.conversationId === conversationId
-                    && msg.status !== newStatus
-                    && msg.status !== "read" ){
-                    return {
-                        ...msg, status: newStatus
-                    }
-                }
-                return msg
-            })
-        }
+    case "UPDATE_MESSAGE_STATUS": {
+      const {
+        conversationId,
+        newStatus,
+        tempId,
+        id
+      } = action.payload
+      return {
+        ...state,
+        messages: state.messages.map((msg) => {
+          if (msg.conversationId === conversationId) {
+            if (tempId && (msg.id === tempId || msg.tempId === tempId)) {
+              return {
+                ...msg,
+                id: id || msg.id,
+                status: newStatus
+              }
+            } else if (!tempId && msg.status !== newStatus && msg.status !== "read") {
+              return {
+                ...msg, status: newStatus
+              }
+            }
+          }
+          return msg
+        })
+      }
     }
 
     case "UPDATE_CONVERSATION_STATUS": {
@@ -143,16 +155,16 @@ function conversationReducer(
           return conv.message &&
             conv.conversationId === action.payload.conversationId
             ? {
-                ...conv,
-                message: {
-                  ...conv.message,
-                  status: action.payload.status,
-                  unreadMessageCount:
-                    action.payload.status === "read"
-                      ? 0
-                      : conv.message.unreadMessageCount || 0,
-                },
-              }
+              ...conv,
+              message: {
+                ...conv.message,
+                status: action.payload.status,
+                unreadMessageCount:
+                  action.payload.status === "read"
+                    ? 0
+                    : conv.message.unreadMessageCount || 0,
+              },
+            }
             : conv;
         }),
       };
@@ -163,21 +175,21 @@ function conversationReducer(
         conversations: state.conversations.map((conv) => {
           return conv.conversationId === action.payload.conversationId
             ? {
-                ...conv,
-                message: {
-                  ...(conv.message || {}),
-                  unreadMessageCount: conv.message?.unreadMessageCount
-                    ? conv.message.unreadMessageCount +
-                      (action.payload.lastMessageIsCurrentUser ? 0 : 1)
-                    : action.payload.lastMessageIsCurrentUser
+              ...conv,
+              message: {
+                ...(conv.message || {}),
+                unreadMessageCount: conv.message?.unreadMessageCount
+                  ? conv.message.unreadMessageCount +
+                  (action.payload.lastMessageIsCurrentUser ? 0 : 1)
+                  : action.payload.lastMessageIsCurrentUser
                     ? 0
                     : 1,
-                  lastMessageContent: action.payload.lastMessageContent,
-                  lastMessageTime: action.payload.lastMessageTime,
-                  isCurrentUser: action.payload.lastMessageIsCurrentUser,
-                  status: action.payload.status,
-                },
-              }
+                lastMessageContent: action.payload.lastMessageContent,
+                lastMessageTime: action.payload.lastMessageTime,
+                isCurrentUser: action.payload.lastMessageIsCurrentUser,
+                status: action.payload.status,
+              },
+            }
             : conv;
         }),
       };
@@ -266,7 +278,7 @@ function conversationReducer(
         })
         .map((msg) => {
           return {
-            messageId: (msg.id  || msg.tempId) as string,
+            messageId: (msg.id || msg.tempId) as string,
             type: "message" as const,
             title: msg.sender.username,
             timestamp: msg.timeStamp,
@@ -348,15 +360,18 @@ export function useConversationActions() {
     setSelectedConversation: (conversation: ISelectedConversation | null) => {
       dispatch({ type: "SET_SELECTED_CONVERSATION", payload: conversation });
     },
+    setMessages: (messages: IMessage[]) => {
+      dispatch({ type: "SET_MESSAGES", payload: messages });
+    },
     addMessage: (message: IMessage) => {
       dispatch({ type: "ADD_MESSAGE", payload: message });
     },
-    updateMessagesStatus: ({
-        conversationId, newStatus
+    updateMessageStatus: ({
+      conversationId, newStatus, tempId, id
     }: {
-        conversationId: IMessage["conversationId"], newStatus: MessageStatus
+      conversationId: IMessage["conversationId"], newStatus: MessageStatus, tempId?: string, id?: string
     }) => {
-      dispatch({ type: "UPDATE_MESSAGES_STATUS", payload: {conversationId, newStatus} });
+      dispatch({ type: "UPDATE_MESSAGE_STATUS", payload: { conversationId, newStatus, tempId, id } });
     },
     updateConversationStatus: (
       conversationId: string,
