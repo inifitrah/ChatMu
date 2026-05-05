@@ -46,10 +46,15 @@ const useIncomingMessage = () => {
           lastMessageTime: new Date(),
           status: data.status,
         });
-        markAsDelivered({
-          conversationId,
-          senderId: sender.id,
-        });
+
+        // Only mark as delivered if message status is "sent" (not already delivered)
+        if (data.status === "sent") {
+          markAsDelivered({
+            conversationId,
+            senderId: sender.id,
+          });
+        }
+
         // Only show toast for messages from others
         if (!isCurrentUser) {
           toast({
@@ -59,6 +64,10 @@ const useIncomingMessage = () => {
         }
       };
       const listener = listenMessage(handleReceiveMessage);
+
+      // Request pending messages AFTER listener is ready
+      socket.emit("client:request_pending");
+      console.log("Requested pending messages");
 
       // Cleanup listener
       return () => listener.off();
