@@ -26,7 +26,7 @@ type ContextType = {
   listenMessageSent: (
     callback: (data: {
       tempId: string;
-      serverId: string;
+      id: string;
       timeStamp: number;
       conversationId: string;
     }) => void
