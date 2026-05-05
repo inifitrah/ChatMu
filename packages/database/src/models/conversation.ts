@@ -30,6 +30,7 @@ export const Conversation =
 interface IMessage extends Document {
   conversationId: mongoose.Schema.Types.ObjectId;
   sender: mongoose.Schema.Types.ObjectId;
+  recipient: mongoose.Schema.Types.ObjectId;
   content: string;
   timestamp: Date;
   status: "sent" | "delivered" | "read";
@@ -42,6 +43,11 @@ const MessageSchema = new mongoose.Schema({
     required: true,
   },
   sender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  recipient: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
