@@ -1,9 +1,10 @@
 import { Server, Socket } from "socket.io";
 import { IMessage } from "@chatmu/shared";
+import { Message, Conversation } from "@chatmu/database"
 
 type OnlineUser = { userId: string; socketId: string; username: string };
 
-export function setupSocketHandlers(io: Server) {
+export async function setupSocketHandlers(io: Server) {
   let onlineUsers: OnlineUser[] = [];
 
   io.on("connection", (socket: Socket) => {
@@ -22,56 +23,93 @@ export function setupSocketHandlers(io: Server) {
     io.emit("get_online_users", onlineUsers);
 
     // Handle send message
-    socket.on("client:send_message", (data: IMessage) => {
-      const savedMessage = {
-        ...data,
-        status: "sent",
-        timeStamp: Date.now(),
-        id: `server-${data.id}`,
-        conversationId: data.conversationId,
-      };
+    socket.on("client:send_message", async (data: IMessage) => {
+      try {
+        // save message to db
+        const newMessage = new Message({
+          conversationId: data.conversationId,
+          sender: data.sender.id,
+          content: data.content,
+        });
+        await newMessage.save();
 
-      // Confirm message sent to sender
-      socket.emit("server:message_sent", {
-        tempId: data.id,
-        serverId: savedMessage.id,
-        timeStamp: Date.now(),
-        conversationId: savedMessage.conversationId,
-      });
+        await Conversation.findByIdAndUpdate(data.conversationId, {
+          lastMessage: newMessage._id,
+        });
 
-      // Send message to recipient if online
-      const receivedUser = onlineUsers.find(
-        (user) => user.userId === data.recipient.id
-      );
 
-      if (receivedUser) {
-        socket
-          .to(receivedUser.socketId)
-          .emit("server:new_message", savedMessage);
+        // Confirm message sent to sender
+        socket.emit("server:message_sent", {
+          id: newMessage._id.toString(),
+          tempId: data.tempId,
+          timeStamp: newMessage.timestamp || Date.now(),
+          conversationId: data.conversationId,
+        });
+
+        const savedMessage = {
+          ...data,
+          status: "sent",
+          timeStamp: newMessage.timestamp || Date.now(),
+          id: newMessage._id.toString(),
+          conversationId: data.conversationId,
+        };
+
+        // Send message to recipient if online
+        const receivedUser = onlineUsers.find(
+          (user) => user.userId === data.recipient.id
+        );
+
+        if (receivedUser) {
+          socket
+            .to(receivedUser.socketId)
+            .emit("server:new_message", savedMessage);
+        }
+      } catch (error) {
+        console.error("Error saving message:", error);
       }
     });
 
     // Handle message received acknowledgment
     socket.on(
       "client:message_received",
-      (data: { conversationId: string; senderId: string }) => {
-        const senderUser = onlineUsers.find(
-          (user) => user.userId === data.senderId
-        );
-        if (!senderUser) return;
+      async (data: { conversationId: string; senderId: string }) => {
+        try {
+          // Update status to delivered in database
+          await Message.updateMany(
+            { conversationId: data.conversationId, sender: data.senderId, status: "sent" },
+            { status: "delivered" }
+          );
 
-        socket.to(senderUser.socketId).emit("server:message_received", data);
+          const senderUser = onlineUsers.find(
+            (user) => user.userId === data.senderId
+          );
+          if (!senderUser) return;
+
+          socket.to(senderUser.socketId).emit("server:message_received", data);
+        } catch (error) {
+          console.error("Error updating message delivered status:", error);
+        }
       }
     );
 
     // Handle message read acknowledgment
-    socket.on("client:message_read", ({ conversationId, userId }) => {
-      const receivedUser = onlineUsers.find((user) => user.userId === userId);
+    socket.on("client:message_read", async ({ conversationId, userId }) => {
+      try {
+        // Update status to read in database
+        await Message.updateMany(
+          { conversationId, sender: userId, status: { $ne: "read" } },
+          { status: "read" }
+        );
 
-      if (receivedUser) {
-        socket
-          .to(receivedUser.socketId)
-          .emit("server:mark_as_read", conversationId);
+        const receivedUser = onlineUsers.find((user) => user.userId === userId);
+
+        if (receivedUser) {
+          socket
+            .to(receivedUser.socketId)
+            .emit("server:mark_as_read", conversationId);
+        }
+      } catch (error) {
+        console.error("Error updating message read status:", error);
       }
     });
 
