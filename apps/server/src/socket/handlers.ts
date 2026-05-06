@@ -50,7 +50,6 @@ export async function setupSocketHandlers(io: Server) {
              type: "text",
            });
          }
-         console.log(`Sent ${pendingMessages.length} pending messages to user ${username}`);
        }
      }
 
@@ -71,7 +70,6 @@ export async function setupSocketHandlers(io: Server) {
          status: "sent",
        }).populate("sender", "id username");
 
-       console.log(`User ${username} requested pending messages: found ${pendingMessages.length}`);
 
        for (const msg of pendingMessages) {
          socket.emit("server:new_message", {
@@ -90,9 +88,6 @@ export async function setupSocketHandlers(io: Server) {
            timeStamp: msg.timestamp || Date.now(),
            type: "text",
          });
-       }
-       if (pendingMessages.length > 0) {
-         console.log(`Sent ${pendingMessages.length} pending messages to ${username} on request`);
        }
      });
 
