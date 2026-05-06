@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import { IMessage } from "@chatmu/shared";
 
 const useIncomingMessage = () => {
-  const { socket, listenMessage, markAsDelivered } = useSocketContext();
+  const { socket, listenMessage, reqPending, markAsDelivered } = useSocketContext();
   const { addMessage, setLastMessage } = useConversationActions();
   const { conversations } = useConversation();
   const { toast } = useToast();
@@ -66,8 +66,7 @@ const useIncomingMessage = () => {
       const listener = listenMessage(handleReceiveMessage);
 
       // Request pending messages AFTER listener is ready
-      socket.emit("client:request_pending");
-      console.log("Requested pending messages");
+      reqPending()
 
       // Cleanup listener
       return () => listener.off();

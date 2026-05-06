@@ -13,8 +13,6 @@ export default async function Home() {
 
   const initialConversations = await getConversations(session.user.id);
 
-console.log({initialConversations})
-
   return (
     <HomeClient
       initialConversations={initialConversations}

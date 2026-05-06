@@ -20,6 +20,7 @@ type ContextType = {
   markAsRead: (data: { conversationId: string; userId: string }) => void;
 
   listenMessage: (callback: (data: IMessage) => void) => { off: () => void };
+  reqPending: () => void;
   listenMessageReceived: (
     callback: (data: { senderId: string; conversationId: string }) => void
   ) => { off: () => void };
@@ -46,6 +47,7 @@ const defaultValue: ContextType = {
   listenMessageSent: () => ({ off: () => {} }),
   listenMessageReceived: () => ({ off: () => {} }),
   listenMessage: () => ({ off: () => {} }),
+  reqPending: () => {},
   markAsRead: () => {},
   listenMessageRead: () => ({ off: () => {} }),
   listenOnlineUsers: () => ({ off: () => {} }),
@@ -116,7 +118,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
         }
       };
 
-    const createEmitter = (eventName: string) => (data: any) => {
+    const createEmitter = (eventName: string) => (data?: any) => {
       if (socket) {
         socket.emit(eventName, data);
       } else {
@@ -135,6 +137,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       listenMessageSent: createListener("server:message_sent"),
       listenMessage: createListener("server:new_message"),
       markAsRead: createEmitter("client:message_read"),
+      reqPending: createEmitter("client:request_pending"),
       listenMessageRead: createListener("server:mark_as_read"),
       listenOnlineUsers: createListener("get_online_users"),
     };
