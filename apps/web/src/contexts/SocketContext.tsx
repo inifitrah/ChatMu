@@ -16,6 +16,7 @@ type ContextType = {
   connected: boolean;
 
   sendMessage: (data: IMessage) => void;
+  retrySendMessage: (data: IMessage) => void;
   markAsDelivered: (data: { senderId: string; conversationId: string }) => void;
   markAsRead: (data: { conversationId: string; userId: string }) => void;
 
@@ -132,6 +133,7 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
       socket,
       connected: alreadyConnect,
       sendMessage: createEmitter("client:send_message"),
+      retrySendMessage: createEmitter("client:send_message"), // Use same event for retry
       listenMessageReceived: createListener("server:message_received"),
       markAsDelivered: createEmitter("client:message_received"),
       listenMessageSent: createListener("server:message_sent"),

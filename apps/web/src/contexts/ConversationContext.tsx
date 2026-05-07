@@ -66,7 +66,17 @@ type ConversationAction =
   | { type: "SET_SEARCH_QUERY"; payload: string }
   | { type: "SET_SEARCH_CONVERSATIONS" }
   | { type: "SET_STATUS"; payload: "idle" | "loading" | "failed" }
-  | { type: "SET_USERS"; payload: ConversationState["users"] };
+  | { type: "SET_USERS"; payload: ConversationState["users"] }
+  | {
+      type: "RETRY_MESSAGE";
+      payload: {
+        tempId: string;
+        conversationId: string;
+        content: string;
+        sender: { id: string; username: string };
+        recipient: { id: string; username: string };
+      };
+    };
 
 const initialState: ConversationState = {
   conversations: [],
@@ -307,6 +317,19 @@ function conversationReducer(
     case "SET_USERS": {
       return { ...state, users: action.payload || [] };
     }
+    case "RETRY_MESSAGE": {
+      const { tempId, conversationId, content, sender, recipient } = action.payload;
+      // Update message status to 'sending' to trigger UI
+      return {
+        ...state,
+        messages: state.messages.map((msg) => {
+          if (msg.tempId === tempId || msg.id === tempId) {
+            return { ...msg, status: "sending" as const };
+          }
+          return msg;
+        }),
+      };
+    }
     default: {
       return state;
     }
@@ -409,6 +432,15 @@ export function useConversationActions() {
       dispatch({ type: "SET_USERS", payload: users });
       // refresh search results if query exists
       dispatch({ type: "SET_SEARCH_CONVERSATIONS" });
+    },
+    retryMessage: (params: {
+      tempId: string;
+      conversationId: string;
+      content: string;
+      sender: { id: string; username: string };
+      recipient: { id: string; username: string };
+    }) => {
+      dispatch({ type: "RETRY_MESSAGE", payload: params });
     },
   };
 }

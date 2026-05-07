@@ -9,8 +9,8 @@ import { useSession } from "next-auth/react";
 import { IMessage } from "@chatmu/shared";
 
 const useIncomingMessage = () => {
-  const { socket, listenMessage, reqPending, markAsDelivered } = useSocketContext();
-  const { addMessage, setLastMessage } = useConversationActions();
+  const { socket, listenMessage, reqPending, markAsDelivered, listenMessageSent, retrySendMessage } = useSocketContext();
+  const { addMessage, setLastMessage, updateMessageStatus } = useConversationActions();
   const { conversations } = useConversation();
   const { toast } = useToast();
   const { data: session } = useSession();
@@ -36,6 +36,69 @@ const useIncomingMessage = () => {
           isCurrentUser: sender.id === session?.user.id,
           timeStamp: new Date(),
         };
+
+        const isCurrentUser = sender.id === session?.user.id;
+        addMessage(messageData);
+        setLastMessage({
+          lastMessageIsCurrentUser: isCurrentUser,
+          conversationId,
+          lastMessageContent: content,
+          lastMessageTime: new Date(),
+          status: data.status,
+        });
+
+        // Only mark as delivered if message status is "sent" (not already delivered)
+        if (data.status === "sent") {
+          markAsDelivered({
+            conversationId,
+            senderId: sender.id,
+          });
+        }
+
+        // Only show toast for messages from others
+        if (!isCurrentUser) {
+          toast({
+            title: sender.username,
+            description: content,
+          });
+        }
+      };
+
+      // Handle message sent confirmation from server - replace tempId with real id
+      const handleMessageSent = (data: { tempId: string; id: string; timeStamp: number; conversationId: string }) => {
+        updateMessageStatus({
+          conversationId: data.conversationId,
+          newStatus: "sent",
+          tempId: data.tempId,
+          id: data.id,
+        });
+      };
+
+      const listener = listenMessage(handleReceiveMessage);
+      const sentListener = listenMessageSent(handleMessageSent);
+
+      // Request pending messages AFTER listener is ready
+      reqPending();
+
+      // Cleanup listeners
+      return () => {
+        listener.off();
+        sentListener.off();
+      };
+    }
+  }, [
+    listenMessage,
+    listenMessageSent,
+    conversations,
+    session?.user.id,
+    socket,
+    addMessage,
+    setLastMessage,
+    toast,
+    markAsDelivered,
+    updateMessageStatus,
+  ]);
+};
 
         const isCurrentUser = sender.id === session?.user.id;
         addMessage(messageData);
