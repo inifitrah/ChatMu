@@ -44,6 +44,7 @@ type ContextType = {
 const defaultValue: ContextType = {
   socket: undefined,
   sendMessage: () => {},
+  retrySendMessage: () => {},
   markAsDelivered: () => {},
   listenMessageSent: () => ({ off: () => {} }),
   listenMessageReceived: () => ({ off: () => {} }),
