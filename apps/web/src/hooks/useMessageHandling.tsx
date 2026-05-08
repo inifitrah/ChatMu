@@ -31,20 +31,27 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
 
   // Load initial messages when conversation is selected
   useEffect(() => {
-    const loadMessages = async () => {
-      if (!conversation.conversationId || !session?.user?.id) return;
+    const conversationId = conversation.conversationId;
+    if (!conversationId || !session?.user?.id) return;
 
+    let cancelled = false;
+
+    const loadMessages = async () => {
       const fetchedMessages = await getMessages(
-        conversation.conversationId,
+        conversationId,
         session.user.id
       );
 
-      if (fetchedMessages) {
-        mergeMessages(conversation.conversationId, fetchedMessages);
+      if (!cancelled && fetchedMessages) {
+        mergeMessages(conversationId, fetchedMessages);
       }
     };
 
     loadMessages();
+
+    return () => {
+      cancelled = true;
+    };
   }, [conversation.conversationId, session?.user?.id]);
   const { sendMessage } = useSocketContext();
 
