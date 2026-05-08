@@ -65,13 +65,22 @@ const useIncomingMessage = () => {
       };
 
       // Handle message sent confirmation from server - replace tempId with real id
-      const handleMessageSent = (data: { tempId: string; id: string; timeStamp: number; conversationId: string }) => {
-        updateMessageStatus({
-          conversationId: data.conversationId,
-          newStatus: "sent",
-          tempId: data.tempId,
-          id: data.id,
-        });
+      const handleMessageSent = (data: { tempId: string; id: string; timeStamp: number; conversationId: string; status?: "sent" | "failed" }) => {
+        if (data.status === "failed") {
+          updateMessageStatus({
+            conversationId: data.conversationId,
+            newStatus: "failed",
+            tempId: data.tempId,
+            id: data.id,
+          });
+        } else {
+          updateMessageStatus({
+            conversationId: data.conversationId,
+            newStatus: "sent",
+            tempId: data.tempId,
+            id: data.id,
+          });
+        }
       };
 
       const listener = listenMessage(handleReceiveMessage);

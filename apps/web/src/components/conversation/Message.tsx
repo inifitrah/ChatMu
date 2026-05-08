@@ -40,6 +40,26 @@ const Message: React.FC<MessageProps> = ({
           isCurrentUser && "justify-end text-end"
         )}
       >
+        {onRetry && tempId && conversationId && sender && recipient && (
+            <div className="flex justify-center items-center pr-4">
+                <button
+                  onClick={() => onRetry({
+                    tempId,
+                    conversationId,
+                    content: message,
+                    sender,
+                    recipient,
+                  })}
+                  className="hover:opacity-70 transition-opacity flex  justify-center"
+                  title="Retry sending message"
+                >
+                <p className="text-red-300 text-xs rounded-lg p-1 mr-2">
+                    Retry
+                </p>
+                  <RefreshCw className="w-7 h-7 text-red-500" />
+                </button>
+            </div>
+        )}
         <div className="rounded-xl overflow-hidden max-w-xs">
           <div
             className={cn("bg-violet-200 p-3", isCurrentUser && "bg-blue-200")}
@@ -58,26 +78,7 @@ const Message: React.FC<MessageProps> = ({
                       case "read":
                         return <CheckCheck className="w-3 h-3 text-blue-600" />;
                       case "failed":
-                        return (
-                          <div className="flex items-center gap-1">
-                            <XCircle className="w-3 h-3 text-red-500" />
-                            {onRetry && tempId && conversationId && sender && recipient && (
-                              <button
-                                onClick={() => onRetry({
-                                  tempId,
-                                  conversationId,
-                                  content: message,
-                                  sender,
-                                  recipient,
-                                })}
-                                className="hover:opacity-70 transition-opacity"
-                                title="Retry sending message"
-                              >
-                                <RefreshCw className="w-3 h-3 text-blue-500" />
-                              </button>
-                            )}
-                          </div>
-                        );
+                        return <XCircle className="w-3 h-3 text-red-500" />
                       default:
                         return null;
                     }

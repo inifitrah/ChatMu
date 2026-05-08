@@ -107,13 +107,13 @@ export async function setupSocketHandlers(io: Server) {
           lastMessage: newMessage._id,
         });
 
-
         // Confirm message sent to sender
         socket.emit("server:message_sent", {
           id: newMessage._id.toString(),
           tempId: data.tempId,
           timeStamp: newMessage.timestamp || Date.now(),
           conversationId: data.conversationId,
+          status: "sent",
         });
 
         const savedMessage = {
@@ -136,59 +136,67 @@ export async function setupSocketHandlers(io: Server) {
         }
       } catch (error) {
         console.error("Error saving message:", error);
+        // Notify sender that message failed
+        socket.emit("server:message_sent", {
+          id: "",
+          tempId: data.tempId,
+          timeStamp: Date.now(),
+          conversationId: data.conversationId,
+          status: "failed",
+        });
       }
     });
 
-     // Handle message received acknowledgment
-     socket.on(
-       "client:message_received",
-       async (data: { conversationId: string; senderId: string }) => {
-         try {
-           // Update status to delivered in database
-           await Message.updateMany(
-             {
-               conversationId: new mongoose.Types.ObjectId(data.conversationId),
-               sender: new mongoose.Types.ObjectId(data.senderId),
-               status: "sent"
-             },
-             { status: "delivered" }
-           );
+    // Handle message received acknowledgment
+    socket.on(
+      "client:message_received",
+      async (data: { conversationId: string; senderId: string }) => {
+        try {
+          // Update status to delivered in database
+          await Message.updateMany(
+            {
+              conversationId: new mongoose.Types.ObjectId(data.conversationId),
+              sender: new mongoose.Types.ObjectId(data.senderId),
+              status: "sent"
+            },
+            { status: "delivered" }
+          );
 
-           const senderUser = onlineUsers.find(
-             (user) => user.userId === data.senderId
-           );
-           if (!senderUser) return;
+          const senderUser = onlineUsers.find(
+            (user) => user.userId === data.senderId
+          );
+          if (!senderUser) return;
 
-           io.to(senderUser.socketId).emit("server:message_received", data);
-         } catch (error) {
-           console.error("Error updating message delivered status:", error);
-         }
-       }
-     );
+          io.to(senderUser.socketId).emit("server:message_received", data);
+        } catch (error) {
+          console.error("Error updating message delivered status:", error);
+        }
+      }
+    );
 
-     // Handle message read acknowledgment
-     socket.on("client:message_read", async ({ conversationId, userId }) => {
-       try {
-         // Update status to read in database
-         await Message.updateMany(
-           {
-             conversationId: new mongoose.Types.ObjectId(conversationId),
-             sender: new mongoose.Types.ObjectId(userId),
-             status: { $ne: "read" }
-           },
-           { status: "read" }
-         );
+    // Handle message read acknowledgment
+    socket.on("client:message_read", async ({ conversationId, userId }) => {
+      try {
+        // Update status to read in database
+        await Message.updateMany(
+          {
+            conversationId: new mongoose.Types.ObjectId(conversationId),
+            sender: new mongoose.Types.ObjectId(userId),
+            status: { $ne: "read" }
+          },
+          { status: "read" }
+        );
 
-         const receivedUser = onlineUsers.find((user) => user.userId === userId);
+        const receivedUser = onlineUsers.find((user) => user.userId === userId);
 
-         if (receivedUser) {
-           io.to(receivedUser.socketId)
-             .emit("server:mark_as_read", conversationId);
-         }
-       } catch (error) {
-         console.error("Error updating message read status:", error);
-       }
-     });
+        if (receivedUser) {
+          io.to(receivedUser.socketId)
+            .emit("server:mark_as_read", conversationId);
+        }
+      } catch (error) {
+        console.error("Error updating message read status:", error);
+      }
+    });
 
     // Handle disconnect
     socket.on("disconnect", () => {

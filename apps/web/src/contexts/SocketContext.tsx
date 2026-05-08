@@ -31,6 +31,7 @@ type ContextType = {
       id: string;
       timeStamp: number;
       conversationId: string;
+      status: "sent" | "failed";
     }) => void
   ) => { off: () => void };
   listenMessageRead: (callback: (data: any) => void) => { off: () => void };
