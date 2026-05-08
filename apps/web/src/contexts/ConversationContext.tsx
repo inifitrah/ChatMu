@@ -36,6 +36,12 @@ type ConversationAction =
   | { type: "SET_SELECTED_CONVERSATION"; payload: ISelectedConversation | null }
   | { type: "SET_MESSAGES"; payload: IMessage[] }
   | {
+    type: "MERGE_MESSAGES"; payload: {
+      conversationId: string;
+      messages: IMessage[];
+    }
+  }
+  | {
     type: "UPDATE_MESSAGE_STATUS"; payload: {
       conversationId: IMessage["conversationId"];
       newStatus: IMessage["status"];
@@ -121,6 +127,31 @@ function conversationReducer(
       return {
         ...state,
         messages: action.payload,
+      };
+    }
+    case "MERGE_MESSAGES": {
+      const { conversationId, messages: newMessages } = action.payload;
+      const newIds = new Set(newMessages.map(m => m.id).filter(Boolean));
+      const newTempIds = new Set(newMessages.map(m => m.tempId).filter(Boolean));
+
+      const filteredExisting = state.messages.filter(msg => {
+        if (msg.conversationId !== conversationId) return true;
+        if (msg.id && newIds.has(msg.id)) return false;
+        if (msg.tempId && newTempIds.has(msg.tempId)) return false;
+        if (msg.status === "failed" || msg.status === "sending") return true;
+        return false;
+      });
+
+      const merged = [...filteredExisting, ...newMessages];
+      merged.sort((a, b) => {
+        const ta = a.timeStamp instanceof Date ? a.timeStamp.getTime() : new Date(a.timeStamp).getTime();
+        const tb = b.timeStamp instanceof Date ? b.timeStamp.getTime() : new Date(b.timeStamp).getTime();
+        return ta - tb;
+      });
+
+      return {
+        ...state,
+        messages: merged,
       };
     }
     case "ADD_MESSAGE": {
@@ -385,6 +416,9 @@ export function useConversationActions() {
     },
     setMessages: (messages: IMessage[]) => {
       dispatch({ type: "SET_MESSAGES", payload: messages });
+    },
+    mergeMessages: (conversationId: string, messages: IMessage[]) => {
+      dispatch({ type: "MERGE_MESSAGES", payload: { conversationId, messages } });
     },
     addMessage: (message: IMessage) => {
       dispatch({ type: "ADD_MESSAGE", payload: message });

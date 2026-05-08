@@ -30,7 +30,8 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ messages }) => {
       ...params,
       type: "text" as const,
       status: "sending",
-      timeStamp: Date.now(),
+      isCurrentUser: true,
+      timeStamp: new Date(),
     });
     // Update local state
     retryMessage(params);

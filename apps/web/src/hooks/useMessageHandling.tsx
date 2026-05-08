@@ -20,12 +20,13 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
     [allMessages, conversation.conversationId]
   );
   const {
-    addMessage: setMessage,
+    addMessage,
     setLastMessage,
     updateConversationStatus,
     updateMessageStatus,
     setSelectedConversation,
     setMessages,
+    mergeMessages,
   } = useConversationActions();
 
   // Load initial messages when conversation is selected
@@ -38,8 +39,8 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
         session.user.id
       );
 
-      if (fetchedMessages && fetchedMessages.length > 0) {
-        setMessages(fetchedMessages);
+      if (fetchedMessages) {
+        mergeMessages(conversation.conversationId, fetchedMessages);
       }
     };
 
@@ -99,7 +100,8 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
       timeStamp: new Date(),
     };
     sendMessage(messageData);
-    setMessage(messageData);
+
+    addMessage(messageData);
     setLastMessage({
       lastMessageIsCurrentUser: true,
       conversationId,
