@@ -20,7 +20,7 @@ type Conversation = Omit<IConversation, "message"> & {
 interface ConversationState {
   conversations: Conversation[];
   selectedConversation: ISelectedConversation | null;
-  messages: IMessage[];
+  messages: Record<string, IMessage[]>;
   status: "idle" | "loading" | "failed";
   query: string;
   isSearchActive: boolean;
@@ -34,7 +34,6 @@ type ConversationAction =
   | { type: "SET_CURRENT_USER_ID"; payload: string }
   | { type: "SET_CONVERSATIONS"; payload: Conversation[] }
   | { type: "SET_SELECTED_CONVERSATION"; payload: ISelectedConversation | null }
-  | { type: "SET_MESSAGES"; payload: IMessage[] }
   | {
     type: "MERGE_MESSAGES"; payload: {
       conversationId: string;
@@ -87,7 +86,7 @@ type ConversationAction =
 const initialState: ConversationState = {
   conversations: [],
   selectedConversation: null,
-  messages: [],
+  messages: {},
   status: "idle",
   query: "",
   isSearchActive: false,
@@ -123,26 +122,20 @@ function conversationReducer(
         selectedConversation: action.payload,
       };
     }
-    case "SET_MESSAGES": {
-      return {
-        ...state,
-        messages: action.payload,
-      };
-    }
     case "MERGE_MESSAGES": {
       const { conversationId, messages: newMessages } = action.payload;
+      const existing = state.messages[conversationId] || [];
       const newIds = new Set(newMessages.map(m => m.id).filter(Boolean));
       const newTempIds = new Set(newMessages.map(m => m.tempId).filter(Boolean));
 
-      const filteredExisting = state.messages.filter(msg => {
-        if (msg.conversationId !== conversationId) return true;
+      const keptLocal = existing.filter(msg => {
         if (msg.id && newIds.has(msg.id)) return false;
         if (msg.tempId && newTempIds.has(msg.tempId)) return false;
         if (msg.status === "failed" || msg.status === "sending") return true;
         return false;
       });
 
-      const merged = [...filteredExisting, ...newMessages];
+      const merged = [...keptLocal, ...newMessages];
       merged.sort((a, b) => {
         const ta = a.timeStamp instanceof Date ? a.timeStamp.getTime() : new Date(a.timeStamp).getTime();
         const tb = b.timeStamp instanceof Date ? b.timeStamp.getTime() : new Date(b.timeStamp).getTime();
@@ -151,42 +144,37 @@ function conversationReducer(
 
       return {
         ...state,
-        messages: merged,
+        messages: { ...state.messages, [conversationId]: merged },
       };
     }
     case "ADD_MESSAGE": {
+      const convId = action.payload.conversationId;
+      const existing = state.messages[convId] || [];
       return {
         ...state,
-        messages: [...state.messages, action.payload],
+        messages: { ...state.messages, [convId]: [...existing, action.payload] },
       };
     }
 
     case "UPDATE_MESSAGE_STATUS": {
-      const {
-        conversationId,
-        newStatus,
-        tempId,
-        id
-      } = action.payload
+      const { conversationId, newStatus, tempId, id } = action.payload;
+      const convMessages = state.messages[conversationId];
+      if (!convMessages) return state;
+
       return {
         ...state,
-        messages: state.messages.map((msg) => {
-          if (msg.conversationId === conversationId) {
+        messages: {
+          ...state.messages,
+          [conversationId]: convMessages.map((msg) => {
             if (tempId && (msg.id === tempId || msg.tempId === tempId)) {
-              return {
-                ...msg,
-                id: id || msg.id,
-                status: newStatus
-              }
+              return { ...msg, id: id || msg.id, status: newStatus }
             } else if (!tempId && msg.status !== newStatus && msg.status !== "read") {
-              return {
-                ...msg, status: newStatus
-              }
+              return { ...msg, status: newStatus }
             }
-          }
-          return msg
-        })
-      }
+            return msg
+          }),
+        },
+      };
     }
 
     case "UPDATE_CONVERSATION_STATUS": {
@@ -308,7 +296,7 @@ function conversationReducer(
           messagePreview: u.name,
         }));
 
-      const filteredMessages: MessageSearchResult[] = state.messages
+      const filteredMessages: MessageSearchResult[] = Object.values(state.messages).flat()
         .filter((msg) => {
           if (!query || query === "") return false;
 
@@ -349,16 +337,21 @@ function conversationReducer(
       return { ...state, users: action.payload || [] };
     }
     case "RETRY_MESSAGE": {
-      const { tempId, conversationId, content, sender, recipient } = action.payload;
-      // Update message status to 'sending' to trigger UI
+      const { tempId, conversationId } = action.payload;
+      const convMessages = state.messages[conversationId];
+      if (!convMessages) return state;
+
       return {
         ...state,
-        messages: state.messages.map((msg) => {
-          if (msg.tempId === tempId || msg.id === tempId) {
-            return { ...msg, status: "sending" as const };
-          }
-          return msg;
-        }),
+        messages: {
+          ...state.messages,
+          [conversationId]: convMessages.map((msg) => {
+            if (msg.tempId === tempId || msg.id === tempId) {
+              return { ...msg, status: "sending" as const };
+            }
+            return msg;
+          }),
+        },
       };
     }
     default: {
@@ -413,9 +406,6 @@ export function useConversationActions() {
     },
     setSelectedConversation: (conversation: ISelectedConversation | null) => {
       dispatch({ type: "SET_SELECTED_CONVERSATION", payload: conversation });
-    },
-    setMessages: (messages: IMessage[]) => {
-      dispatch({ type: "SET_MESSAGES", payload: messages });
     },
     mergeMessages: (conversationId: string, messages: IMessage[]) => {
       dispatch({ type: "MERGE_MESSAGES", payload: { conversationId, messages } });

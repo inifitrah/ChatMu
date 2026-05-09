@@ -11,13 +11,10 @@ import { getOrCreateConversation, getMessages } from "@/app/actions/conversation
 const useMessageHandling = (conversation: ISelectedConversation) => {
   const { markAsRead } = useSocketContext();
   const { data: session } = useSession();
-  const { messages: allMessages } = useConversation();
+  const { messages: messagesByConv } = useConversation();
   const messages = useMemo(
-    () =>
-      allMessages.filter(
-        (message) => message.conversationId === conversation.conversationId
-      ),
-    [allMessages, conversation.conversationId]
+    () => messagesByConv[conversation.conversationId] || [],
+    [messagesByConv, conversation.conversationId]
   );
   const {
     addMessage,
@@ -25,7 +22,6 @@ const useMessageHandling = (conversation: ISelectedConversation) => {
     updateConversationStatus,
     updateMessageStatus,
     setSelectedConversation,
-    setMessages,
     mergeMessages,
   } = useConversationActions();
 
